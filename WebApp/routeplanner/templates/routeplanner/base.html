@@ -13,46 +13,43 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" href="{% static 'routeplanner/main.css' %}">
+
     {% if title %}
-    <title>Django Blog - {{ title }}</title>
+    <title>Dublin Bus - {{ title }}</title>
     {% else %}
-    <title>Django Blog</title>
+    <title>Dublin Bus</title>
     {% endif %}
 </head>
 
 <body>
     <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
-            <div class="container">
-                <a class="navbar-brand mr-4" href="{% url 'routeplanner' %}">Django Blog</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
-                    aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarToggle">
-                    <div class="navbar-nav mr-auto">
-                        <a class="nav-item nav-link" href="{% url 'routeplanner' %}">Home</a>
-                        <a class="nav-item nav-link" href="{% url 'about' %}">About</a>
-                    </div>
-                    <!-- Navbar Right Side -->
-                    <div class="navbar-nav">
-                        <a class="nav-item nav-link" href="#">Login</a>
-                        <a class="nav-item nav-link" href="#">Register</a>
+        <div class="container">
+                <a href="{% url 'routeplanner' %}"><h1>DUBLIN BUS</h1></a>
+        </div>
+    </header>
+
+    <main role="main" class="container-fluid">
+        <div class="row">
+            <div class="col-1 p-0" id="navibar">
+                <div class="item"> Journey</div>
+                <div class="item"> Stops</div>
+                <div class="item"> Routes</div>
+                <div class="item"> Leap</div>
+            </div>
+            <div class="col-4 shadow" id="content">
+                <div class="row content_header">
+                    <div class="col">
+                        Journey
                     </div>
                 </div>
             </div>
-        </nav>
-    </header>
-    <main role="main" class="container">
-        <div class="row">
-            <div class="col-md-8">
-                {% block content %}{% endblock %}
-            </div>
+            <div class="col-7" id="map"></div>
         </div>
     </main>
-
+    
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
@@ -62,6 +59,11 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
-</body>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFP5d_7EMWgLSyTTuCvpYcUU--AQ239So&callback=initMap">
+    </script>
 
+    <script src="{% static 'routeplanner/base.js' %}"></script>   
+    
+</body>
 </html>

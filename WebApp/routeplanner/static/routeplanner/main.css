@@ -1,27 +1,26 @@
 body {
   background: #fafafa;
   color: #333333;
-  margin-top: 5rem;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color: #444444;
+a {
+  color: black;
 }
 
-.bg-steel {
-  background-color: #5f788a;
+a:hover, a:active {
+  text-decoration: none;
+  color: inherit; 
 }
 
-.site-header .navbar-nav .nav-link {
-  color: #cbd5db;
-}
-
-.site-header .navbar-nav .nav-link:hover {
-  color: #ffffff;
-}
-
-.site-header .navbar-nav .nav-link.active {
-  font-weight: 500;
+.site-header {
+  height: 80px;
+  background-color: #ffbf00;
+  color: black;
+  font-size: 30px;
+  box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.3); ;
+  position: relative;
+  z-index: 99999;
+  
 }
 
 .content-section {
@@ -31,3 +30,47 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 3px;
   margin-bottom: 20px;
 }
+
+.content_header {
+  height: 70px; 
+  padding: 10px;
+  font-size: 30px;
+  background-color: #ffbf00;
+}
+
+#map {
+  max-height: 100vh;
+  overflow-y: hidden;
+  background-color: bisque;
+  height: 900px;
+}
+
+#navibar {
+  background-color: #606060;
+}
+
+#content {
+  background-color: white;
+  box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 9999;
+}
+
+.item {
+  height:50px;
+  overflow:hidden;
+  color:#fff;
+  text-align: center;
+  padding: 20px;
+  height: 15%;
+}
+
+.item:hover {
+  background-color: #ffbf00 ;
+  color: black;
+}
+    
+
+
+
+  
