@@ -3,5 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name="routeplanner"),
-    path('about', views.about, name="about"),
+    path('stops', views.stops, name="stops"),
+    path('routes', views.routes, name="routes"),
+    path('leapcard', views.leapcard, name="leapcard"),
 ]
