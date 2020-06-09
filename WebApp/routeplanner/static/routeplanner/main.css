@@ -23,14 +23,6 @@ a:hover, a:active {
   
 }
 
-.content-section {
-  background: #ffffff;
-  padding: 10px 20px;
-  border: 1px solid #dddddd;
-  border-radius: 3px;
-  margin-bottom: 20px;
-}
-
 .content_header {
   height: 70px; 
   padding: 10px;
@@ -41,7 +33,6 @@ a:hover, a:active {
 #map {
   max-height: 100vh;
   overflow-y: hidden;
-  background-color: bisque;
   height: 900px;
 }
 
@@ -69,8 +60,3 @@ a:hover, a:active {
   background-color: #ffbf00 ;
   color: black;
 }
-    
-
-
-
-  

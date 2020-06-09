@@ -1,31 +1,14 @@
 
-var initMap = () => {
-    this.map = new google.maps.Map(
-        document.getElementById('map'), {
-            zoom: 15,
-            center: {lat: 53.3568, lng: -6.26814},  // Blessington Street station
-            fullscreenControl: false
-        });
 
-    this.infowindow = new google.maps.InfoWindow();
+// Initialize and add the map
+var mymap = L.map('map').setView([53.3482, -6.2641], 12);
 
-    // Try HTML5 geolocation.
-    //Setting and Scrolling user's location
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-        var pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-        // The marker, positioned at user location
-        var marker = new google.maps.Marker({position: pos, map: map});
-        map.setCenter(pos);
-      }, function() {
-        handleLocationError(true, infowindow, map.getCenter());
-      });
-    } else {
-        // Browser doesn't support Geolocation
-        handleLocationError(false, infowindow, map.getCenter());
-    }
+L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'pk.eyJ1Ijoib2hteWhhcHB5IiwiYSI6ImNrYjdyaWg0cDA0bXMycXFyNzgxdmkyN3kifQ.gcq3O8-AveWKXNS5TUGL_g'
+}).addTo(mymap);
 
-};

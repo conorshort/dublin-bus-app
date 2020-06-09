@@ -11,6 +11,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
 
     <link rel="stylesheet" type="text/css" href="{% static 'routeplanner/main.css' %}">
 
@@ -36,14 +39,14 @@
                 <div class="item"> Routes</div>
                 <div class="item"> Leap</div>
             </div>
-            <div class="col-4 shadow" id="content">
+            <div class="col-3 shadow" id="content">
                 <div class="row content_header">
                     <div class="col">
                         Journey
                     </div>
                 </div>
             </div>
-            <div class="col-7" id="map"></div>
+            <div class="col-8" id="map"></div>
         </div>
     </main>
     
@@ -59,9 +62,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFP5d_7EMWgLSyTTuCvpYcUU--AQ239So&callback=initMap">
-    </script>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+    crossorigin=""></script>
 
     <script src="{% static 'routeplanner/base.js' %}"></script>   
     
