@@ -60,9 +60,13 @@ a:hover, a:active {
   color: black;
 }
 
-.list-group-item:nth-child(odd) {
-  color: #777;
+.dropdown-toggle { 
+  background-color: white; 
+  color: #333333;
 }
-/* .list-group-item:nth-child(even) {
-  color: blue;
-} */
+
+.btn-primary {
+  background-color: deepskyblue;
+  border-style: none;
+}
+
