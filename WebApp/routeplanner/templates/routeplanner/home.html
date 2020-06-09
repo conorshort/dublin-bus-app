@@ -1,17 +1,14 @@
 {% extends "routeplanner/base.html" %}
 {% block content %}
 
-<div class="media-body">
-    <h1>This is the home page soon there will be a very pretty map here</h1>
-
-    {% for bus in busses %}
-    <h3>{{ bus.route }}</h3>
-    <h5>{{ bus.from }}</h5>
-    <h5>{{ bus.to }}</h5>
-    <h5>{{ bus.time }}</h5>
-    {% endfor %}
-    
+<div class="col-3" id="content">
+    <div class="row content_header">
+        <div class="col">
+            Journey
+        </div>
+    </div>
 </div>
+<div class="col-8" id="map"></div>
 
 {% endblock content %}
 
