@@ -59,3 +59,10 @@ a:hover, a:active {
   background-color: #ffbf00 ;
   color: black;
 }
+
+.list-group-item:nth-child(odd) {
+  color: #777;
+}
+/* .list-group-item:nth-child(even) {
+  color: blue;
+} */
