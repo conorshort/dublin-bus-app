@@ -1,17 +1,58 @@
 {% extends "routeplanner/base.html" %}
 {% block content %}
 
-<div class="media-body">
-    <h1>This is the home page soon there will be a very pretty map here</h1>
-
-    {% for bus in busses %}
-    <h3>{{ bus.route }}</h3>
-    <h5>{{ bus.from }}</h5>
-    <h5>{{ bus.to }}</h5>
-    <h5>{{ bus.time }}</h5>
-    {% endfor %}
-    
+<div class="col-3" id="content">
+    <div class="row content_header">
+        <div class="col">
+            Journey
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form>
+                <div class="form-group row">
+                    <label for="inputFromStop" class="col-sm-2 col-form-label">From: </label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputFromStop" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputToStop" class="col-sm-2 col-form-label">To: </label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="inputToStop" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="form-group col-md-6">
+                        <div class="dropdown">
+                            <label for="dropdownDate">Date: </label>
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownDate" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dropdown
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#">Action</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="dropdown">
+                            <label for="dropdownTime">Time: </label>
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownTime" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dropdown
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#">Action</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary float-right">Submit</button>
+            </form>
+        </div>
+    </div>
 </div>
+<div class="col-8" id="map"></div>
 
 {% endblock content %}
 
