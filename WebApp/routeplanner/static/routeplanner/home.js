@@ -2,27 +2,12 @@
 $(document).ready(function() {
     $( "#sidebar" ).load( "/journey #content" );
     $('.nav_item').click(function(e) {  
-        var id = $(this).attr('id');
-        console.log(id);
+        // Get the name of tab on the navbar that was clicked
+        var nav_id = $(this).attr('id');
+        console.log(nav_id);
 
-        // change content when nav item clicked
-        switch(id) {
-            case "journey":
-                $( "#sidebar" ).load( "/journey #content" );
-                break;
-            case "routes":
-                $( "#sidebar" ).load( "/routes #content" );
-                break;
-            case "stops":
-                $( "#sidebar" ).load( "/stops #content" );
-                break;
-            case "leapcard":
-                $( "#sidebar" ).load( "/leapcard #content" );
-                break;
-            default:
-                $( "#sidebar" ).load( "/journey #content" );
-                break;
-          }
+        // Update sidebar content with appropriate html
+        $("#sidebar").load("/" + nav_id + " #content");
     });
 });
 
