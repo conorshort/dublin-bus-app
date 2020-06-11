@@ -74,8 +74,8 @@ class BusStopManager(models.Manager):
 
 class BusStop(models.Model):
     stopid = models.IntegerField(primary_key=True)
-    displaystopid = models.IntegerField(blank=True, null=True)
-    shortname = models.CharField(max_length=200, blank=True, null=True)
+    displaystopid = models.IntegerField(blank=True, null=True) # Duplicate of stopid, can be deleted
+    shortname = models.CharField(max_length=200, blank=True, null=True)  # Very similar to fullname, can be deleted
     shortnamelocalized = models.CharField(
         max_length=200, blank=True, null=True)
     fullname = models.CharField(
@@ -83,8 +83,8 @@ class BusStop(models.Model):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     lastupdated = models.DateField(blank=True, null=True)
-    operator = models.CharField(max_length=20, blank=True, null=True)
-    op_type = models.IntegerField(blank=True, null=True)
+    operator = models.CharField(max_length=20, blank=True, null=True)  # constant value, can be deleted
+    op_type = models.IntegerField(blank=True, null=True)  # constant value, can be deleted
     routes = models.TextField(blank=True, null=True)
 
     # Model manager
@@ -119,12 +119,12 @@ class RouteShapeManager(models.Manager):
 
         print("Adding to db...")
         model_instances = [RouteShape(
-            unique_point_id=f'{record["shape_id"]}"-seq:{record["shape_pt_sequence"]}',
+            unique_point_id=f'{record["shape_id"]}-seq:{record["shape_pt_sequence"]}',
             shape_id=record["shape_id"],
             shape_pt_lat=record["shape_pt_lat"],
             shape_pt_lon=record["shape_pt_lon"],
             shape_pt_sequence=record["shape_pt_sequence"],
-            shape_dist_traveled=record["shape_dist_traveled"]
+            shape_dist_traveled=record["shape_dist_traveled"] # Doesn't seem accurate or useful, can be deleted
         ) for record in df_records]
 
         self.bulk_create(model_instances,
@@ -139,7 +139,7 @@ class RouteShape(models.Model):
     shape_pt_lat = models.FloatField(blank=True, null=True)
     shape_pt_lon = models.FloatField(blank=True, null=True)
     shape_pt_sequence = models.IntegerField()
-    shape_dist_traveled = models.FloatField(blank=True, null=True)
+    shape_dist_traveled = models.FloatField(blank=True, null=True) # Doesn't seem accurate or useful, can be deleted
 
     # Model manager
     objects = RouteShapeManager()
