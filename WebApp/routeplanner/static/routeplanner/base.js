@@ -6,7 +6,12 @@ $(document).ready(function() {
 
         // change content when nav item clicked
         if (id == "journey"){
-            $( "#content" ).load( "home.html" );
+            // get() will send a request to django the URL you give it as the first arg, you'll need to set up the urls.py and a views.py in django so that
+            // it returns the appropriate html
+            // That html will then be returned  as "data" in the function belows
+            $.get( "/journey", function( data ) {
+                $("#content").html(data)
+            } );
             // $( "#content" ).load( "../../tempeletes/routeplanner/home.html" );
         };
     });
