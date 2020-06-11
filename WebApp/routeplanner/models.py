@@ -1,8 +1,9 @@
 from django.db import models
 
+
 class BusStopManager(models.Manager):
 
-    def _get_all_bus_stop_data(self):
+    def __get_all_bus_stop_data(self):
         ''' Connect to smartdublin api and return a JSON of all bus stops '''
 
         import requests
@@ -21,7 +22,7 @@ class BusStopManager(models.Manager):
             print("Data obtained.")
             return json.loads(r.text)["results"]
 
-    def _format_date_for_django(self, date_str):
+    def __format_date_for_django(self, date_str):
         ''' Format a date-time str from smartdublin API for use in Django model'''
         from datetime import datetime
 
@@ -30,7 +31,7 @@ class BusStopManager(models.Manager):
 
     def update_all_stops(self):
         ''' Find all Dublin Bus stops currently in use and update the database '''
-        stops_json = _get_all_bus_stop_data()
+        stops_json = self.__get_all_bus_stop_data()
 
         print("Adding to db...")
         bus_stops = []
@@ -47,7 +48,8 @@ class BusStopManager(models.Manager):
             else:
                 continue
 
-            last_update_str = __format_date_for_django(stop["lastupdated"])
+            last_update_str = self.__format_date_for_django(
+                stop["lastupdated"])
 
             # Make an instance of BusStop
             bus_stops.append(BusStop(
@@ -67,11 +69,7 @@ class BusStopManager(models.Manager):
         # Add all BusStop instances to the DB
         self.bulk_create(
             bus_stops, batch_size=100, ignore_conflicts=True)
-        print("\nDone")
-t
-
-
-
+        print("Done")
 
 
 class BusStop(models.Model):
@@ -97,25 +95,31 @@ class BusStop(models.Model):
         db_table = 'all_bus_stops'
 
 
-
-
-
 class RouteShapeManager(models.Manager):
+    
     def get_shape_json_by_shape_id(self, shape_id):
+
         shape = RouteShape.objects.filter(shape_id=shape_id)
+        num_points = len(shape)
+        shape_dict = {"shape_id": shape[0].shape_id,
+                      "points": [None] * num_points
+                      }
         for point in shape:
-            d = {"lat": point["shape_pt_lat"],
-                "lon": point["shape_pt_lon"]}
+            pt_seq = point.shape_pt_sequence
+            shape_dict["points"][pt_seq - 1] = {"lat": point.shape_pt_lat,
+                                            "lon": point.shape_pt_lon}  
+        return shape_dict
 
     def update_all_shapes(self):
         import pandas as pd
         print("Getting data...")
-        df = pd.read_csv("C:/Users/cls15/Google Drive/Comp Sci/Research Practicum/Code/dublin-bus-app/Models/Data Cleaning/shapes.txt")
+        df = pd.read_csv(
+            "C:/Users/cls15/Google Drive/Comp Sci/Research Practicum/Code/dublin-bus-app/Models/Data Cleaning/shapes.txt")
         df_records = df.to_dict('records')
-        
+
         print("Adding to db...")
         model_instances = [RouteShape(
-            unique_point_id=record["shape_id"] + "Seq:" + record["shape_pt_sequence"],
+            unique_point_id=f'{record["shape_id"]}"-seq:{record["shape_pt_sequence"]}',
             shape_id=record["shape_id"],
             shape_pt_lat=record["shape_pt_lat"],
             shape_pt_lon=record["shape_pt_lon"],
@@ -129,11 +133,8 @@ class RouteShapeManager(models.Manager):
         print("Done")
 
 
-
-
-
 class RouteShape(models.Model):
-    unique_point_id = models.CharField(max_length=30)
+    unique_point_id = models.CharField(primary_key=True, max_length=30)
     shape_id = models.CharField(max_length=30)
     shape_pt_lat = models.FloatField(blank=True, null=True)
     shape_pt_lon = models.FloatField(blank=True, null=True)
