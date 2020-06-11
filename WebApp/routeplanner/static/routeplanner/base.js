@@ -1,4 +1,16 @@
+// click function for div item
+$(document).ready(function() {
+    $('.nav_item').click(function(e) {  
+        var id = $(this).attr('id');
+        console.log(id);
 
+        // change content when nav item clicked
+        if (id == "journey"){
+            $( "#content" ).load( "home.html" );
+            // $( "#content" ).load( "../../tempeletes/routeplanner/home.html" );
+        };
+    });
+});
 
 // Initialize and add the map
 var mymap = L.map('map').setView([53.3482, -6.2641], 12);

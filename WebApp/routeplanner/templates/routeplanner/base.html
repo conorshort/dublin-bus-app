@@ -34,21 +34,23 @@
     <main role="main" class="container-fluid">
         <div class="row">
             <div class="col-1 p-0" id="navibar">
-                <a href="/"><div class="item"> Journey</div></a>
-                <a href="/stops"><div class="item"> Stops</div></a>
-                <a href="/routes"><div class="item"> Routes</div></a>
-                <a href="/leapcard"><div class="item"> Leap Card</div></a>
+                <div class="nav_item" id="journey"> Journey</div></a>
+                <div class="nav_item" id="stops"> Stops</div></a>
+                <div class="nav_item" id="routes"> Routes</div></a>
+                <div class="nav_item" id="leapcard"> Leap Card</div></a>
             </div>
-            {% block content %}{% endblock %}
+            <div class="col-11 p-0" id="content">
+                <!-- {% block content %}{% endblock %} -->
+            </div>
         </div>
     </main>
     
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
         crossorigin="anonymous"></script>
