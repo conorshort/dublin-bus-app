@@ -24,7 +24,6 @@ a:hover, a:active {
 
 .sidebar_header {
   height: 70px; 
-  padding: 10px;
   font-size: 30px;
   background-color: #ffbf00;
 }
@@ -39,7 +38,7 @@ a:hover, a:active {
   background-color: #606060;
 }
 
-#sidebar {
+#content {
   background-color: white;
   box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
   position: relative;

@@ -24,6 +24,9 @@ def home(request):
     }
     return render(request, 'routeplanner/home.html', context)
 
+def journey(request):
+    return render(request, 'routeplanner/journey.html')
+
 def stops(request):
     return render(request, 'routeplanner/stops.html')
 
