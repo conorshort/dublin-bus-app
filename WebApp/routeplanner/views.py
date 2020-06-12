@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+import requests
 
 
 dummy_bus_content = [
@@ -19,9 +20,26 @@ dummy_bus_content = [
 
 
 def home(request):
-    context = {
-        'busses': dummy_bus_content
+
+    API = '83e8d16b48f83517a5d89158fc88656e'
+    URL = "http://api.openweathermap.org/data/2.5/weather?q=Dublin,ie&appid=" + API
+    try:
+        city_weather = requests.get(url=URL).json() #sends request to API and resturns weather data in Json
+    except:
+        print("Error, Weather Data Not Recieved")        
+    
+    weather = {
+        'temperature' : int(city_weather['main']['temp'] - 273.15),
+        'description' : city_weather['weather'][0]['description'],
+        'icon' : city_weather['weather'][0]['icon']
     }
+
+    context = {
+        'busses': dummy_bus_content,
+        'weather': weather
+    }
+   
+
     return render(request, 'routeplanner/home.html', context)
 
 def stops(request):
@@ -32,3 +50,5 @@ def routes(request):
 
 def leapcard(request):
     return render(request, 'routeplanner/leapcard.html', {'title' : 'Leapcard'})
+
+  

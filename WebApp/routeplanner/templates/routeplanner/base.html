@@ -32,14 +32,14 @@
                     <article class="media">
                         <div class="media-left">
                             <figure class="image is-50x50">
-                                <img src="http://openweathermap.org/img/w/10d.png" alt="Image">
+                                <img src="http://openweathermap.org/img/w/{{ weather.icon }}.png" alt="Image">
                             </figure>
                         </div>
                         <div class="media-content">
                             <div class="container">
                                 <p>
-                                    <span class="subtitle">29° C </span>
-                                    <br>  Thunderstorm with Heavy Rain
+                                    <span class="subtitle">{{ weather.temperature }}° C </span>
+                                    <br>  {{ weather.description }}
                                 </p>
                             </div>
                         </div>
