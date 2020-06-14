@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-
+import requests
+import json
 
 dummy_bus_content = [
     {
@@ -28,7 +29,19 @@ def journey(request):
     return render(request, 'routeplanner/journey.html')
 
 def stops(request):
-    return render(request, 'routeplanner/stops.html')
+
+    URL = 'http://127.0.0.1:8000/api/stops'
+    try:
+        r = requests.get(URL, timeout=20)
+    except requests.exceptions.RequestException as e:
+        print("Something went wrong: could not connect to", URL)
+        return render(request, 'routeplanner/stops.html', {})
+    else:
+        stops = json.loads(r.text)
+        context = {
+            'stops': stops
+        }
+        return render(request, 'routeplanner/stops.html', context)
 
 def routes(request):
     return render(request, 'routeplanner/routes.html')

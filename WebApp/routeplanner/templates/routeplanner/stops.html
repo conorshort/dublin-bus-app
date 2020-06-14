@@ -10,13 +10,22 @@
                 <div class="active-cyan-4 mb-4">
                     <input class="form-control" type="text" placeholder="Find a stop" aria-label="Search">
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">stop</li>
-                    <li class="list-group-item">stop</li>        
-                    <li class="list-group-item">stop</li>
+                
+                <ul class="list-group-flush p-0 vh-100" id="stopsListGroup">
+                    {% for stop in stops %}
+                    <li class="list-group-item" id="station-${{stop.stopid}}">
+                        <ul>
+                            <li><b>{{ stop.fullname }}</b></li>
+                            <li>{{ stop.routes }}</li>
+                        </ul>
+                    </li>
+
+                    {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
 </div>
+</script> 
+
 

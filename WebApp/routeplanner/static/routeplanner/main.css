@@ -1,6 +1,11 @@
-body {
+html, body {
   background: #fafafa;
   color: #333333;
+  height: 100%;
+}
+
+main {
+  height: 100%;
 }
 
 a {
@@ -28,14 +33,18 @@ a:hover, a:active {
   background-color: #ffbf00;
 }
 
+.sidebar {
+  height: 100vh;
+  overflow:scroll;
+}
+
 #map {
-  max-height: 100vh;
   overflow-y: hidden;
-  height: 900px;
 }
 
 #navibar {
   background-color: #606060;
+  
 }
 
 #content {
@@ -67,5 +76,10 @@ a:hover, a:active {
 .btn-primary {
   background-color: deepskyblue;
   border-style: none;
+}
+
+#stopsListGroup {
+  max-height:800px;
+  overflow:auto;
 }
 

@@ -13,6 +13,8 @@ $(document).ready(function() {
 
 // Initialize and add the map
 var mymap = L.map('map').setView([53.3482, -6.2641], 12);
+// Set map hight 
+$("#map").height($(window).height()-80);
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',

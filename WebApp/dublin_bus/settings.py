@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles'
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -78,9 +80,9 @@ WSGI_APPLICATION = 'dublin_bus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'djangomess',
+        'NAME': 'dublin_bus_test',
         'USER': 'root',
-        'PASSWORD': 'd6A2zQyaSHWDvw2pE8RBNeG3',
+        'PASSWORD': 'Dublinbus_6!#5/6',
         'HOST': 'localhost',
         'PORT': '3306',
     }
