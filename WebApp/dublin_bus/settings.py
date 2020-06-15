@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+sys.path.append(".")
+import config
 import os
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -80,14 +83,13 @@ WSGI_APPLICATION = 'dublin_bus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dublin_bus_test',
-        'USER': 'root',
-        'PASSWORD': 'Dublinbus_6!#5/6',
-        'HOST': 'localhost',
+        'NAME': 'bus_data',
+        'USER': config.db["admin_username"],
+        'PASSWORD': config.db["admin_pw"],
+        'HOST': config.db["host"],
         'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

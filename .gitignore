@@ -134,3 +134,7 @@ dmypy.json
 .vscode
 setting.json
 Models/routesequences.csv
+
+
+# secret config stuff
+config.py
