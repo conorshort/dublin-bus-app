@@ -1,29 +1,29 @@
-{% extends "routeplanner/base.html" %}
-{% block content %}
-
-<div class="col-3" id="content">
-    <div class="row content_header">
-        <div class="col">
-            Leap Card
+<div class="row" id="content">
+    <div class="col">
+        <div class="row sidebar_header">
+            <div class="col">
+                Leap Card
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <form>
+                    <b>Leap card account information:</b></br></br>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn btn-primary float-right">Submit</button>
+                </form>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <form>
-                <b>Leap card account information:</b></br></br>
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Username">
-                </div>
-                <div class="form-group">
-                    <input type="password" class="form-control" placeholder="Password">
-                </div>
-                <button type="submit" class="btn btn-primary float-right">Submit</button>
-            </form>
-        </div>
-    </div>
+    
 </div>
-<div class="col-8" id="map"></div>
 
-{% endblock content %}
 
-</html>
+
+
+

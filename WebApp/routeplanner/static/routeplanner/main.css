@@ -22,9 +22,8 @@ a:hover, a:active {
   z-index: 99999;
 }
 
-.content_header {
+.sidebar_header {
   height: 70px; 
-  padding: 10px;
   font-size: 30px;
   background-color: #ffbf00;
 }
@@ -46,7 +45,7 @@ a:hover, a:active {
   z-index: 9999;
 }
 
-.item {
+.nav_item {
   height:50px;
   overflow:hidden;
   color:#fff;
@@ -55,7 +54,7 @@ a:hover, a:active {
   height: 15%;
 }
 
-.item:hover {
+.nav_item:hover {
   background-color: #ffbf00 ;
   color: black;
 }
