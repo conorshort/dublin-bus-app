@@ -121,8 +121,7 @@ class GTFSShapeManager(models.Manager):
     def update_all_shapes(self):
         import pandas as pd
         print("Getting data...")
-        df = pd.read_csv(
-            "C:/Users/cls15/Google Drive/Comp Sci/Research Practicum/Code/dublin-bus-app/Models/Data Cleaning/shapes.txt")
+        df = pd.read_csv(static("dublin_bus_gtfs/shapes.txt"))
         df_records = df.to_dict('records')
 
         print("Adding to db...")
