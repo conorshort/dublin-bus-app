@@ -9,9 +9,9 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
+import sys
 
-sys.path.append(".")
-import config
+from .config import *
 import os
 
 
@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '(zg1l-9*n7tj%g=l)e$)c7^iq!v121t#$y8x+8!hv&9ag@(gh_'
+SECRET_KEY = "6e$-u*$-g$6%7$dpe9j(%1a1s8^&4j(&l7fvtij9@4xwvr0fvn"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -84,9 +84,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bus_data',
-        'USER': config.db["admin_username"],
-        'PASSWORD': config.db["admin_pw"],
-        'HOST': config.db["host"],
+        'USER': db_config["admin_username"],
+        'PASSWORD': db_config["admin_pw"],
+        'HOST': db_config["host"],
         'PORT': '3306',
     }
 }
