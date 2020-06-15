@@ -1,18 +1,21 @@
 {% extends "routeplanner/base.html" %}
-{% block content %}
-
-<div class="media-body">
-    <h1>This is the home page soon there will be a very pretty map here</h1>
-
-    {% for bus in busses %}
-    <h3>{{ bus.route }}</h3>
-    <h5>{{ bus.from }}</h5>
-    <h5>{{ bus.to }}</h5>
-    <h5>{{ bus.time }}</h5>
-    {% endfor %}
-    
+{% load static %}
+{% block main %}
+<div class="row">
+    <div class="col-1 p-0" id="navibar">
+        <div class="nav_item" id="journey"> Journey</div></a>
+        <div class="nav_item" id="stops"> Stops</div></a>
+        <div class="nav_item" id="routes"> Routes</div></a>
+        <div class="nav_item" id="leapcard"> Leap Card</div></a>
+    </div>
+    <div class="col-3" id="sidebar"></div>
+    <div class="col-8" id="map"></div>
 </div>
+{% endblock main %}
 
-{% endblock content %}
-
-</html>
+{% block js %}
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+    crossorigin=""></script>   
+    <script src="{% static 'routeplanner/home.js' %}"></script> 
+{% endblock %}

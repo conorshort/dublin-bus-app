@@ -24,6 +24,14 @@ def home(request):
     }
     return render(request, 'routeplanner/home.html', context)
 
+def journey(request):
+    return render(request, 'routeplanner/journey.html')
 
-def about(request):
-    return render(request, 'routeplanner/about.html')
+def stops(request):
+    return render(request, 'routeplanner/stops.html')
+
+def routes(request):
+    return render(request, 'routeplanner/routes.html')
+
+def leapcard(request):
+    return render(request, 'routeplanner/leapcard.html')
