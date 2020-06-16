@@ -9,6 +9,10 @@ $(document).ready(function() {
         // Update sidebar content with appropriate html
         $("#sidebar").load("/" + nav_id + " #content");
     });
+
+    $('#test').click(function(e) {  
+        console.log('test');
+    });
 });
 
 // Initialize and add the map

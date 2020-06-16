@@ -30,7 +30,7 @@ def journey(request):
 
 def stops(request):
 
-    URL = 'http://127.0.0.1:8000/api/stops'
+    URL = 'http://127.0.0.1:8000/api/stops/nearby?longitude=-6.263695&latitude=53.3522411111&radius=0.1'
     try:
         r = requests.get(URL, timeout=20)
     except requests.exceptions.RequestException as e:
