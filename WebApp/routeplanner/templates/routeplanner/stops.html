@@ -1,8 +1,8 @@
-{% load static %}
 <div class="row" id="content">
+    {% load static %}
     <div class="col">
         <div class="row sidebar_header">
-            <div class="col" id="test">
+            <div class="col">
                 Stops
             </div>
         </div>
@@ -13,20 +13,11 @@
                 </div>
                 
                 <ul class="list-group-flush p-0 vh-100" id="stopsListGroup">
-                    {% for stop in stops %}
-                    <li class="list-group-item" id="station-${{stop.stopid}}">
-                        <ul>
-                            <li><b>{{ stop.fullname }}</b></li>
-                            <li>{{ stop.routes }}</li>
-                        </ul>
-                    </li>
-                    
-                    {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
-    <script src="{% static 'routeplanner/home.js' %}"></script> 
+    <script src="{% static 'routeplanner/stops.js' %}" id="script"></script> 
 </div>
 
 
