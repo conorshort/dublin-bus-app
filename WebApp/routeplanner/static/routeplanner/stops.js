@@ -22,7 +22,7 @@ function renderListItem(stop) {
 function showStopsOnMap(stop) {
     L.marker([stop.latitude, stop.longitude])
     .addTo(mymap)
-    .bindPopup(stop.fullname + "<br>" + stop.routes);;
+    .bindPopup(stop.fullname + "<br>" + stop.routes);
 }
 
 

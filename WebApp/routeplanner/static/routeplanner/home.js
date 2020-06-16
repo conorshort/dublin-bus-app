@@ -10,20 +10,48 @@ $(document).ready(function() {
         // Update sidebar content with appropriate html
         $("#sidebar").load("/" + nav_id + "#script");
     });
+    initMap();
 });
 
-// Initialize and add the map
-var mymap = L.map('map').setView([53.3482, -6.2641], 12);
-// Set map hight 
-$("#map").height($(window).height()-80);
 
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+//LOCATION: default value is Dublin city centre,
+//If user allow location access, than set value to user location
+let LOCATION = [53.3482, -6.2641]
+
+// Initialize and add the map
+var map = L.map('map').setView(LOCATION, 12);
+
+function initMap(){
+
+    // Set map hight 
+    $("#map").height($(window).height()-80);
+
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
     id: 'mapbox/streets-v11',
     tileSize: 512,
     zoomOffset: -1,
     accessToken: 'pk.eyJ1Ijoib2hteWhhcHB5IiwiYSI6ImNrYjdyaWg0cDA0bXMycXFyNzgxdmkyN3kifQ.gcq3O8-AveWKXNS5TUGL_g'
-}).addTo(mymap);
+    }).addTo(map);
+
+    map.locate({setView: true, watch: true});
+
+    var onLocationFound = function(e){
+        L.marker(e.latlng)
+        .addTo(map)
+        .bindPopup("You are here!")
+        .openPopup();
+        LOCATION = e.latlng;
+        map.setView(e.latlng, 12);
+    };
+
+    map.on('locationfound', onLocationFound);
+}
+
+
+
+
+
 
 
