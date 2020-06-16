@@ -128,7 +128,7 @@ class AbstractGTFS(models.Model):
     ''' Abstract class that all GTFS classes inherit from
 
     Sets the model manager for each class to GTFSManager'''
-    objects = GTFSManager()
+    updater = GTFSManager()
 
     class Meta:
         abstract = True
