@@ -2,20 +2,36 @@
 {% load static %}
 {% block main %}
 <div class="row">
-    <div  id="side-navibar">
+    <div id="side-navibar">
         <div class="nav_item" id="journey"> Journey</div></a>
         <div class="nav_item" id="stops"> Stops</div></a>
         <div class="nav_item" id="routes"> Routes</div></a>
         <div class="nav_item" id="leapcard"> Leap Card</div></a>
     </div>
-    <div  id="sidebar"></div>
+    <div id="sidebar"></div>
     <div class="col" id="map"></div>
 </div>
+
+<div class="container" id="bottom-navibar">
+    <div class="row" id="resp-sidebar-menu">
+        <div class="bottom_nav_item col" id="bottom-journey"> Journey</div>
+        <div class="bottom_nav_item col" id="bottom-stops"> Stops</div>
+        <div class="bottom_nav_item col" id="bottom-routes"> Routes</div>
+        <div class="bottom_nav_item col" id="bottom-leapcard"> Leap Card</div>
+        <div class="bottom_nav_item col" id="bottom-showmap"> Show Map</div>
+    </div>
+    <div class="row" id="resp-map-menu">
+        <div class="bottom_nav_item col" id="bottom-hidemap"> Hide Map</div>
+    </div>
+</div>
+
+
+
 {% endblock main %}
 
 {% block js %}
-    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
     integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
-    crossorigin=""></script>   
-    <script src="{% static 'routeplanner/home.js' %}"></script> 
+    crossorigin=""></script>
+<script src="{% static 'routeplanner/home.js' %}"></script>
 {% endblock %}

@@ -39,17 +39,31 @@ a:hover, a:active {
   height: calc(100vh - 80px);
 }
 
+#bottom-navibar {
+  background-color: #606060;
+  width: 100vw !important;
+  height: 60px;
+  display: none;
+  z-index: 9999;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+
 #content {
   background-color: white;
   box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
   position: relative;
-  z-index: 9999;
+  z-index: 9000;
   width: 100%;
   height: calc(100vh - 80px);
+  overflow: scroll;
 }
 
 #sidebar {
-    width: 460px;
+    width: 430px;
 }
 
 
@@ -63,10 +77,27 @@ a:hover, a:active {
   height: 15%;
 }
 
+
+
+
+
 .nav_item:hover {
   background-color: #ffbf00 ;
   color: black;
 }
+
+.bottom_nav_item  {
+  overflow:hidden;
+  color:#fff;
+  text-align: center;
+  height: 60px;
+  width: 25%;
+}
+.bottom_nav_item:hover {
+  background-color: #ffbf00 ;
+  color: black;
+}
+
 
 .dropdown-toggle { 
   background-color: white; 
@@ -80,16 +111,21 @@ a:hover, a:active {
 
 @media (max-width: 955px) { 
     #sidebar {
-      background-color: green;
       width: 100vw;
       box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
       position: relative;
-      z-index: 9999;
+      z-index: 9000;
+      height:calc(100vh - 80px - 60px);
     }
+
+    #content {
+      height:calc(100vh - 80px - 60px);
+    }
+
 
     #map {
       display: none;
-      height: calc(100vh - 80px);
+      height: calc(100vh - 80px - 60px);
       overflow-y: hidden;
     }
 
@@ -97,6 +133,11 @@ a:hover, a:active {
       display: none;
     }
 
+    #bottom-navibar {
+      display: block;
+      min-width: 100vw !important;
+    }
 
 
  }
+

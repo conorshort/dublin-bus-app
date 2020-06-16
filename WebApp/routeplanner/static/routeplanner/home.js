@@ -1,13 +1,40 @@
 // click function for div item
 $(document).ready(function() {
+
     $( "#sidebar" ).load( "/journey #content" );
+
     $('.nav_item').click(function(e) {  
         // Get the name of tab on the navbar that was clicked
         var nav_id = $(this).attr('id');
-        console.log(nav_id);
-
         // Update sidebar content with appropriate html
         $("#sidebar").load("/" + nav_id + " #content");
+    });
+
+
+
+    $('.bottom_nav_item').click(function (e) {
+        // Get the name of tab on the navbar that was clicked
+        var nav_id = $(this).attr('id');
+        nav_id = nav_id.split("-")[1];
+        // Update sidebar content with appropriate html
+        if (nav_id === "showmap"){
+            $("#sidebar").hide()
+            $("#map").show()
+
+            $("#resp-map-menu").show()
+            $("#resp-sidebar-menu").hide()
+
+            mymap.invalidateSize()
+            
+        } else if (nav_id === "hidemap") {
+            $("#sidebar").show()
+            $("#map").hide()
+
+            $("#resp-map-menu").hide()
+            $("#resp-sidebar-menu").show()
+        } else {
+        $("#sidebar").load("/" + nav_id + " #content");
+        }
     });
 });
 
