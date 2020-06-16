@@ -1,17 +1,18 @@
 from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import BusStop
 from .serializers import BusStopSerializer
-from django.contrib.gis.geos import Point
-from django.contrib.gis.measure import Distance
-from django.http import HttpResponse
 
 class BusStopViewSet(viewsets.ModelViewSet):
     queryset = BusStop.objects.all()
     serializer_class = BusStopSerializer
 
-    def get_queryset(self):
+    # giving params longitude, latitudeand radius, API will return all the stops with in radius
+    # usage example: /api/stops/nearby?longitude=-6.263695&latitude=53.3522411111&radius=0.1
+    @action(detail=False)
+    def nearby(self, request):
 
         longitude = self.request.query_params.get('longitude')
         latitude= self.request.query_params.get('latitude')
@@ -29,10 +30,9 @@ class BusStopViewSet(viewsets.ModelViewSet):
             as s HAVING distance < %s \
             ORDER BY distance;" % (latitude, longitude, latitude, radius) 
 
-
         queryset = BusStop.objects.raw(sql)
         serializer = BusStopSerializer(queryset, many=True)
 
-        return serializer.data
+        return Response(serializer.data)
 
     
