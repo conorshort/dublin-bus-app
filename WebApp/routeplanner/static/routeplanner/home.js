@@ -14,12 +14,12 @@ $(document).ready(function() {
 });
 
 
-//LOCATION: default value is Dublin city centre,
+//centreLocation: default value is Dublin city centre,
 //If user allow location access, than set value to user location
-let LOCATION = [53.3482, -6.2641]
+var centreLocation = [53.3482, -6.2641]
 
 // Initialize and add the map
-var map = L.map('map').setView(LOCATION, 12);
+var map = L.map('map').setView(centreLocation, 12);
 
 function initMap(){
 
@@ -42,7 +42,7 @@ function initMap(){
         .addTo(map)
         .bindPopup("You are here!")
         .openPopup();
-        LOCATION = e.latlng;
+        centreLocation = e.latlng;
         map.setView(e.latlng, 12);
     };
 

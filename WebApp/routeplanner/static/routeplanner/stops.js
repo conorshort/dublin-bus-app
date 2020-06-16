@@ -1,4 +1,6 @@
-$.getJSON('http://127.0.0.1:8000/api/stops/nearby?longitude=-6.263695&latitude=53.3522411111&radius=0.1', function(data) {
+
+// console.log(`http://127.0.0.1:8000/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=0.5`);
+$.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=0.5`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
             content += renderListItem(stop);
@@ -21,14 +23,10 @@ function renderListItem(stop) {
 
 function showStopsOnMap(stop) {
     L.marker([stop.latitude, stop.longitude])
-    .addTo(mymap)
-    .bindPopup(stop.fullname + "<br>" + stop.routes);
+    .addTo(map)
+    .bindPopup(`<b> ${stop.fullname}</b> <br> ${stop.routes}`);
 }
 
-
-$('.list-group-item').click(function(e) {  
-
-});
 
 
 
