@@ -92,90 +92,126 @@ class BusStop(models.Model):
 
 # ========================================================================================
 # ========================================================================================
-# Models for GTFS data found here https://transitfeeds.com/p/transport-for-ireland/782/latest
+# Models to store the GTFS data found here https://transitfeeds.com/p/transport-for-ireland/782/latest
 
 
+# =================== Manager for all GTFS classes ===================
+# Includes a method that will read from a class's associated
+# text file and add it to the db. Can be called with
+# <gtfs-class>.objects.update_all()
+class GTFSManager(models.Manager):
 
-# ===== ROUTE =====
-class GTFSRouteManager(models.Manager):
     def update_all(self):
+        ''' Read data from a text file and import to mysql
+
+        The text file is found as a class variable in each GTFS class'''
         import pandas as pd
         print("Getting data...")
-        df = pd.read_csv("api/static/api/dublin_bus_gtfs/routes.txt")
-        df_records = df.to_dict('records')
+        df = pd.read_csv(self.model._text_file)
+        df_records=df.to_dict('records')
 
-        print("Adding to db...")
-        model_instances = [GTFSRoute(
-            route_id=record["route_id"],
-            route_name=record["route_short_name"],
-        ) for record in df_records]
-
-        self.bulk_create(model_instances,
-                         batch_size=10000,
-                         ignore_conflicts=True)
+        print("Creating instances...")
+        self.all().delete()
+        model_instances = []
+        for i, record in enumerate(df_records):
+            gtfs_instance = self.model.from_dict(record)
+            model_instances.append(gtfs_instance)
+            if i % 10000 == 0:
+                print(f"Adding entries up to {i} to db...")
+                self.bulk_create(model_instances)
+                model_instances = []
+        self.bulk_create(model_instances)
         print("Done")
 
 
-class GTFSRoute(models.Model):
-    route_id = models.CharField(primary_key=True, max_length=50)
-    route_name = models.CharField(max_length=20)
+class AbstractGTFS(models.Model):
+    ''' Abstract class that all GTFS classes inherit from
 
-    objects = GTFSRouteManager()
+    Sets the model manager for each class to GTFSManager'''
+    objects = GTFSManager()
 
     class Meta:
-        managed = True
-        db_table = 'gtfs_routes'
+        abstract = True
+    
+    @classmethod
+    def from_dict(cls, gtfs_dict):
+        ''' Create an instance of a class from a dictionary
 
-# ===== SHAPE =====
+        If a class includes a _proc_func runs the dictionary
+        throught that first '''
+
+        # Create an instance of the class
+        gtfs_instance = cls()
+
+        # Alter the dictionary with _proc_func if found
+        proc_func = getattr(gtfs_instance, "_proc_func", None)
+        if proc_func:
+            gtfs_dict = proc_func(gtfs_dict)
+        
+        # Loop through the dict and set the instance values
+        for key, val in gtfs_dict.items():
+            if key in dir(gtfs_instance):
+                setattr(gtfs_instance, key, val)
+        return gtfs_instance
 
 
+
+# =================== ROUTE ===================
+
+class GTFSRoute(AbstractGTFS):
+    route_id=models.CharField(primary_key=True, max_length=50)
+    route_name=models.CharField(max_length=20)
+
+    _text_file = "api/static/api/dublin_bus_gtfs/routes.txt"
+
+    def _proc_func(self, route_dict):
+        route_dict["route_name"] = route_dict["route_short_name"]
+        return route_dict
+
+    def __repr__(self):
+        return self.route_id + " " + self.route_name
+
+    class Meta:
+        managed=True
+        db_table='gtfs_routes'
+
+
+
+# =================== SHAPE ===================
+
+# ===== Shape Manager=====
 class GTFSShapeManager(models.Manager):
 
     def get_json_by_id(self, shape_id):
         ''' Take a shape_id and return a dict containing a list of its lats and'''
-        shape = RouteShape.objects.filter(shape_id=shape_id)
-        num_points = len(shape)
-        shape_dict = {"shape_id": shape[0].shape_id,
+        shape = GTFSShape.objects.filter(shape_id=shape_id)
+        num_points=len(shape)
+        shape_dict={"shape_id": shape[0].shape_id,
                       "points": [None] * num_points
                       }
         for point in shape:
-            pt_seq = point.shape_pt_sequence
-            shape_dict["points"][pt_seq - 1] = {"lat": point.shape_pt_lat,
+            pt_seq=point.shape_pt_sequence
+            shape_dict["points"][pt_seq - 1]={"lat": point.shape_pt_lat,
                                                 "lon": point.shape_pt_lon}
         return shape_dict
 
-    def update_all(self):
-        import pandas as pd
-        print("Getting data...")
-        df = pd.read_csv("api/static/api/dublin_bus_gtfs/shapes.txt")
-        df_records = df.to_dict('records')
 
-        print("Adding to db...")
-        shape_instances = []
-        for record in df_records:
-            shape_instances.append(GTFSShape(
-                unique_point_id=f'{record["shape_id"]}:{record["shape_pt_sequence"]}',
-                shape_id=record["shape_id"],
-                shape_pt_lat=record["shape_pt_lat"],
-                shape_pt_lon=record["shape_pt_lon"],
-                shape_pt_sequence=record["shape_pt_sequence"]
-            ))
-
-        self.bulk_create(shape_instances,
-                         batch_size=10000,
-                         ignore_conflicts=True)
-        print("\nDone")
-
-
-class GTFSShape(models.Model):
-    unique_point_id = models.CharField(primary_key=True, max_length=70)
-    shape_id = models.CharField(max_length=30)
-    shape_pt_lat = models.FloatField(blank=True, null=True)
-    shape_pt_lon = models.FloatField(blank=True, null=True)
-    shape_pt_sequence = models.IntegerField()
+# ===== Shape Model =====
+class GTFSShape(AbstractGTFS):
+    unique_point_id=models.CharField(primary_key=True, max_length=70)
+    shape_id=models.CharField(max_length=30)
+    shape_pt_lat=models.FloatField(blank=True, null=True)
+    shape_pt_lon=models.FloatField(blank=True, null=True)
+    shape_pt_sequence=models.IntegerField()
 
     # Model manager
-    objects = GTFSShapeManager()
+    objects=GTFSShapeManager()
+
+    _text_file = "api/static/api/dublin_bus_gtfs/shapes.txt"
+
+    def _proc_func(self, shape_dict):
+        shape_dict["unique_point_id"] = f'{shape_dict["shape_id"]}:{shape_dict["shape_pt_sequence"]}'
+        return shape_dict
 
     def __repr__(self):
         return f'''Id: {self.shape_id};
@@ -183,12 +219,24 @@ class GTFSShape(models.Model):
                    Seq: {self.shape_pt_sequence}'''
 
     class Meta:
-        managed = True
-        db_table = 'gtfs_shapes'
-        unique_together = (("shape_id", "shape_pt_sequence"),)
+        managed=True
+        db_table='gtfs_shapes'
+        unique_together=(("shape_id", "shape_pt_sequence"),)
 
 
-class GTFSStopTimeManager(models.Manager):
+
+# =================== STOP TIMES ===================
+
+class GTFSStopTime(AbstractGTFS):
+    unique_trip_id=models.CharField(primary_key=True, max_length=50)
+    trip_id=models.CharField(max_length=50)
+    arrival_time = models.IntegerField(blank=True, null=True)
+    departure_time=models.IntegerField(blank=True, null=True)
+    stop_id=models.CharField(max_length=50)
+    stop_sequence=models.IntegerField()
+    stop_headsign=models.CharField(max_length=200)
+
+    _text_file = "api/static/api/dublin_bus_gtfs/stop_times.txt"
 
     def __time_to_secs(self, time):
         hrs, mins, secs = time.split(":")
@@ -196,89 +244,29 @@ class GTFSStopTimeManager(models.Manager):
         mins_to_secs = int(mins) * 60
         return hrs_to_secs + mins_to_secs + int(secs)
 
-    def update_all(self):
-        import pandas as pd
-        print("Getting data...")
-        df = pd.read_csv("api/static/api/dublin_bus_gtfs/stop_times.txt")
-        df_records = df.to_dict('records')
-
-        print("Adding to db...")
-                
-        stop_time_instances = []
-        for record in df_records:
-            stop_time_instances.append(GTFSStopTime(
-                unique_trip_id=f'{record["trip_id"]}:{record["stop_sequence"]}',
-                trip_id=record["trip_id"],
-                arrival_time=self.__time_to_secs(record["arrival_time"]),
-                departure_time=self.__time_to_secs(record["depart ure_time"]),
-                stop_id=record["stop_id"],
-                stop_sequence=record["stop_sequence"],
-                stop_headsign=record["stop_headsign"]
-            ))
-
-        self.bulk_create(stop_time_instances,
-                         batch_size=10000,
-                         ignore_conflicts=True)
-        print("Done")
-
-
-class GTFSStopTime(models.Model):
-    unique_trip_id = models.CharField(primary_key=True, max_length=50)
-    trip_id = models.CharField(max_length=50)
-    arrival_time = models.IntegerField(blank=True, null=True)
-    departure_time = models.IntegerField(blank=True, null=True)
-    stop_id = models.CharField(max_length=50)
-    stop_sequence = models.IntegerField()
-    stop_headsign = models.CharField(max_length=200)
-
-    # Model manager
-    objects = GTFSStopTimeManager()
+    def _proc_func(self, stop_time_dict):
+        stop_time_dict["unique_trip_id"] = f'{stop_time_dict["trip_id"]}:{stop_time_dict["stop_sequence"]}'
+        stop_time_dict["arrival_time"] = self.__time_to_secs(stop_time_dict["arrival_time"])
+        stop_time_dict["departure_time"] = self.__time_to_secs(stop_time_dict["departure_time"])
+        return stop_time_dict
 
     class Meta:
-        managed = True
-        db_table = 'gtfs_stop_times'
-
-
-class GTFSTripManager(models.Manager):
-
-    def update_all(self):
-        import pandas as pd
-        print("Getting data...")
-        df = pd.read_csv("api/static/api/dublin_bus_gtfs/trips.txt")
-        df_records = df.to_dict('records')
-
-        print("Adding to db...")
-        trip_instances = []
-        for i, record in enumerate(df_records):
-            if i %100 == 0:
-                print(i)
-            trip_instances.append(GTFSTrip(
-                route_id=record["route_id"],
-                service_id=record["service_id"],
-                trip_id=record["trip_id"],
-                shape_id=record["shape_id"],
-                trip_headsign=record["trip_headsign"],
-                direction_id=record["direction_id"]
-            ))
-
-        self.bulk_create(trip_instances,
-                         batch_size=10000,
-                         ignore_conflicts=True)
-        print("\nDone")
+        managed=True
+        db_table='gtfs_stop_times'
 
 
 
-class GTFSTrip(models.Model):
+# =================== TRIPS ===================
+class GTFSTrip(AbstractGTFS):
     route_id = models.CharField(max_length=70)
-    service_id = models.CharField(max_length=70)
-    trip_id = models.CharField(primary_key=True, max_length=70)
-    shape_id = models.CharField(max_length=70)
-    trip_headsign = models.CharField(max_length=200)
-    direction_id = models.IntegerField()
+    service_id=models.CharField(max_length=70)
+    trip_id=models.CharField(primary_key=True, max_length=70)
+    shape_id=models.CharField(max_length=70)
+    trip_headsign=models.CharField(max_length=200)
+    direction_id=models.IntegerField()
 
-    # Model manager
-    objects = GTFSTripManager()
+    _text_file = "api/static/api/dublin_bus_gtfs/trips.txt"
 
     class Meta:
-        managed = True
-        db_table = 'gtfs_trips'
+        managed=True
+        db_table='gtfs_trips'
