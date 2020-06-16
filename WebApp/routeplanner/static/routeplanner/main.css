@@ -29,13 +29,14 @@ a:hover, a:active {
 }
 
 #map {
-  max-height: 100vh;
-  overflow-y: hidden;
-  height: 900px;
+      height: calc(100vh - 80px);
+      overflow-y: hidden;
 }
 
-#navibar {
+#side-navibar {
   background-color: #606060;
+  width: 90px;
+  height: calc(100vh - 80px);
 }
 
 #content {
@@ -43,7 +44,15 @@ a:hover, a:active {
   box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 9999;
+  width: 100%;
+  height: calc(100vh - 80px);
 }
+
+#sidebar {
+    width: 460px;
+}
+
+
 
 .nav_item {
   height:50px;
@@ -69,3 +78,25 @@ a:hover, a:active {
   border-style: none;
 }
 
+@media (max-width: 955px) { 
+    #sidebar {
+      background-color: green;
+      width: 100vw;
+      box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 9999;
+    }
+
+    #map {
+      display: none;
+      height: calc(100vh - 80px);
+      overflow-y: hidden;
+    }
+
+    #side-navibar {
+      display: none;
+    }
+
+
+
+ }
