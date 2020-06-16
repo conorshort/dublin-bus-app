@@ -26,7 +26,7 @@ class BusStopViewSet(viewsets.ModelViewSet):
             + sin ( radians( %s ) )\
             * sin( radians( s.latitude ) ))) \
             AS distance \
-            FROM dublin_bus_test.all_bus_stops \
+            FROM bus_data.bus_stops \
             as s HAVING distance < %s \
             ORDER BY distance;" % (latitude, longitude, latitude, radius) 
 
