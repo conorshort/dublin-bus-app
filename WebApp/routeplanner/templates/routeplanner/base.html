@@ -25,6 +25,7 @@
 </head>
 
 <body>
+    <!-- Weather icon html-->
     <header class="site-header">
         <div class="container form-inline">
                 <a href="{% url 'routeplanner' %}"><h1>DUBLIN BUS</h1></a>
@@ -32,12 +33,14 @@
                     <article class="media">
                         <div class="media-left">
                             <figure class="image is-50x50">
+                                <!-- Image of cloud / sun etc depending on weather-->
                                 <img src="http://openweathermap.org/img/w/{{ weather.icon }}.png" alt="Image">
                             </figure>
                         </div>
                         <div class="media-content">
                             <div class="container">
                                 <p>
+                                    <!-- Recieving temperature and description from views.py-->
                                     <span class="subtitle">{{ weather.temperature }}° C </span>
                                     <br>  {{ weather.description }}
                                 </p>
