@@ -82,7 +82,7 @@ class BusStop(models.Model):
     routes = models.TextField(blank=True, null=True)
 
     # Model manager
-    # objects = BusStopManager()
+    objects = BusStopManager()
 
     class Meta:
         managed = True
@@ -167,6 +167,8 @@ class GTFSRoute(AbstractGTFS):
     def __repr__(self):
         return self.route_id + " " + self.route_name
 
+    objects = models.Manager()
+
     class Meta:
         managed=True
         db_table='gtfs_routes'
@@ -232,6 +234,8 @@ class GTFSStopTime(AbstractGTFS):
     stop_sequence=models.IntegerField()
     stop_headsign=models.CharField(max_length=200)
 
+    objects = models.Manager()
+
     _text_file = "api/static/api/dublin_bus_gtfs/stop_times.txt"
 
     def __time_to_secs(self, time):
@@ -260,6 +264,8 @@ class GTFSTrip(AbstractGTFS):
     shape_id=models.CharField(max_length=70)
     trip_headsign=models.CharField(max_length=200)
     direction_id=models.IntegerField()
+
+    objects = models.Manager()
 
     _text_file = "api/static/api/dublin_bus_gtfs/trips.txt"
 
