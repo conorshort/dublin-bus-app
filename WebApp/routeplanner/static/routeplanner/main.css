@@ -16,6 +16,11 @@ a:hover, a:active {
   text-decoration: none;
   color: inherit; 
 }
+#site_icon {
+  height: 80px;
+  line-height: 80px;
+  vertical-align: center;
+}
 
 .site-header {
   height: 80px;
@@ -60,6 +65,27 @@ a:hover, a:active {
   left: 0px;
   right: 0px;
 }
+
+
+.weather {
+  height: 80px;
+  line-height: 80px;
+  vertical-align: center;
+  
+}
+
+div.weather#temp {
+  font-size: 40px;
+}
+
+div.weather#description {
+  font-size: 20px;
+}
+
+#weather_img {
+  height: 80px;
+}
+
 
 
 #content {
@@ -157,4 +183,3 @@ a:hover, a:active {
 
 
  }
-
