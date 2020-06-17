@@ -29,8 +29,8 @@ a:hover, a:active {
 }
 
 #map {
-      height: calc(100vh - 80px);
-      overflow-y: hidden;
+  height: calc(100vh - 80px);
+  overflow-y: hidden;
 }
 
 #side-navibar {
@@ -59,13 +59,14 @@ a:hover, a:active {
   z-index: 9000;
   width: 100%;
   height: calc(100vh - 80px);
-  overflow: scroll;
+  overflow:auto;
 }
+
+
 
 #sidebar {
     width: 430px;
 }
-
 
 
 .nav_item {
@@ -78,14 +79,6 @@ a:hover, a:active {
 }
 
 
-
-
-
-.nav_item:hover {
-  background-color: #ffbf00 ;
-  color: black;
-}
-
 .bottom_nav_item  {
   overflow:hidden;
   color:#fff;
@@ -93,8 +86,14 @@ a:hover, a:active {
   height: 60px;
   width: 25%;
 }
-.bottom_nav_item:hover {
+
+.nav_item:hover, .bottom_nav_item:hover {
   background-color: #ffbf00 ;
+  color: black;
+}
+
+.nav-active{
+  background-color: #aaaaaa;
   color: black;
 }
 
@@ -109,6 +108,8 @@ a:hover, a:active {
   border-style: none;
 }
 
+
+/* CSS for when the page is less than 955px */
 @media (max-width: 955px) { 
     #sidebar {
       width: 100vw;
