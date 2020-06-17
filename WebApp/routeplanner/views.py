@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import requests
 
+import json
+
+
 
 dummy_bus_content = [
     {
@@ -31,14 +34,13 @@ weather = {
 }
 
 def home(request):
-
     context = {
         'busses': dummy_bus_content,
         'weather': weather
     }
    
-
     return render(request, 'routeplanner/home.html', context)
+
 
 def journey(request):
     return render(request, 'routeplanner/journey.html')

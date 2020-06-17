@@ -1,6 +1,11 @@
-body {
+html, body {
   background: #fafafa;
   color: #333333;
+  height: 100%;
+}
+
+main {
+  height: 100%;
 }
 
 a {
@@ -26,6 +31,11 @@ a:hover, a:active {
   height: 70px; 
   font-size: 30px;
   background-color: #ffbf00;
+}
+
+.sidebar {
+  height: 100vh;
+  overflow:scroll;
 }
 
 #map {
@@ -106,6 +116,12 @@ a:hover, a:active {
 .btn-primary {
   background-color: deepskyblue;
   border-style: none;
+}
+
+
+#stopsListGroup {
+  max-height:800px;
+  overflow:auto;
 }
 
 

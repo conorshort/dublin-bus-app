@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from .config import db_config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles'
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -78,10 +81,10 @@ WSGI_APPLICATION = 'dublin_bus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'djangomess',
-        'USER': 'root',
-        'PASSWORD': 'd6A2zQyaSHWDvw2pE8RBNeG3',
-        'HOST': 'localhost',
+        'NAME': 'bus_data',
+        'USER': db_config["read_only_username"],
+        'PASSWORD': db_config["read_only_pw"],
+        'HOST': db_config["host"],
         'PORT': '3306',
     }
 }
