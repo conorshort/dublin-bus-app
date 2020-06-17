@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.response import Response
+from django.http import JsonResponse
 from rest_framework.decorators import action
 from .models import BusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
 from .serializers import BusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
@@ -15,25 +17,38 @@ class BusStopViewSet(viewsets.ReadOnlyModelViewSet):
     def nearby(self, request):
 
         longitude = self.request.query_params.get('longitude')
-        latitude= self.request.query_params.get('latitude')
+        latitude = self.request.query_params.get('latitude')
         radius = self.request.query_params.get('radius')
+
+        # Check if value of longitude and latitude are given
+        if longitude and latitude:
+            
+            # if radius value is not given, set radius value as 0.3(km)
+            if radius is None:
+                radius = '0.3'
+            
+            # SQL statement that will find the stops that are within given radius
+            sql = "SELECT *, ( 3959 * acos ( cos ( radians( %s ) )\
+                * cos( radians( s.latitude ) )\
+                * cos( radians( s.longitude ) \
+                    - radians( %s ) )\
+                + sin ( radians( %s ) )\
+                * sin( radians( s.latitude ) ))) \
+                AS distance \
+                FROM bus_data.bus_stops \
+                as s HAVING distance < %s \
+                ORDER BY distance;" % (latitude, longitude, latitude, radius) 
+
+            queryset = BusStop.objects.raw(sql)
+            serializer = BusStopSerializer(queryset, many=True)
+
+            return Response(serializer.data)
         
-        # SQL statement that will find the stops that are within given radius
-        sql = "SELECT *, ( 3959 * acos ( cos ( radians( %s ) )\
-            * cos( radians( s.latitude ) )\
-            * cos( radians( s.longitude ) \
-                - radians( %s ) )\
-            + sin ( radians( %s ) )\
-            * sin( radians( s.latitude ) ))) \
-            AS distance \
-            FROM bus_data.bus_stops \
-            as s HAVING distance < %s \
-            ORDER BY distance;" % (latitude, longitude, latitude, radius) 
+        # If missing longitude and latitude value, return error message
+        else:
+            content = {'message': 'Longitude and latitude fields are required'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
-        queryset = BusStop.objects.raw(sql)
-        serializer = BusStopSerializer(queryset, many=True)
-
-        return Response(serializer.data)
 
 class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = GTFSRoute.objects.all()
