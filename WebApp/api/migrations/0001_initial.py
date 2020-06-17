@@ -52,6 +52,7 @@ class Migration(migrations.Migration):
                 ('stop_id', models.CharField(max_length=50)),
                 ('stop_sequence', models.IntegerField()),
                 ('stop_headsign', models.CharField(max_length=200)),
+
             ],
             options={
                 'db_table': 'gtfs_stop_times',

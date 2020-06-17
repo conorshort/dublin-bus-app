@@ -136,5 +136,10 @@ setting.json
 Models/routesequences.csv
 
 
-#secret congig stuff
+
+# secret config stuff
 config.py
+
+# gtfs files, some are too big for git
+dublin_bus_gtfs/
+
