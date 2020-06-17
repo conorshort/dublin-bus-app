@@ -12,10 +12,17 @@ a {
   color: black;
 }
 
+/* ==== Header ==== */
+#header_content {
+  margin: 0 auto; 
+  width: 80%;
+}
+
 a:hover, a:active {
   text-decoration: none;
   color: inherit; 
 }
+
 #site_icon {
   height: 80px;
   line-height: 80px;
@@ -32,46 +39,10 @@ a:hover, a:active {
   z-index: 99999;
 }
 
-.sidebar_header {
-  height: 70px; 
-  font-size: 30px;
-  background-color: #ffbf00;
-}
-
-.sidebar {
-  height: 100vh;
-  overflow:scroll;
-}
-
-#map {
-  height: calc(100vh - 80px);
-  overflow-y: hidden;
-}
-
-#side-navibar {
-  background-color: #606060;
-  width: 90px;
-  height: calc(100vh - 80px);
-}
-
-#bottom-navibar {
-  background-color: #606060;
-  width: 100vw !important;
-  height: 60px;
-  display: none;
-  z-index: 9999;
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-}
-
-
 .weather {
   height: 80px;
   line-height: 80px;
   vertical-align: center;
-  
 }
 
 div.weather#temp {
@@ -86,6 +57,38 @@ div.weather#description {
   height: 80px;
 }
 
+/* ==== Sidebar ==== */
+.sidebar_header {
+  height: 70px; 
+  font-size: 30px;
+  background-color: #ffbf00;
+}
+
+.sidebar {
+  height: 100vh;
+  overflow:scroll;
+}
+
+
+/* ==== Navigation bar ==== */
+
+#side-navibar {
+  background-color: #606060;
+  width: 90px;
+  height: calc(100vh - 80px);
+}
+
+#bottom-navibar {
+  background-color: #ffbf00;
+  width: 100vw !important;
+  height: 60px;
+  display: none;
+  z-index: 9999;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
 
 
 #content {
@@ -98,11 +101,17 @@ div.weather#description {
   overflow:auto;
 }
 
-
-
 #sidebar {
     width: 430px;
 }
+
+
+/* ==== Map ==== */
+#map {
+  height: calc(100vh - 80px);
+  overflow-y: hidden;
+}
+
 
 
 .nav_item {
@@ -124,26 +133,31 @@ div.weather#description {
 }
 
 .nav_item:hover, .bottom_nav_item:hover {
-  background-color: #ffbf00 ;
+  background-color: #aaaaaa67;
   color: black;
+  transition: 0.2s ease-in-out;
 }
 
 .nav-active{
-  background-color: #aaaaaa;
+  background-color: #ffbf00 ;
   color: black;
+  font-weight: bold;
 }
 
+/* ==== Dropdown element ==== */
 
 .dropdown-toggle { 
   background-color: white; 
   color: #333333;
 }
 
+/* ==== Button element ==== */
 .btn-primary {
   background-color: deepskyblue;
   border-style: none;
 }
 
+/* ==== Other elements ==== */
 
 #stopsListGroup {
   max-height:800px;
