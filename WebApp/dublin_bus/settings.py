@@ -13,6 +13,7 @@ import sys
 
 from .config import *
 import os
+from .config import db_config
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -84,8 +85,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bus_data',
-        'USER': db_config["admin_username"],
-        'PASSWORD': db_config["admin_pw"],
+        'USER': db_config["read_only_username"],
+        'PASSWORD': db_config["read_only_pw"],
         'HOST': db_config["host"],
         'PORT': '3306',
     }

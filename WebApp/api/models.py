@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.templatetags.static import static
 
@@ -176,6 +175,91 @@ class GTFSRoute(AbstractGTFS):
         db_table='gtfs_routes'
 
 
+# ========================================================================================
+# ========================================================================================
+# Models to store the GTFS data found here https://transitfeeds.com/p/transport-for-ireland/782/latest
+
+
+# =================== Manager for all GTFS classes ===================
+# Includes a method that will read from a class's associated
+# text file and add it to the db. Can be called with
+# <gtfs-class>.objects.update_all()
+class GTFSManager(models.Manager):
+
+    def update_all(self):
+        ''' Read data from a text file and import to mysql
+        The text file is found as a class variable in each GTFS class'''
+        import pandas as pd
+        print("Getting data...")
+        df = pd.read_csv(self.model._text_file)
+        df_records=df.to_dict('records')
+
+        print("Creating instances...")
+        self.all().delete()
+        model_instances = []
+        for i, record in enumerate(df_records):
+            gtfs_instance = self.model.from_dict(record)
+            model_instances.append(gtfs_instance)
+            if i % 10000 == 0:
+                print(f"Adding entries up to {i} to db...")
+                self.bulk_create(model_instances)
+                model_instances = []
+        self.bulk_create(model_instances)
+        print("Done")
+
+
+class AbstractGTFS(models.Model):
+    ''' Abstract class that all GTFS classes inherit from
+    Sets the model manager for each class to GTFSManager'''
+    updater = GTFSManager()
+
+    class Meta:
+        abstract = True
+    
+    @classmethod
+    def from_dict(cls, gtfs_dict):
+        ''' Create an instance of a class from a dictionary
+        If a class includes a _proc_func runs the dictionary
+        throught that first '''
+
+        # Create an instance of the class
+        gtfs_instance = cls()
+
+        # Alter the dictionary with _proc_func if found
+        proc_func = getattr(gtfs_instance, "_proc_func", None)
+        if proc_func:
+            gtfs_dict = proc_func(gtfs_dict)
+        
+        # Loop through the dict and set the instance values
+        for key, val in gtfs_dict.items():
+            if key in dir(gtfs_instance):
+                setattr(gtfs_instance, key, val)
+        return gtfs_instance
+
+
+
+# =================== ROUTE ===================
+
+class GTFSRoute(AbstractGTFS):
+    route_id=models.CharField(primary_key=True, max_length=50)
+    route_name=models.CharField(max_length=20)
+
+    _text_file = "api/static/api/dublin_bus_gtfs/routes.txt"
+
+    def _proc_func(self, route_dict):
+        route_dict["route_name"] = route_dict["route_short_name"]
+        return route_dict
+
+    def __repr__(self):
+        return self.route_id + " " + self.route_name
+
+    objects = models.Manager()
+
+    class Meta:
+        managed=True
+        db_table='gtfs_routes'
+
+
 
 # =================== SHAPE ===================
 
@@ -223,8 +307,7 @@ class GTFSShape(AbstractGTFS):
         db_table='gtfs_shapes'
         unique_together=(("shape_id", "shape_pt_sequence"),)
 
-
-
+        
 # =================== STOP TIMES ===================
 
 class GTFSStopTime(AbstractGTFS):
@@ -235,6 +318,8 @@ class GTFSStopTime(AbstractGTFS):
     stop_id=models.CharField(max_length=50)
     stop_sequence=models.IntegerField()
     stop_headsign=models.CharField(max_length=200)
+
+
 
     _text_file = "api/static/api/dublin_bus_gtfs/stop_times.txt"
 
@@ -253,9 +338,9 @@ class GTFSStopTime(AbstractGTFS):
     class Meta:
         managed=True
         db_table='gtfs_stop_times'
-
-
-
+        
+        
+        
 # =================== TRIPS ===================
 class GTFSTrip(AbstractGTFS):
     route_id = models.CharField(max_length=70)
@@ -270,3 +355,4 @@ class GTFSTrip(AbstractGTFS):
     class Meta:
         managed=True
         db_table='gtfs_trips'
+
