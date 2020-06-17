@@ -69,11 +69,24 @@ div.weather#description {
   overflow:scroll;
 }
 
+#content {
+  background-color: white;
+  box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 9000;
+  width: 100%;
+  height: calc(100vh - 80px);
+  overflow:auto;
+}
+
+#sidebar {
+    width: 430px;
+}
 
 /* ==== Navigation bar ==== */
 
 #side-navibar {
-  background-color: #606060;
+  background-color: #797878;
   width: 90px;
   height: calc(100vh - 80px);
 }
@@ -91,19 +104,38 @@ div.weather#description {
 }
 
 
-#content {
-  background-color: white;
-  box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
-  position: relative;
-  z-index: 9000;
-  width: 100%;
-  height: calc(100vh - 80px);
-  overflow:auto;
+.nav_item {
+  height:50px;
+  overflow:hidden;
+  text-align: center;
+  padding: 20px;
+  height: 15%;
+  color: black;
 }
 
-#sidebar {
-    width: 430px;
+
+.bottom_nav_item  {
+  overflow:hidden;
+  text-align: center;
+  height: 60px;
+  width: 25%;
 }
+
+.nav_item:hover, .bottom_nav_item:hover {
+  background-color: #aaaaaa67;
+  transition: 0.2s ease-in-out;
+}
+
+.nav-active{
+  background-color: #ffbf00;
+  font-weight: bold;
+}
+
+
+.nav_img {
+  height:60%;
+}
+
 
 
 /* ==== Map ==== */
@@ -113,36 +145,6 @@ div.weather#description {
 }
 
 
-
-.nav_item {
-  height:50px;
-  overflow:hidden;
-  color:#fff;
-  text-align: center;
-  padding: 20px;
-  height: 15%;
-}
-
-
-.bottom_nav_item  {
-  overflow:hidden;
-  color:#fff;
-  text-align: center;
-  height: 60px;
-  width: 25%;
-}
-
-.nav_item:hover, .bottom_nav_item:hover {
-  background-color: #aaaaaa67;
-  color: black;
-  transition: 0.2s ease-in-out;
-}
-
-.nav-active{
-  background-color: #ffbf00 ;
-  color: black;
-  font-weight: bold;
-}
 
 /* ==== Dropdown element ==== */
 
