@@ -4,9 +4,9 @@ html, body {
   height: 100%;
 }
 
-main {
+/* main {
   height: 100%;
-}
+} */
 
 a {
   color: black;
@@ -65,7 +65,7 @@ div.weather#description {
 }
 
 .sidebar {
-  height: 100vh;
+  height:calc(100vh - 80px);
   overflow:scroll;
 }
 
@@ -92,7 +92,7 @@ div.weather#description {
 }
 
 #bottom-navibar {
-  background-color: #ffbf00;
+  background-color: #797878;
   width: 100vw !important;
   height: 60px;
   display: none;
@@ -105,12 +105,12 @@ div.weather#description {
 
 
 .nav_item {
-  height:50px;
   overflow:hidden;
   text-align: center;
   padding: 20px;
   height: 15%;
   color: black;
+  min-height: 100px;
 }
 
 
@@ -199,3 +199,13 @@ div.weather#description {
 
 
  }
+
+@media (max-height: 475px) { 
+  .nav_img {
+    display: none;
+  }
+  .nav_item {
+    padding: 10px;
+    min-height: 40px;
+  }
+}
