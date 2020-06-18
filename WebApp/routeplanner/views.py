@@ -20,6 +20,8 @@ dummy_bus_content = [
         'time': '15:55'
     }
 ]
+
+#api key and url for weather data
 API = '83e8d16b48f83517a5d89158fc88656e'
 URL = "http://api.openweathermap.org/data/2.5/weather?q=Dublin,ie&appid=" + API
 try:
@@ -27,6 +29,7 @@ try:
 except:
     print("Error, Weather Data Not Recieved")        
 
+#weather information as dictionaryt to be included in context
 weather = {
     'temperature' : int(city_weather['main']['temp'] - 273.15),
     'description' : city_weather['weather'][0]['description'],
