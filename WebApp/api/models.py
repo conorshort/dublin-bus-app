@@ -88,6 +88,7 @@ class BusStop(models.Model):
         managed = True
         db_table = 'bus_stops'
 
+
 # ========================================================================================
 # ========================================================================================
 # Models to store the GTFS data found here https://transitfeeds.com/p/transport-for-ireland/782/latest
@@ -232,7 +233,7 @@ class GTFSStopTime(AbstractGTFS):
     stop_sequence=models.IntegerField()
     stop_headsign=models.CharField(max_length=200)
 
-
+    objects = models.Manager()
 
     _text_file = "api/static/api/dublin_bus_gtfs/stop_times.txt"
 
@@ -262,6 +263,8 @@ class GTFSTrip(AbstractGTFS):
     shape_id=models.CharField(max_length=70)
     trip_headsign=models.CharField(max_length=200)
     direction_id=models.IntegerField()
+
+    objects = models.Manager()
 
     _text_file = "api/static/api/dublin_bus_gtfs/trips.txt"
 

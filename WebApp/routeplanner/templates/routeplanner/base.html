@@ -27,27 +27,26 @@
 <body>
     <!-- Weather icon html-->
     <header class="site-header">
-        <div class="container form-inline">
-                <a href="{% url 'routeplanner' %}"><h1>DUBLIN BUS</h1></a>
-                <div class="box">
-                    <article class="media">
-                        <div class="media-left">
-                            <figure class="image is-50x50">
-                                <!-- Image of cloud / sun etc depending on weather-->
-                                <img src="http://openweathermap.org/img/w/{{ weather.icon }}.png" alt="Image">
-                            </figure>
-                        </div>
-                        <div class="media-content">
-                            <div class="container">
-                                <p>
-                                    <!-- Recieving temperature and description from views.py-->
-                                    <span class="subtitle">{{ weather.temperature }}° C </span>
-                                    <br>  {{ weather.description }}
-                                </p>
-                            </div>
-                        </div>
-                    </article>
+        <div id="header_content">
+            <div class="row">
+                <div class="col-8" id="site_icon">
+                    <a href="{% url 'routeplanner' %}"><h1 id="site_icon">BUUS</h1></a>
                 </div>
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-2 weather">
+                            <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" id="weather_img">
+                        </div>
+                        <div class="col-3 weather" id="temp">
+                            {{ weather.temperature }}°C
+                        </div>
+                        <div class="col-7 weather" id="description">
+                            {{ weather.description }}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
