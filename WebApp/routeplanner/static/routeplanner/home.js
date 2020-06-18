@@ -19,7 +19,7 @@ $(document).ready(function() {
 var centreLocation = [53.3482, -6.2641]
 
 // Initialize and add the map
-var map = L.map('map').setView(centreLocation, 12);
+var map = L.map('map').setView(centreLocation, 14);
 
 function initMap(){
 
@@ -43,7 +43,7 @@ function initMap(){
         .bindPopup("You are here!")
         .openPopup();
         centreLocation = e.latlng;
-        map.setView(e.latlng, 12);
+        map.setView(e.latlng, 14);
     };
 
     map.on('locationfound', onLocationFound);
