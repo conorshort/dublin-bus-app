@@ -35,6 +35,10 @@ a:hover, a:active {
   height: 900px;
 }
 
+#leap-info {
+  color: #ffbf00;
+}
+
 #navibar {
   background-color: #606060;
 }
