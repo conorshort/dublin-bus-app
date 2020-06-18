@@ -52,18 +52,20 @@ def leapcard(request):
             try:
                 login_ok = session.try_login(username, password)
                 overview = session.get_card_overview()
-                # pprint(overview)
-                cardInfo = 'Card:',vars(overview)['card_label'],'Balance: €',vars(overview)['balance']
-                return render(request, 'routeplanner/leapcard.html',{'form': form,'Result':cardInfo})
+
+                card_info = {"card":vars(overview)['card_label'],
+                            "balance":vars(overview)['balance']}
+
+                return render(request, 'routeplanner/leapcard.html',{'form': form,'result':card_info})
                 
-                except Exception as e:
-                    print("x")
-                    print("---")
-                    print("Error: Unable to retrieve Leap Card state.")
-                    print("---")
-                    print("leapcard.ie | href="+login_url)
-                    error="Error: Unable to retrieve Leap Card state."
-                    return render(request, 'routeplanner/leapcard.html',{'form': form,'Result':error})
+            except Exception as e:
+                print("x")
+                print("---")
+                print("Error: Unable to retrieve Leap Card state.")
+                print("---")
+                print("leapcard.ie | href="+login_url)
+                error="Error: Unable to retrieve Leap Card state."
+                return render(request, 'routeplanner/leapcard.html',{'form': form,'Result':error})
                     
     form = leapCardForm()
 
