@@ -83,3 +83,13 @@ a:hover, a:active {
   overflow:auto;
 }
 
+/* Styling for even number list-item */
+.list-group-item:nth-child(2n) { 
+  background-color: #fafafa;
+  border: 0px;
+}
+
+/* Dont show any bullets front of list-item */
+li {
+  list-style: none;
+}
