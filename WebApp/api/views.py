@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import action
 from .models import BusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
 from .serializers import BusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
+import json
 
 class BusStopViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = BusStop.objects.all()
@@ -54,9 +55,39 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = GTFSRoute.objects.all()
     serializer_class = GTFSRouteSerializer
 
+    @action(detail=False)
+    def routename(self, response):
+        q = GTFSRoute.objects.values('route_name').distinct()
+        print(q)
+        return Response(q)
+
+
+
+
 class GTFSShapeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = GTFSShape.objects.all()
     serializer_class = GTFSShapeSerializer
+
+    @action(detail=False)
+    def geo_json(self, request):
+        routename = request.GET.get("routename")
+        inbound = request.GET.get("inbound")
+
+        routes_queryset = GTFSRoute.objects.get_route_id(routename)
+
+        shape_geo_jsons = []
+        for route in routes_queryset:
+            route_id = route.route_id
+            shape_id_queryset = GTFSTrip.objects.filter(route_id=route_id, direction_id=inbound).values(
+                'shape_id').distinct()
+            for shape_id in shape_id_queryset:
+                shape_geo_jsons.append({
+                    "type": "LineString",
+                    "coordinates": GTFSShape.objects.get_points_by_id(shape_id["shape_id"])
+                },)
+
+        return Response(shape_geo_jsons)
+
 
 class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = GTFSStopTime.objects.all()

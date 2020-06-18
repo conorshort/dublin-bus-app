@@ -154,6 +154,13 @@ class AbstractGTFS(models.Model):
 
 # =================== ROUTE ===================
 
+class GTFSRouteManager(GTFSManager):
+
+    def get_route_id(self, route_name):
+        route_id_queryset = GTFSRoute.objects.filter(route_name=route_name)
+        return route_id_queryset
+
+
 class GTFSRoute(AbstractGTFS):
     route_id=models.CharField(primary_key=True, max_length=50)
     route_name=models.CharField(max_length=20)
@@ -167,7 +174,7 @@ class GTFSRoute(AbstractGTFS):
     def __repr__(self):
         return self.route_id + " " + self.route_name
 
-    objects = models.Manager()
+    objects = GTFSRouteManager()
 
     class Meta:
         managed=True
@@ -178,20 +185,17 @@ class GTFSRoute(AbstractGTFS):
 # =================== SHAPE ===================
 
 # ===== Shape Manager=====
-class GTFSShapeManager(models.Manager):
+class GTFSShapeManager(GTFSManager):
 
-    def get_json_by_id(self, shape_id):
-        ''' Take a shape_id and return a dict containing a list of its lats and'''
+    def get_points_by_id(self, shape_id):
+        ''' Take a shape_id and return a dict containing a list of its lats and lons'''
         shape = GTFSShape.objects.filter(shape_id=shape_id)
-        num_points=len(shape)
-        shape_dict={"shape_id": shape[0].shape_id,
-                      "points": [None] * num_points
-                      }
+        num_points = len(shape)
+        points = [None] * num_points
         for point in shape:
             pt_seq=point.shape_pt_sequence
-            shape_dict["points"][pt_seq - 1]={"lat": point.shape_pt_lat,
-                                                "lon": point.shape_pt_lon}
-        return shape_dict
+            points[pt_seq - 1] = [point.shape_pt_lon, point.shape_pt_lat]
+        return points
 
 
 # ===== Shape Model =====
@@ -233,7 +237,6 @@ class GTFSStopTime(AbstractGTFS):
     stop_sequence=models.IntegerField()
     stop_headsign=models.CharField(max_length=200)
 
-    objects = models.Manager()
 
     _text_file = "api/static/api/dublin_bus_gtfs/stop_times.txt"
 
@@ -264,7 +267,6 @@ class GTFSTrip(AbstractGTFS):
     trip_headsign=models.CharField(max_length=200)
     direction_id=models.IntegerField()
 
-    objects = models.Manager()
 
     _text_file = "api/static/api/dublin_bus_gtfs/trips.txt"
 
