@@ -138,7 +138,7 @@ function toggleRouteDisplay(routeName) {
         routeListElementID.addClass("route-loading");
 
         // Generate a random colour
-        let colour = '#' + Math.floor(Math.random() * 16777215).toString(16)
+        let colour = '#' + Math.floor(seededRandom(funhash(routeName)) * 16777215).toString(16)
 
         // Decide whether to display black or white text based on the background colour
         let textColour = getTextColour(colour)
@@ -236,3 +236,15 @@ function alphanumSort(a, b) {
     }
     return aa.length - bb.length;
 }
+
+
+function seededRandom(seed) {
+    var x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+}
+
+var funhash = function (s) {
+    for (var i = 0, h = 0xdeadbeef; i < s.length; i++)
+        h = Math.imul(h ^ s.charCodeAt(i), 2654435761);
+    return (h ^ h >>> 16) >>> 0;
+};
