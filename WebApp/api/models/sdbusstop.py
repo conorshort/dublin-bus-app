@@ -87,7 +87,7 @@ class SmartDublinBusStop(models.Model):
     routes = models.TextField(blank=True, null=True)
 
     # Model manager
-    objects = BusStopManager()
+    objects = SmartDublinBusStopManager()
 
     class Meta:
         managed = True

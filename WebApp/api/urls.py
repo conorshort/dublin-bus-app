@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from django.conf.urls import include
-from .views import BusStopViewSet, GTFSRouteViewSet, GTFSShapeViewSet, GTFSStopTimeViewSet, GTFSTripViewSet
+from .views import SmartDublinBusStopViewSet, GTFSRouteViewSet, GTFSShapeViewSet, GTFSStopTimeViewSet, GTFSTripViewSet
 
 router = routers.DefaultRouter()
-router.register('stops', BusStopViewSet)
+router.register('stops', SmartDublinBusStopViewSet)
 router.register('routes', GTFSRouteViewSet)
 router.register('shapes', GTFSShapeViewSet)
 router.register('stoptime', GTFSStopTimeViewSet)

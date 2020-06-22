@@ -33,9 +33,9 @@ class GTFSShape(AbstractGTFS):
     # Model manager
     objects = GTFSShapeManager()
 
-    _text_file = "api/static/api/dublin_bus_gtfs/shapes.txt"
+    _text_file = "shapes.txt"
 
-    def _proc_func(self, shape_dict):
+    def _proc_func(self, calendar_date_dict, textfile):
         shape_dict["unique_point_id"] = f'{shape_dict["shape_id"]}:{shape_dict["shape_pt_sequence"]}'
         return shape_dict
 
