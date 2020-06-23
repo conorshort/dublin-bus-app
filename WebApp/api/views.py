@@ -4,13 +4,13 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.decorators import action
-from .models import BusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
-from .serializers import BusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
-import json
+from api.models import SmartDublinBusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
+from .serializers import SmartDublinBusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
 
-class BusStopViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = BusStop.objects.all()
-    serializer_class = BusStopSerializer
+
+class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = SmartDublinBusStop.objects.all()
+    serializer_class = SmartDublinBusStopSerializer
 
     # giving params longitude, latitudeand radius, API will return all the stops with in radius
     # usage example: /api/stops/nearby?longitude=-6.263695&latitude=53.3522411111&radius=0.1
