@@ -68,7 +68,7 @@ class SmartDublinBusStopManager(models.Manager):
 
         # Add all BusStop instances to the DB
         self.bulk_create(
-            bus_stops, batch_size=100, ignore_conflicts=True)
+            bus_stops, batch_size=1000, ignore_conflicts=True)
         print("Done")
 
 

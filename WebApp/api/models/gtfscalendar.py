@@ -14,7 +14,8 @@ class GTFSCalendar(AbstractGTFS):
     _text_file = "calendar.txt"
 
     agency = models.ForeignKey(GTFSAgency, on_delete=models.CASCADE)
-    service_id = models.CharField(max_length=128, primary_key=True)
+    service_id = models.CharField(max_length=128)
+    agency_service_id = models.CharField(max_length=128, primary_key=True)
 
     monday = models.BooleanField()
     tuesday = models.BooleanField()
@@ -27,19 +28,21 @@ class GTFSCalendar(AbstractGTFS):
     start_date = models.DateField()
     end_date = models.DateField()
 
-    def _proc_func(self, calendar_dict, agency_dict):
+    def _dict_proc_func(self, calendar_dict, agency_dict):
 
         agency_id = agency_dict["id"]
 
+        calendar_dict["agency_service_id"] = agency_id + \
+            "_" + calendar_dict["service_id"]
+
         calendar_dict["agency"] = GTFSAgency.objects.get(agency_id=agency_id)
 
-        calendar_dict["service_id"] = agency_id + \
-            "_" + calendar_dict["service_id"]
+        calendar_dict["service_id"] = calendar_dict["service_id"]
  
         calendar_dict["start_date"] = datetime.strptime(
-            calendar_dict["start_date"], "%Y%m%d")
+            str(calendar_dict["start_date"]), "%Y%m%d")
 
         calendar_dict["end_date"] = datetime.strptime(
-            calendar_dict["end_date"], "%Y%m%d")
+            str(calendar_dict["end_date"]), "%Y%m%d")
 
         return calendar_dict

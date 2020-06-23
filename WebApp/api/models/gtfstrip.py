@@ -3,6 +3,7 @@ from django.templatetags.static import static
 from .gtfsabstract import GTFSManager, AbstractGTFS
 from .gtfsroute import GTFSRoute
 from .gtfscalendar import GTFSCalendar
+
 # =================== TRIPS ===================
 class GTFSTrip(AbstractGTFS):
     route = models.ForeignKey(GTFSRoute, on_delete=models.CASCADE)
@@ -14,6 +15,15 @@ class GTFSTrip(AbstractGTFS):
 
     _text_file = "trips.txt"
 
+    def _dict_proc_func(self, trip_dict, agency_dict):
+
+        agency_id = agency_dict["id"]
+        trip_dict["calendar"] = GTFSCalendar(agency_service_id=f'{agency_id}_{trip_dict["service_id"]}')
+
+        trip_dict["route"] = GTFSRoute(route_id=trip_dict["route_id"])
+
+
+        return trip_dict
     class Meta:
         managed = True
         db_table = 'gtfs_trips'

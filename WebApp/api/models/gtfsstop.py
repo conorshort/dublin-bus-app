@@ -6,12 +6,12 @@ from .gtfsabstract import GTFSManager, AbstractGTFS
 
 
 class GTFSStop(AbstractGTFS):
-    stop_id = models.CharField(max_length=128)
+    stop_id = models.CharField(max_length=128, primary_key=True)
     stop_name = models.CharField(max_length=1024)
     stop_lat = models.FloatField()
     stop_lon = models.FloatField()
 
-    _text_files = ["api/static/api/dublin_bus_gtfs/stops.txt"]
+    _text_file = "stops.txt"
 
     class Meta:
         managed = True

@@ -8,3 +8,4 @@ from .gtfsstoptime import GTFSStopTime
 from .gtfstrip import GTFSTrip
 
 from .sdbusstop import SmartDublinBusStop
+

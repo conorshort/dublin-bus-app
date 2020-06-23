@@ -84,9 +84,9 @@ WSGI_APPLICATION = 'dublin_bus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bus_data',
-        'USER': db_config["read_only_username"],
-        'PASSWORD': db_config["read_only_pw"],
+        'NAME': db_config["schema_name"],
+        'USER': db_config["admin_username"],
+        'PASSWORD': db_config["admin_pw"],
         'HOST': db_config["host"],
         'PORT': '3306',
     }

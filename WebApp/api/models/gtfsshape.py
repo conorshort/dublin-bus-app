@@ -35,7 +35,7 @@ class GTFSShape(AbstractGTFS):
 
     _text_file = "shapes.txt"
 
-    def _proc_func(self, calendar_date_dict, textfile):
+    def _dict_proc_func(self, shape_dict, agency_dict):
         shape_dict["unique_point_id"] = f'{shape_dict["shape_id"]}:{shape_dict["shape_pt_sequence"]}'
         return shape_dict
 

@@ -12,11 +12,9 @@ class GTFSRoute(AbstractGTFS):
 
     _text_file = "routes.txt"
 
-    def _proc_func(self, route_dict, textfile):
-        if text_file == "api/static/api/dublin_bus_gtfs/calendar.txt":
-            agency_id = "978"
-        if text_file == "api/static/api/go_ahead_gtfs/calendar.txt":
-            agency_id = "03"
+    def _dict_proc_func(self, route_dict, agency_dict):
+
+        agency_id = agency_dict["id"]
         
         route_dict["agency"] = GTFSAgency.objects.get(agency_id=agency_id)
 

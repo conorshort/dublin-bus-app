@@ -9,7 +9,7 @@ class GTFSAgency(AbstractGTFS):
         managed = True
         db_table = 'gtfs_agency'
 
-    agency_id = models.CharField(max_length=128, null=True, blank=True)
+    agency_id = models.CharField(max_length=128, primary_key=True)
     agency_name = models.CharField(max_length=255, unique=True)
     agency_url = models.URLField()
     agency_timezone = models.CharField(max_length=64)

@@ -29,12 +29,36 @@ class GTFSManager(models.Manager):
             for i, record in enumerate(df_records):
                 gtfs_instance = self.model.from_dict(record, agency_dict)
                 model_instances.append(gtfs_instance)
-                if i % 10000 == 0:
+                if i % 1000 == 0:
                     print(f"Adding entries up to {i} to db...")
-                    self.bulk_create(model_instances)
+                    self.bulk_create(model_instances, ignore_conflicts=True)
                     model_instances = []
-            self.bulk_create(model_instances)
+            self.bulk_create(model_instances, ignore_conflicts=True)
         print("Done")
+
+    def update_all_tables(self):
+        from .gtfsagency import GTFSAgency
+        from .gtfscalendar import GTFSCalendar
+        from .gtfscalendardate import GTFSCalendarDate
+        from .gtfsroute import GTFSRoute
+        from .gtfsshape import GTFSShape
+        from .gtfsstop import GTFSStop
+        from .gtfsstoptime import GTFSStopTime
+        from .gtfstrip import GTFSTrip
+        gtfs_classes = [GTFSStop,
+                        GTFSAgency,
+                        GTFSCalendar,
+                        GTFSCalendarDate,
+                        GTFSRoute,
+                        GTFSShape,GTFSTrip,
+                        GTFSStopTime]
+                        
+
+
+                        
+
+        for c in gtfs_classes:
+            c.objects.update_all()
 
 
 class AbstractGTFS(models.Model):
@@ -47,10 +71,10 @@ class AbstractGTFS(models.Model):
 
     _agencies = [{"name": "Dublin Bus",
                  "id": "978",
-                 "path": "api/static/api/dublin_bus_gtfs/"},
+                 "path": "api/files/dublin_bus_gtfs/"},
                 {"name": "Go Ahead",
-                 "id": "03",
-                 "path": "api/static/api/go_ahead_gtfs/"}, ]
+                 "id": "3",
+                 "path": "api/files/go_ahead_gtfs/"}, ]
 
     @classmethod
     def from_dict(cls, gtfs_dict, agency_dict):
@@ -62,7 +86,7 @@ class AbstractGTFS(models.Model):
         gtfs_instance = cls()
 
         # Alter the dictionary with _proc_func if found
-        proc_func = getattr(gtfs_instance, "_proc_func", None)
+        proc_func = getattr(gtfs_instance, "_dict_proc_func", None)
         if proc_func:
             gtfs_dict = proc_func(gtfs_dict, agency_dict)
 
