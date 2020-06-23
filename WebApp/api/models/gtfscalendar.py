@@ -32,13 +32,15 @@ class GTFSCalendar(AbstractGTFS):
 
         agency_id = agency_dict["id"]
 
+        # The service ids agencies use might overlap, to fix this
+        # append the agency id to the start to get a unique id
         calendar_dict["agency_service_id"] = agency_id + \
             "_" + calendar_dict["service_id"]
 
+        # Get the correct agency from the db
         calendar_dict["agency"] = GTFSAgency.objects.get(agency_id=agency_id)
-
-        calendar_dict["service_id"] = calendar_dict["service_id"]
- 
+    
+        # Make start and end date into date time objects
         calendar_dict["start_date"] = datetime.strptime(
             str(calendar_dict["start_date"]), "%Y%m%d")
 

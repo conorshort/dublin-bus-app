@@ -23,8 +23,6 @@ class GTFSCalendarDate(AbstractGTFS):
 
         agency_id = agency_dict["id"]
 
-        calendar_date_dict["service_id"] = str(calendar_date_dict["service_id"])
-
         calendar_date_dict["calendar"] = GTFSCalendar.objects.get(
             agency_service_id=f'{agency_id}_{calendar_date_dict["service_id"]}')
 

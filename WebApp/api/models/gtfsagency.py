@@ -3,6 +3,7 @@ from django.templatetags.static import static
 from .gtfsabstract import GTFSManager, AbstractGTFS
 
 
+# Agency: contains name and id of each company (id dublin bus, go ahead)
 class GTFSAgency(AbstractGTFS):
 
     class Meta:

@@ -10,6 +10,7 @@ from django.templatetags.static import static
 # Includes a method that will read from a class's associated
 # text files and add it to the db. Can be called with
 # <gtfs-class>.objects.update_all()
+
 class GTFSManager(models.Manager):
 
     def update_all(self):
@@ -36,6 +37,7 @@ class GTFSManager(models.Manager):
             self.bulk_create(model_instances, ignore_conflicts=True)
         print("Done")
 
+    # Update the tables for all classes
     def update_all_tables(self):
         from .gtfsagency import GTFSAgency
         from .gtfscalendar import GTFSCalendar
@@ -52,10 +54,6 @@ class GTFSManager(models.Manager):
                         GTFSRoute,
                         GTFSShape,GTFSTrip,
                         GTFSStopTime]
-                        
-
-
-                        
 
         for c in gtfs_classes:
             c.objects.update_all()
@@ -63,12 +61,16 @@ class GTFSManager(models.Manager):
 
 class AbstractGTFS(models.Model):
     ''' Abstract class that all GTFS classes inherit from
+
     Sets the model manager for each class to GTFSManager'''
     objects = GTFSManager()
 
     class Meta:
         abstract = True
-
+    
+    # A list of agencies
+    # If we want to add another agancy we can just add a new folder containing
+    # the text files and add the ageny below
     _agencies = [{"name": "Dublin Bus",
                  "id": "978",
                  "path": "api/files/dublin_bus_gtfs/"},
