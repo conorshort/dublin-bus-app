@@ -56,7 +56,7 @@ class SmartDublinBusStopManager(models.Manager):
                 stop["lastupdated"])
 
             # Make an instance of BusStop
-            bus_stops.append(BusStop(
+            bus_stops.append(SmartDublinBusStop(
                 stopid=stop["stopid"],
                 shortnamelocalized=stop["shortnamelocalized"],
                 fullname=stop["fullname"],

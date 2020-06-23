@@ -6,6 +6,6 @@ from .gtfsshape import GTFSShape
 from .gtfsstop import GTFSStop
 from .gtfsstoptime import GTFSStopTime
 from .gtfstrip import GTFSTrip
-
+from .gtfsabstract import AbstractGTFS
 from .sdbusstop import SmartDublinBusStop
 
