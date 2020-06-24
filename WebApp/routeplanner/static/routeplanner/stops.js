@@ -11,14 +11,19 @@ map.on('moveend', function(e) {
     let mapCentra = map.getCenter();
     //update centreLocation to centre of the map
     centreLocation = [mapCentra["lat"], mapCentra["lng"]];
+
+    //clear all the markers in the layer
     stopsLayer.clearLayers();
+    //clear all the elements in list group
+    $("#stopsListGroup").empty();
     showStops();
  });
 
 
+ 
 function showStops(){
 
-    $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=0.5`, function(data) {
+    $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=1`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
             content += renderListItem(stop);
@@ -46,8 +51,6 @@ function showArrivingBusesOnSideBar(stopid){
         }  
     });
 }
-
-
 
 
 // create and return list-group-item for stop
@@ -82,8 +85,6 @@ function markStopsOnMap(stop) {
     .bindPopup(`<b> ${stop.fullname}</b><br> ${stop.routes}`);
     stopsLayer.addLayer(marker);
 }
-
-
 
 
 //Click function for bus stop list-item
