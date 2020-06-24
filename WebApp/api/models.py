@@ -86,7 +86,7 @@ class BusStop(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'bus_stops'
+        db_table = 'sd_bus_stops'
 
 
 # ========================================================================================

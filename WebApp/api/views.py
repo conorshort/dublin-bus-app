@@ -26,11 +26,14 @@ class BusStopViewSet(viewsets.ModelViewSet):
             + sin ( radians( %s ) )\
             * sin( radians( s.latitude ) ))) \
             AS distance \
-            FROM bus_data.bus_stops \
+            FROM bus_data.sd_bus_stops \
             as s HAVING distance < %s \
             ORDER BY distance;" % (latitude, longitude, latitude, radius) 
 
         queryset = BusStop.objects.raw(sql)
+        
+        # all_commenter_ids = list(queryset)
+        # print(all_commenter_ids[0])
         serializer = BusStopSerializer(queryset, many=True)
 
         return Response(serializer.data)

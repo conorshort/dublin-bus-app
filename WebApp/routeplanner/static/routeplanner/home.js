@@ -1,5 +1,6 @@
 // click function for div item
 $(document).ready(function() {
+
     $( "#sidebar" ).load( "/journey #content");
 
     $('.nav_item').click(function(e) {  
@@ -20,6 +21,7 @@ var centreLocation = [53.3482, -6.2641]
 
 // Initialize and add the map
 var map = L.map('map').setView(centreLocation, 14);
+
 
 function initMap(){
 
@@ -45,6 +47,7 @@ function initMap(){
         centreLocation = e.latlng;
         map.setView(e.latlng, 14);
     };
+
 
     map.on('locationfound', onLocationFound);
 }

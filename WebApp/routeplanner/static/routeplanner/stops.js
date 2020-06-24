@@ -1,11 +1,32 @@
-$.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=0.5`, function(data) {
+//init layer for storeing all stop markers
+var stopsLayer = L.layerGroup().addTo(map)
+
+
+$(document).ready(function() {
+    showStops();
+});
+
+//event will be called when map bounds change
+map.on('moveend', function(e) {
+    let mapCentra = map.getCenter();
+    //update centreLocation to centre of the map
+    centreLocation = [mapCentra["lat"], mapCentra["lng"]];
+    stopsLayer.clearLayers();
+    showStops();
+ });
+
+
+function showStops(){
+
+    $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=0.5`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
             content += renderListItem(stop);
-            showStopsOnMap(stop)
+            markStopsOnMap(stop)
         });
         $( "#stopsListGroup" ).append(content);
-});
+    });
+}
 
 function showArrivingBusesOnSideBar(stopid){
 
@@ -25,6 +46,8 @@ function showArrivingBusesOnSideBar(stopid){
         }  
     });
 }
+
+
 
 
 // create and return list-group-item for stop
@@ -52,12 +75,15 @@ function renderRealtimeListItem(bus) {
 }
 
 
-function showStopsOnMap(stop) {
+function markStopsOnMap(stop) {
+
     var marker = 
     L.marker([stop.latitude, stop.longitude])
-    .addTo(map)
     .bindPopup(`<b> ${stop.fullname}</b><br> ${stop.routes}`);
+    stopsLayer.addLayer(marker);
 }
+
+
 
 
 //Click function for bus stop list-item
