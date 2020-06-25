@@ -1,14 +1,13 @@
-//init layer for storeing all stop markers
-var stopsLayer = L.layerGroup().addTo(map)
-
 
 $(document).ready(function() {
+    //clear all the markers in the layer
+    stopsLayer.clearLayers();
     showStops();
 });
 
 //event will be called when map bounds change
 map.on('moveend', function(e) {
-    let mapCentra = map.getCenter();
+    var mapCentra = map.getCenter();
     //update centreLocation to centre of the map
     centreLocation = [mapCentra["lat"], mapCentra["lng"]];
 
