@@ -28,6 +28,8 @@ class GTFSCalendar(AbstractGTFS):
     start_date = models.DateField()
     end_date = models.DateField()
 
+    display_days = models.CharField(max_length=128, blank=True, null=True)
+
     def _dict_proc_func(self, calendar_dict, agency_dict):
 
         agency_id = agency_dict["id"]

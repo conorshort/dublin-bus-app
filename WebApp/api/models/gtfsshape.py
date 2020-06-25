@@ -8,18 +8,15 @@ from .gtfsabstract import GTFSManager, AbstractGTFS
 # ===== Shape Manager=====
 class GTFSShapeManager(GTFSManager):
 
-    def get_json_by_id(self, shape_id):
-        ''' Take a shape_id and return a dict containing a list of its lats and'''
+    def get_points_by_id(self, shape_id):
+        ''' Take a shape_id and return a dict containing a list of its lats and lons'''
         shape = GTFSShape.objects.filter(shape_id=shape_id)
         num_points = len(shape)
-        shape_dict = {"shape_id": shape[0].shape_id,
-                      "points": [None] * num_points
-                      }
+        points = [None] * num_points
         for point in shape:
             pt_seq = point.shape_pt_sequence
-            shape_dict["points"][pt_seq - 1] = {"lat": point.shape_pt_lat,
-                                                "lon": point.shape_pt_lon}
-        return shape_dict
+            points[pt_seq - 1] = [point.shape_pt_lon, point.shape_pt_lat]
+        return points
 
 
 # ===== Shape Model =====

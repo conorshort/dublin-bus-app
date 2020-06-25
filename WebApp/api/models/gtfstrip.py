@@ -22,8 +22,8 @@ class GTFSTrip(AbstractGTFS):
 
         trip_dict["route"] = GTFSRoute(route_id=trip_dict["route_id"])
 
-
         return trip_dict
+        
     class Meta:
         managed = True
         db_table = 'gtfs_trips'

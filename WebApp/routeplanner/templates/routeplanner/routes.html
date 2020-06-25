@@ -1,7 +1,6 @@
-
 {% load static %}
 
-<div  id="content">
+<div id="content">
     <div class="col">
         <div class="row sidebar_header">
             <div class="col">
@@ -9,14 +8,27 @@
             </div>
         </div>
         <div class="row">
-            <div class="col p-0">
+            <div class="col p-0" id="routes-div">
                 <div class="active-cyan-4 mb-4">
-                    <input class="form-control" id="route-filter" type="text" placeholder="Find a route" aria-label="Search">
+                    <input class="form-control" id="route-filter" type="text" placeholder="Find a route"
+                        aria-label="Search">
                 </div>
                 <ul class="list-group list-group-flush" id="routes-list">
                 </ul>
             </div>
+
+            <div class="col p-0" id="route-stop-div">
+                <h6 class="btn btn-outline-secondary" id="back-to-routes">
+                    Back </h6>
+                <h3 id="route-stops-title"></h3>
+                <div class="accordion" id="variations-accordion">
+                </div>
+            </div>
         </div>
     </div>
+
+
+
+
 </div>
 <script src="{% static 'routeplanner/routes.js' %}" id="script"></script>

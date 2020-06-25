@@ -3,8 +3,9 @@ from django.templatetags.static import static
 from .gtfsabstract import GTFSManager, AbstractGTFS
 from .gtfstrip import GTFSTrip
 from .gtfsstop import GTFSStop
-# =================== STOP TIMES ===================
 
+
+# =================== STOP TIMES ===================
 class GTFSStopTime(AbstractGTFS):
     unique_trip_id = models.CharField(primary_key=True, max_length=50)
     trip = models.ForeignKey(GTFSTrip, on_delete=models.CASCADE)

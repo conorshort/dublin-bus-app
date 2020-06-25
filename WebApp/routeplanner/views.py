@@ -56,4 +56,6 @@ def routes(request):
 def leapcard(request):
     return render(request, 'routeplanner/leapcard.html')
 
+def routestops(request):
+    return render(request, 'routeplanner/routestops.html')
   
