@@ -79,12 +79,11 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
             calendar__start_date__lte=today,
             calendar__end_date__gte=today).values("shape_id", towards=F("gtfsstoptime__stop_headsign")).distinct()
 
-        print(shape_id_queryset)
         return Response(shape_id_queryset)
 
     @action(detail=False)
     def stops(self, request):
-        ''' Given a routename and direction get all variations of a route'''
+        ''' Given a routeshape get all stops on the route'''
         shape_id = request.GET.get('shape')
 
         trip = GTFSTrip.objects.filter(shape_id=shape_id).first()
@@ -148,11 +147,11 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False)
     def timetable(self, response):
+        ''' Given a shape id and stop id, get a timetable for that route at that stop ''' 
         shape_id = self.request.query_params.get("shape")
         stop_id = self.request.query_params.get("stop_id")
-
-        today = datetime.datetime.today()
-
+        
+        
         trips = GTFSTrip.objects.filter(shape_id=shape_id)
 
         calendars = trips.values("calendar__display_days").distinct()

@@ -441,7 +441,9 @@ function renderTimetableRow(times) {
 
 // https://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
 function getTextColour(color) {
-    if (color.length == 7) { color = color.substring(1); }
+    if (color.length == 7) { 
+        color = color.substring(1); 
+    }
     var R = parseInt(color.substring(0, 2), 16);
     var G = parseInt(color.substring(2, 4), 16);
     var B = parseInt(color.substring(4, 6), 16);
@@ -483,8 +485,11 @@ function alphanumSort(a, b) {
     return aa.length - bb.length;
 }
 
+
+// Take two days and sort them in order of the week
+// For use in the .sort() method
 function sortByDay(day1, day2) {
-    daysInOrder = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+    let daysInOrder = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
     day1 = day1.substr(0, 3).toLowerCase();
     day2 = day2.substr(0, 3).toLowerCase();
 
@@ -493,8 +498,16 @@ function sortByDay(day1, day2) {
     return day1 - day2;
 }
 
+//https://ourcodeworld.com/articles/read/278/how-to-split-an-array-into-chunks-of-the-same-size-easily-in-javascript
+function chunkArray(myArray, chunk_size) {
+    var results = [];
 
+    while (myArray.length) {
+        results.push(myArray.splice(0, chunk_size));
+    }
 
+    return results;
+}
 
 
 function seededRandom(seed) {
@@ -509,13 +522,4 @@ var funhash = function (s) {
 };
 
 
-//https://ourcodeworld.com/articles/read/278/how-to-split-an-array-into-chunks-of-the-same-size-easily-in-javascript
-function chunkArray(myArray, chunk_size) {
-    var results = [];
 
-    while (myArray.length) {
-        results.push(myArray.splice(0, chunk_size));
-    }
-
-    return results;
-}
