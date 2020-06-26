@@ -1,11 +1,14 @@
 from django.shortcuts import render
+<<<<<<< HEAD
 from django.http import HttpResponse
 
 from pprint import pprint
 from pyleapcard import *
 
+=======
+from django.http import HttpResponse, JsonResponse
+>>>>>>> origin/show-arriving-buses-of-the-stop
 import requests
-import json
 
 
 from .forms import leapCardForm
@@ -118,3 +121,7 @@ leap_card_content = [
 
 
 
+
+def realtimeInfo(request, stop_id):
+    r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
+    return JsonResponse(r.text, safe=False)

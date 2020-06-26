@@ -1,4 +1,3 @@
-
 // Code in this block will be run one the page is loaded in the browser
 $(document).ready(function () {
 
@@ -46,21 +45,53 @@ $(document).ready(function () {
         }
 
     });
+    initMap();
 });
 
-// Initialize and add the map
-var mymap = L.map('map').setView([53.3482, -6.2641], 12);
-// Set map hight 
-// $("#map").height($(window).height()-80);
 
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+//centreLocation: default value is Dublin city centre,
+//If user allow location access, than set value to user location
+var centreLocation = [53.3482, -6.2641]
+
+// Initialize and add the map
+var map = L.map('map').setView(centreLocation, 14);
+//init layer for storeing all stop markers
+var stopsLayer = L.layerGroup().addTo(map);
+
+
+function initMap(){
+
+    // Set map hight 
+    $("#map").height($(window).height()-80);
+
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
     id: 'mapbox/streets-v11',
     tileSize: 512,
     zoomOffset: -1,
     accessToken: 'pk.eyJ1Ijoib2hteWhhcHB5IiwiYSI6ImNrYjdyaWg0cDA0bXMycXFyNzgxdmkyN3kifQ.gcq3O8-AveWKXNS5TUGL_g'
-}).addTo(mymap);
+    }).addTo(map);
+
+    map.locate({setView: true, watch: true});
+
+    var onLocationFound = function(e){
+        L.marker(e.latlng)
+        .addTo(map)
+        .bindPopup("You are here!")
+        .openPopup();
+        centreLocation = e.latlng;
+        map.setView(e.latlng, 14);
+    };
+
+
+    map.on('locationfound', onLocationFound);
+}
+
+
+
+
+
 
 
 // 
