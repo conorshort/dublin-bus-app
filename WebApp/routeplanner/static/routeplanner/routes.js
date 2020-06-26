@@ -14,6 +14,9 @@ $(document).ready(function () {
         filterRouteList()
     });
 
+    // On click for the back button when route variations are
+    // showing
+    // Hides the variations div and shows the routes 
     $("#back-to-routes").click(function () {
         $("#route-stop-div").fadeOut(10);
         $("#variations-accordion").html("");
@@ -22,7 +25,7 @@ $(document).ready(function () {
     });
 
 
-    // get the route from django
+    // get all routes from django
     $.getJSON("api/routes/routename", function (data) {
 
         // Get the routenames from the data
@@ -43,10 +46,10 @@ $(document).ready(function () {
         // Display the routes
         $("#routes-list").append(content);
 
-        // Add an on click that will display the 
-        // route on the map
+        // Add an on click to each route
         $(".route-item").click(function () {
-
+            
+            // Hide the all routes div
             $("#routes-div").fadeOut(10);
 
             // get the ID of the element clicked
@@ -56,10 +59,14 @@ $(document).ready(function () {
             routeName = routeElemId.split("-")[1];
             $("#route-stops-title").html(routeName)
             $("#route-stop-div").fadeIn(400);
-            // Toggle display of the route as needed
+
+            // Toggle display of the route on the map as needed
             toggleRouteDisplay(routeName)
+
             let inbound = 1;
+            // Show a list of the variations 
             showRouteVariations(routeName, inbound).then(() => {
+                // Then add the onclicks to the variations
                 addOnclicksToVariations()
             });
         });
@@ -69,11 +76,15 @@ $(document).ready(function () {
 
 
 
-
+// Show a list of route variations
+// Returns a promise so .then() can be used to execute code
+// when it is done
 function showRouteVariations(routeName, inbound) {
+    // Get the variation based on route name and direction
     return $.getJSON("api/routes/variations/",
         { name: routeName, inbound: inbound },
         function (variations) {
+            // Display the variations
             let content = '';
             variations.forEach((variation, index) => {
                 content += renderVariationAccordionItem(variation.towards, variation.shape_id, index);
@@ -83,19 +94,26 @@ function showRouteVariations(routeName, inbound) {
 
 }
 
+// Add the on click to the route variations 
 function addOnclicksToVariations() {
     $(".stops-list-button").click(function () {
+        // Each variation in the list has its unique shape id
+        // stored in a data-shape-id attribute
         let shapeId = $(this).attr('data-shape-id');
         let index = $(this).attr('data-index');
+        // Get a list of stops using the shape id
         $.getJSON("api/routes/stops/", { shape: shapeId }, function (stops) {
+            // Sort the stops in the order they appear on the route.
             stops.sort((a, b) => {
                 return a.seq - b.seq;
             });
+            // Create a list item for each stop and add it to the list
             let content = '';
             stops.forEach(stop => {
                 content += renderStopListItem(stop.stop_name, stop.id);
             });
             $(`#stops-list-${index}`).append(content);
+            // Add on clicks to the stops
             addOnclicksToStops(shapeId)
         });
     });
@@ -104,161 +122,86 @@ function addOnclicksToVariations() {
 
 function addOnclicksToStops(shapeId) {
     $(".stop-item").click(function () {
+
+        // Get the stop id and stop name from the clicked element
         let stopId = $(this).attr('data-stop-id');
         let stopName = $("#stop-" + stopId).html()
 
-        $('#timetable-modal').modal('toggle');
-
+        // Set the title of the timetable
         $("#timetable-title").html(stopName);
 
-        $("#timetable-tabs").html("")
-            .hide();
+        // Toggle display of the timetable modal (pop up box)
+        // And remove any previous info it contained
+        $('#timetable-modal').modal('toggle');
 
-        $("#timetable-content").html("")
+        $("#timetable-tabs, #timetable-content").html("")
             .hide();
 
         $("#timetable-loader").show();
 
+        // Get the timetable for this route variation at this stop
         return $.getJSON("/api/stoptime/timetable",
             { shape: shapeId, stop_id: stopId },
             function (timetables) {
+                // Show the modal content
                 $("#timetable-tabs").show();
                 $("#timetable-content").show();
 
                 $("#timetable-loader").hide();
+                // Populate the modal with the timetable
                 fillTimetableModal(stopName, timetables);
             });
     });
 }
 
-
+// Populate the modal with the timetable
 function fillTimetableModal(stopName, timetables) {
-    let idx = 0;
+
+    // chunk size dictates how many times will be displayed in 
+    // each row of the timetable
+    const CHUNK_SIZE = 6;
+
+    // The time table is a dict with keys like "Mon-Fri"
+    // or Sun. These are sorted alphabetically by default
+    // so here they are sorted by day of the week
     timetableKeys = Object.keys(timetables);
     timetableKeys.sort(sortByDay);
+    
+    // Loop through the keys
+    let idx = 0
     timetableKeys.forEach(days => {
+        // Create the tab and an empty pane
         let tabAndPane = renderNavTabAndPane(days, idx);
         $("#timetable-tabs").append(tabAndPane.tab);
         $("#timetable-content").append(tabAndPane.pane);
 
+        // Make a list of all the times
         timesArr = []
         timetables[days].forEach(time => {
             timesArr.push(time.time)
         });
+        // Sort the times
         timesArr.sort();
-        console.log(timesArr)
+
+        // Convert the time from seconds after midnight to a human readable format
         timesArr = timesArr.map(time => {
             return new Date((time % 86400) * 1000).toISOString().substr(11, 5);
         });
-        timeChunks = chunkArray(timesArr, 6);
 
+        // Split the times into chunks, one chunk for each row
+        timeChunks = chunkArray(timesArr, CHUNK_SIZE);
+
+        // Add the times to the timetables
         timeChunks.forEach(times => {
             let row = renderTimetableRow(times)
             $(`#timetable-table-${idx}`).append(row)
         });
+
+        // Initialise the tooltips
         $('[data-toggle="tooltip"]').tooltip()
         idx++;
     });
 }
-
-
-// create and return list-group-item for route
-function renderRouteListItem(route) {
-    const content = `
-        <li class="list-group-item route-item" id="route-${route}">
-            <ul>
-                <li class="row"><b>${route}</b> <span class="route-loading-span"></span></li>
-            </ul>
-        </li>`;
-    return content;
-}
-
-function renderStopListItem(stop, id) {
-    const content = `
-        <li class="list-group-item stop-item" data-stop-id="${id}">
-            <ul>
-                <li class="row"  id="stop-${id}">${stop}</li>
-            </ul>
-        </li>`;
-    return content;
-}
-
-
-
-function renderVariationAccordionItem(destination, id, index) {
-    const content = `
-        <div class="card">
-            <div class="card-header" id="heading-${index}">
-                <h2 class="mb-0">
-                    <button class="btn btn-secondary btn-block stops-list-button" type="button" data-toggle="collapse"
-                            data-target="#collapse-${index}"
-                            aria-expanded="true"
-                            aria-controls="collapse-${index}"
-                            data-shape-id="${id}"
-                            data-index="${index}">
-                        Towards ${destination}
-                    </button>
-                </h2>
-            </div>
-
-            <div id="collapse-${index}" class="collapse" aria-labelledby="heading-${index}"
-                data-parent="#variations-accordion">
-                <div class="card-body">
-                    <ul class="list-group list-group-flush stops-list" id="stops-list-${index}">
-                    </ul>
-                </div>
-            </div>
-        </div>`;
-    return content;
-}
-
-
-
-
-
-
-
-function renderNavTabAndPane(days, index) {
-    let active, show;
-    if (index == 0) {
-        active = "active";
-        show = "show"
-    } else {
-        active = "";
-        show = ""
-    }
-    let tab = ` <a class="nav-item nav-link ${active}" id="nav-tab-${index}" data-toggle="tab" href="#timetable-${index}" role="tab"
-                        aria-controls="nav-home" aria-selected="true">${days}</a>`;
-
-    let pane = `<div class="tab-pane fade ${show} ${active}" id="timetable-${index}" role="tabpanel">
-                    <table class="table table-sm">
-                        <tbody id="timetable-table-${index}"></tbody>
-                    </table>
-                </div>`;
-
-    return { tab: tab, pane: pane }
-}
-
-
-function renderTimetableRow(times) {
-    let content = "<tr>"
-    times.forEach(time => {
-        content += `<td data-toggle="tooltip" title="Usually 5-10 mins late">${time}</td>`
-    });
-    content += "</tr>";
-    console.log(content)
-    return content
-}
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -387,6 +330,112 @@ function filterRouteList() {
         }
     }
 }
+
+// ========= RENDER FUNCTIONS =========
+// These are all functions for rendering various elements dynamically
+
+
+// create and return list-group-item for route
+function renderRouteListItem(route) {
+    const content = `
+        <li class="list-group-item route-item" id="route-${route}">
+            <ul>
+                <li class="row"><b>${route}</b> <span class="route-loading-span"></span></li>
+            </ul>
+        </li>`;
+    return content;
+}
+
+function renderStopListItem(stop, id) {
+    const content = `
+        <li class="list-group-item stop-item" data-stop-id="${id}">
+            <ul>
+                <li class="row"  id="stop-${id}">${stop}</li>
+            </ul>
+        </li>`;
+    return content;
+}
+
+
+
+function renderVariationAccordionItem(destination, id, index) {
+    const content = `
+        <div class="card">
+            <div class="card-header" id="heading-${index}">
+                <h2 class="mb-0">
+                    <button class="btn btn-secondary btn-block stops-list-button" type="button" data-toggle="collapse"
+                            data-target="#collapse-${index}"
+                            aria-expanded="true"
+                            aria-controls="collapse-${index}"
+                            data-shape-id="${id}"
+                            data-index="${index}">
+                        Towards ${destination}
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse-${index}" class="collapse" aria-labelledby="heading-${index}"
+                data-parent="#variations-accordion">
+                <div class="card-body">
+                    <ul class="list-group list-group-flush stops-list" id="stops-list-${index}">
+                    </ul>
+                </div>
+            </div>
+        </div>`;
+    return content;
+}
+
+
+
+
+
+
+// Render the tab and the pane for displaying the timetables
+function renderNavTabAndPane(days, index) {
+
+    // Active and show determine which tab and pane are currently
+    // being displayed. By default the first tab will show
+    let active, show;
+    if (index == 0) {
+        active = "active";
+        show = "show";
+    } else {
+        active = "";
+        show = "";
+    }
+    let tab = ` <a class="nav-item nav-link ${active}" id="nav-tab-${index}" data-toggle="tab" href="#timetable-${index}" role="tab"
+                        aria-controls="nav-home" aria-selected="true">${days}</a>`;
+
+    let pane = `<div class="tab-pane fade ${show} ${active}" id="timetable-${index}" role="tabpanel">
+                    <table class="table table-sm">
+                        <tbody id="timetable-table-${index}"></tbody>
+                    </table>
+                </div>`;
+
+    return { tab: tab, pane: pane };
+}
+
+
+// Render each row for the timetable
+function renderTimetableRow(times) {
+    let content = "<tr>";
+    times.forEach(time => {
+        content += `<td data-toggle="tooltip" title="Usually 5-10 mins late">${time}</td>`;
+    });
+    content += "</tr>";
+    return content;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
