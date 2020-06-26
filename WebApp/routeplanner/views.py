@@ -1,8 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+
+from pprint import pprint
+from pyleapcard import *
+
 import requests
 import json
 
+
+from .forms import leapCardForm
 
 
 def home(request):
@@ -37,6 +43,9 @@ def home(request):
     }
 
 
+
+
+def home(request):
     context = {
         'weather': weather
     }
@@ -54,8 +63,58 @@ def routes(request):
     return render(request, 'routeplanner/routes.html')
 
 def leapcard(request):
-    return render(request, 'routeplanner/leapcard.html')
 
-def routestops(request):
-    return render(request, 'routeplanner/routestops.html')
-  
+    if request.method == 'POST':
+        form = leapCardForm(request.POST)
+        if form.is_valid():
+            #      leap = {
+            #     'leapInfo': leap_card_content
+            # }   
+            username = form.cleaned_data['username'] 
+            password = form.cleaned_data['password']
+
+            login_url="https://www.leapcard.ie/en/login.aspx"
+            session = LeapSession()
+
+            form = leapCardForm() 
+            
+            try:
+                login_ok = session.try_login(username, password)
+                overview = session.get_card_overview()
+
+                card_info = {"card":vars(overview)['card_label'],
+                            "balance":vars(overview)['balance']}
+
+                return render(request, 'routeplanner/leapcard.html',{'form': form,'result':card_info})
+                
+            except Exception as e:
+                print("x")
+                print("---")
+                print("Error: Unable to retrieve Leap Card state.")
+                print("---")
+                print("leapcard.ie | href="+login_url)
+                error="Error: Unable to retrieve Leap Card state."
+                return render(request, 'routeplanner/leapcard.html',{'form': form,'Result':error})
+                    
+    form = leapCardForm()
+
+    return render(request, 'routeplanner/leapcard.html',{'form': form})
+
+
+    
+leap_card_content = [
+    {
+        'a': 'Error: Unable to retrieve Leap Card state.',
+        'b': 'leapcard.ie | href="https://www.leapcard.ie/en/login.aspx"',
+
+    },
+    # {
+    #     'route': '41',
+    #     'from': 'Lwr. Abbey St',
+    #     'to': 'Swords Manor',
+    #     'time': '15:55'
+    # }
+]
+
+
+

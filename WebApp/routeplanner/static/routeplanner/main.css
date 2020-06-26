@@ -64,9 +64,24 @@ div.weather#description {
   background-color: #ffbf00;
 }
 
+
+#map {
+  max-height: 100vh;
+  overflow-y: hidden;
+  height: 900px;
+}
+
+#leap-info {
+  color: #ffbf00;
+}
+
+#navibar {
+  background-color: #606060;
+
 .sidebar {
   height:calc(100vh - 80px);
   overflow:scroll;
+
 }
 
 #content {
