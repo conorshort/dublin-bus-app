@@ -9,8 +9,12 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
+import sys
 
+from .config import *
 import os
+from .config import db_config
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,12 +24,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '(zg1l-9*n7tj%g=l)e$)c7^iq!v121t#$y8x+8!hv&9ag@(gh_'
+SECRET_KEY = "6e$-u*$-g$6%7$dpe9j(%1a1s8^&4j(&l7fvtij9@4xwvr0fvn"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost',
+                 "127.0.0.1"]
 
 
 # Application definition
@@ -38,7 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     # 'crispy_forms',
+
+    'rest_framework',
+    'api',
+
 ]
 
 # CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -79,11 +89,14 @@ WSGI_APPLICATION = 'dublin_bus.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'bus_data',
+        'USER': db_config["read_only_username"],
+        'PASSWORD': db_config["read_only_pw"],
+        'HOST': db_config["host"],
+        'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -122,3 +135,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')

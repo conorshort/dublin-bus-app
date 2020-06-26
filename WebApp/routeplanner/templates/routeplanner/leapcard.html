@@ -1,11 +1,11 @@
-{% extends "routeplanner/base.html" %}
-{% block content %}
-
-<div class="col-3" id="content">
-    <div class="row content_header">
-        <div class="col">
-            Leap Card
+<div id="content">
+    <div class="col">
+        <div class="row sidebar_header">
+            <div class="col">
+                Leap Card
+            </div>
         </div>
+
     </div>
     <div class="row">
         <div class="col">
@@ -23,8 +23,9 @@
         <h2 id="leap-info">Balance: </h2> 
         <h4>{{ result.balance }}</h4>
     </div>
+
 </div>
-<div class="col-8" id="map"></div>
 
 {% endblock content %}
 </html>
+

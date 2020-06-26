@@ -1,27 +1,29 @@
-{% extends "routeplanner/base.html" %}
-{% block content %}
 
-<div class="col-3" id="content">
-    <div class="row content_header">
-        <div class="col">
-            Stops
-        </div>
-    </div>
-    <div class="row">
-        <div class="col p-0">
-            <div class="active-cyan-4 mb-4">
-                <input class="form-control" type="text" placeholder="Find a stop" aria-label="Search">
+{% load static %}
+
+<div id="content">
+
+    <div class="col">
+        <div class="row sidebar_header">
+            <div class="col">
+                Stops
             </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">stop</li>
-                <li class="list-group-item">stop</li>        
-                <li class="list-group-item">stop</li>
-            </ul>
+        </div>
+        <div class="row">
+            <div class="col p-0">
+                <div class="active-cyan-4 mb-4">
+                    <input class="form-control" type="text" placeholder="Find a stop" aria-label="Search">
+                </div>
+
+                
+                <ul class="list-group-flush p-0 vh-100" id="stopsListGroup">
+
+                </ul>
+            </div>
         </div>
     </div>
+
+    <script src="{% static 'routeplanner/stops.js' %}" id="script"></script> 
 </div>
-<div class="col-8" id="map"></div>
 
-{% endblock content %}
 
-</html>
