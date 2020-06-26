@@ -156,6 +156,7 @@ function fillTimetableModal(stopName, timetables) {
             let row = renderTimetableRow(times)
             $(`#timetable-table-${idx}`).append(row)
         });
+        $('[data-toggle="tooltip"]').tooltip()
         idx++;
     });
 }
@@ -242,7 +243,7 @@ function renderNavTabAndPane(days, index) {
 function renderTimetableRow(times) {
     let content = "<tr>"
     times.forEach(time => {
-        content += `<td>${time}</td>`
+        content += `<td data-toggle="tooltip" title="Usually 5-10 mins late">${time}</td>`
     });
     content += "</tr>";
     console.log(content)
