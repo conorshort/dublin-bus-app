@@ -36,7 +36,7 @@ a:hover, a:active {
   font-size: 30px;
   box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.3); ;
   position: relative;
-  z-index: 99999;
+  z-index: 1000;
 }
 
 .weather {
@@ -88,7 +88,7 @@ div.weather#description {
   background-color: white;
   box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
   position: relative;
-  z-index: 9000;
+  z-index: 1000;
   width: 100%;
   height: calc(100vh - 80px);
   overflow:auto;
@@ -111,7 +111,7 @@ div.weather#description {
   width: 100vw !important;
   height: 60px;
   display: none;
-  z-index: 9999;
+  z-index: 1000;
   position: fixed;
   bottom: 0px;
   left: 0px;
@@ -181,6 +181,82 @@ div.weather#description {
   overflow:auto;
 }
 
+.route-active {
+  background-color: #ffe391;
+  pointer-events: auto;
+}
+.route-loading {
+  background-color: #b9b9b9;
+  pointer-events: none;
+}
+
+.route-loading-span {
+  padding-left: 40px ;
+  padding-top: 4px;
+}
+
+#route-stop-div {
+  display: none;
+}
+
+.stops-list {
+  height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.stop-item {
+  padding: 5px 5px;
+}
+
+
+#timetable-modal {
+  top: 10%;
+}
+
+/* #timetable-loader {
+  display: none;
+} */
+
+.loader {
+    border: 4px solid #797878;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+    border-top: 4px solid #ffbf00;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+}
+
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+.loader-large {
+    border: 16px solid #797878;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+    border-top: 16px solid #ffbf00;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* CSS for when the page is less than 955px */
 @media (max-width: 955px) { 
@@ -188,7 +264,7 @@ div.weather#description {
       width: 100vw;
       box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
       position: relative;
-      z-index: 9000;
+      z-index: 1000;
       height:calc(100vh - 80px - 60px);
     }
 
@@ -223,4 +299,29 @@ div.weather#description {
     padding: 10px;
     min-height: 40px;
   }
+}
+
+
+
+
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

@@ -30,7 +30,8 @@ SECRET_KEY = "6e$-u*$-g$6%7$dpe9j(%1a1s8^&4j(&l7fvtij9@4xwvr0fvn"
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost',
-                 "127.0.0.1"]
+                 "127.0.0.1",
+                 "192.168.0.38"]
 
 
 # Application definition
@@ -90,9 +91,9 @@ WSGI_APPLICATION = 'dublin_bus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bus_data',
-        'USER': db_config["read_only_username"],
-        'PASSWORD': db_config["read_only_pw"],
+        'NAME': db_config["schema_name"],
+        'USER': db_config["admin_username"],
+        'PASSWORD': db_config["admin_pw"],
         'HOST': db_config["host"],
         'PORT': '3306',
     }

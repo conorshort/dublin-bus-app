@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from .models import BusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
+from api.models import SmartDublinBusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
 
-class BusStopSerializer(serializers.ModelSerializer):
+
+class SmartDublinBusStopSerializer(serializers.ModelSerializer):
     class Meta: 
-        model = BusStop
+        model = SmartDublinBusStop
         fields = ( 'stopid', 
         'shortnamelocalized',
         'fullname',

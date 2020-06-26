@@ -81,7 +81,7 @@ $(window).resize(function () {
 
 function loadSideBarContent(navId){
     // Load the appropriate HTML using the navId
-    $("#sidebar").load("/" + navId + " #content");
+    $("#sidebar").load("/" + navId);
 
     // Set the active navbar item to the one currently displayed
     // for both side nave bar and bottom nav bar
