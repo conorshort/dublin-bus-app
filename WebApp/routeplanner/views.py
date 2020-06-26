@@ -1,13 +1,10 @@
 from django.shortcuts import render
-<<<<<<< HEAD
 from django.http import HttpResponse
 
 from pprint import pprint
 from pyleapcard import *
 
-=======
 from django.http import HttpResponse, JsonResponse
->>>>>>> origin/show-arriving-buses-of-the-stop
 import requests
 
 
@@ -44,16 +41,8 @@ def home(request):
         'description' : city_weather['weather'][0]['description'],
         'icon' : city_weather['weather'][0]['icon']
     }
-
-
-
-
-def home(request):
-    context = {
-        'weather': weather
-    }
    
-    return render(request, 'routeplanner/home.html', context)
+    return render(request, 'routeplanner/home.html', weather)
 
 
 def journey(request):

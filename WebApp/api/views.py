@@ -38,12 +38,12 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
                 + sin ( radians( %s ) )\
                 * sin( radians( s.latitude ) ))) \
                 AS distance \
-                FROM bus_data.bus_stops \
+                FROM bus_data.sd_bus_stops \
                 as s HAVING distance < %s \
                 ORDER BY distance;" % (latitude, longitude, latitude, radius)
 
-            queryset = BusStop.objects.raw(sql)
-            serializer = BusStopSerializer(queryset, many=True)
+            queryset = SmartDublinBusStop.objects.raw(sql)
+            serializer = SmartDublinBusStopSerializer(queryset, many=True)
 
             return Response(serializer.data)
 
