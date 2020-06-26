@@ -282,7 +282,7 @@ function displayRouteOnMap(routeName, direction, colour) {
             // Add the route geojson to the map
             let routeLayer = L.geoJSON(routeGeoJson, {
                 style: style,
-            }).addTo(mymap);
+            }).addTo(map);
 
             // routeLayerObj holds all routes currently on the map, allowing them
             // to be easily deleted later
@@ -294,7 +294,7 @@ function displayRouteOnMap(routeName, direction, colour) {
 // function to remove a route from the map
 function removeRouteFromMap(routeName) {
     // Get map layer from the routeLayerObj and remove it
-    mymap.removeLayer(routeLayerObj[routeName]);
+    map.removeLayer(routeLayerObj[routeName]);
 
     // delete map layer from routeLayerObj
     delete routeLayerObj[routeName];
