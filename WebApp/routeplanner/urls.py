@@ -7,4 +7,5 @@ urlpatterns = [
     path('stops', views.stops, name="stops"),
     path('routes', views.routes, name="routes"),
     path('leapcard', views.leapcard, name="leapcard"),
+    path('realtimeInfo/<str:stop_id>', views.realtimeInfo, name="realtimeInfo"),
 ]
