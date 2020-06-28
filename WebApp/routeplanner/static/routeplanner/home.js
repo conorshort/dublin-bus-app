@@ -57,7 +57,8 @@ var centreLocation = [53.3482, -6.2641]
 var map = L.map('map').setView(centreLocation, 14);
 //init layer for storeing all stop markers
 var stopsLayer = L.layerGroup().addTo(map);
-
+//init layer for storeing journey 
+var journeyLayer = L.layerGroup().addTo(map);
 
 function initMap(){
 

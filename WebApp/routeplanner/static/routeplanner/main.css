@@ -219,6 +219,11 @@ div.weather#description {
   top: 10%;
 }
 
+
+.journey_result_icon {
+  width: 20px;
+}
+
 /* #timetable-loader {
   display: none;
 } */
