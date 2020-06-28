@@ -10,7 +10,7 @@ import requests
 from dublin_bus.config import GOOGLE_DIRECTION_KEY
 
 
-from .forms import leapCardForm, JourneyPlannerForm
+from .forms import leapCardForm
 
 
 def home(request):
@@ -36,48 +36,53 @@ def home(request):
 
 
 
-def journey(request):
+def journey(request, template_name="routeplanner/home.html"):
     
-    print("request", request)
-    # If this is a POST request then process the Form data
-    if request.method == "POST":
-        print("postttt")
-        # # Create a form instance and populate it with data from the request (binding):
-        # form = JourneyPlannerForm(request.POST)
+    return render(request, 'routeplanner/journey.html')
 
-        # # Check if the form is valid:
-        # if form.is_valid():
+    # # If this is a POST request then process the Form data
+    # if request.method == 'POST':
+    #     # Create a form instance and populate it with data from the request (binding):
+    #     form = JourneyPlannerForm(request.POST)
 
-        #     print("is_valid")
+    #     # Check if the form is valid:
+    #     if form.is_valid():
 
-        #     from_location = form.cleaned_data['from_location'] 
-        #     to_location = form.cleaned_data['to_location']
-        #     date = form.cleaned_data['date'] 
-        #     time = form.cleaned_data['time'] 
-        #     # api-endpoint 
-        #     URL = "https://maps.googleapis.com/maps/api/directions/json"
+    #         print("is_valid")
+
+    #         from_location = form.cleaned_data['from_location'] 
+    #         to_location = form.cleaned_data['to_location']
+    #         date = form.cleaned_data['date'] 
+    #         time = form.cleaned_data['time'] 
+    #         # api-endpoint 
+    #         URL = "https://maps.googleapis.com/maps/api/directions/json"
             
             
-        #     # defining a params dict for the parameters to be sent to the API 
-        #     PARAMS = {'origin' : from_location,
-        #             'destination' : to_location,
-        #             'key' : GOOGLE_DIRECTION_KEY,
-        #             'transit_mode' : 'bus',
-        #             'mode' : 'transit'} 
+    #         # defining a params dict for the parameters to be sent to the API 
+    #         PARAMS = {'origin' : from_location,
+    #                 'destination' : to_location,
+    #                 'key' : GOOGLE_DIRECTION_KEY,
+    #                 'transit_mode' : 'bus',
+    #                 'mode' : 'transit'} 
             
-        #     # sending get request and saving the response as response object 
-        #     r = requests.get(url = URL, params = PARAMS) 
+    #         # sending get request and saving the response as response object 
+    #         r = requests.get(url = URL, params = PARAMS) 
             
-        #     # extracting data in json format 
-        #     data = r.json() 
-        #     print(data)
+    #         # extracting data in json format 
+    #         data = r.json() 
+    #         # return render(request, 'routeplanner/journey.html',{'form': form,'result':data})
+    #         print(data)
+    #     # Create a response
+    #     response = TemplateResponse(request, template_name, {'form': form,'result':'result'})
+    #     return response
+    #     # form = JourneyPlannerForm()
+    #     # return render(request, 'routeplanner/journey.html', {'form': form})
 
-    if request.method == "GET": 
-        print("gettttt")
+    # else: 
     
-    form = JourneyPlannerForm()
-    return render(request, 'routeplanner/journey.html', {'form': form})
-
+        # form = JourneyPlannerForm()
+        # return render(request, 'routeplanner/journey.html', {'form': form})
+    
 
 
 
@@ -151,8 +156,3 @@ leap_card_content = [
 
 
 
-
-
-def realtimeInfo(request, stop_id):
-    r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
-    return JsonResponse(r.text, safe=False)

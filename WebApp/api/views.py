@@ -8,6 +8,9 @@ from api.models import SmartDublinBusStop, GTFSRoute, GTFSShape, GTFSStopTime, G
 from .serializers import SmartDublinBusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
 import datetime
 from django.db.models import F
+import requests
+from dublin_bus.config import GOOGLE_DIRECTION_KEY
+
 
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
@@ -197,3 +200,34 @@ class GTFSTripViewSet(viewsets.ReadOnlyModelViewSet):
         serializer=GTFSTripSerializer(queryset, many = True)
 
         return Response(serializer.data)
+
+
+
+
+def realtimeInfo(request, stop_id):
+    r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
+    return JsonResponse(r.json() , safe=False)
+
+
+
+def direction(request):
+
+    origin = request.GET.get('origin')
+    destination = request.GET.get('destination')
+
+    URL = 'https://maps.googleapis.com/maps/api/directions/json'
+    # defining a params dict for the parameters to be sent to the API 
+    PARAMS = {'origin' : origin,
+            'destination' : destination,
+            'key' : GOOGLE_DIRECTION_KEY,
+            'transit_mode' : 'bus',
+            'mode' : 'transit'} 
+            
+    # sending get request and saving the response as response object 
+    r = requests.get(url = URL, params = PARAMS) 
+    
+    # extracting data in json format 
+    data = r.json() 
+
+    return JsonResponse(data, safe=False)
+

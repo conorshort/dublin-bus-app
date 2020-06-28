@@ -35,7 +35,7 @@ function showStops(){
 function showArrivingBusesOnSideBar(stopid){
 
     //get realtime data
-    $.getJSON(`http://127.0.0.1:8000/realtimeInfo/${stopid}`, function(data) {
+    $.getJSON(`http://127.0.0.1:8000/api/realtimeInfo/${stopid}`, function(data) {
 
         // parse response data to json 
         obj = JSON.parse(data)
