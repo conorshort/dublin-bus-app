@@ -209,13 +209,14 @@ def realtimeInfo(request, stop_id):
     return JsonResponse(r.json() , safe=False)
 
 
-
 def direction(request):
-
+    print(request)
+    # if request == "POST":
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
 
     URL = 'https://maps.googleapis.com/maps/api/directions/json'
+    
     # defining a params dict for the parameters to be sent to the API 
     PARAMS = {'origin' : origin,
             'destination' : destination,

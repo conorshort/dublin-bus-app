@@ -146,7 +146,6 @@ function fillTimetableModal(stopName, timetables) {
             timesArr.push(time.time)
         });
         timesArr.sort();
-        console.log(timesArr)
         timesArr = timesArr.map(time => {
             return new Date((time % 86400) * 1000).toISOString().substr(11, 5);
         });
@@ -245,7 +244,6 @@ function renderTimetableRow(times) {
         content += `<td>${time}</td>`
     });
     content += "</tr>";
-    console.log(content)
     return content
 }
 

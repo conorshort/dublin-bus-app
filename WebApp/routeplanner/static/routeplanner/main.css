@@ -64,6 +64,10 @@ div.weather#description {
   background-color: #ffbf00;
 }
 
+.gray_content {
+  background-color: rgb(206, 206, 206);
+}
+
 
 #map {
   max-height: 100vh;
