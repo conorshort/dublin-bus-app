@@ -17,8 +17,6 @@ map.on('moveend', function(e) {
     $("#stopsListGroup").empty();
     showStops();
  });
-
-
  
 function showStops(){
 

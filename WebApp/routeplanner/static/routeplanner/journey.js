@@ -2,14 +2,6 @@ $(document).ready(function () {
     $("#journey_result_div").fadeOut(10);
     $("#journey_search_div").fadeIn(10);
 
-    // var encodingPolyline = "czfdIjebe@EJKBMMEPM\\y@vAwBlB_@XESDR^Yf@a@DJDR@`@?|AFjB|@`FXr@V`@HCJDDNxAPtBFnAIpB{@dCKbAIpJqCbA[|B{@fAc@FMFOBMLg@Ke@F]T_@ZITFNZ@R^ZLTpHxAx@L~ATlAX@MBKLMF@B@ZQt@W|AGxABzAIp@MhC{@dGuBbBWjAAnAJdAJxADf@O^e@@ONa@ZWXAXPHJn@FXQRMp@c@AMAS@QJc@TWVERJNZHj@Cf@_@bBAz@LdA\\vAlA~ExAnEdEzKj@fBJp@lBhHLz@r@dFp@fHXtGCrMQlE]xDk@hE}@rEqBjJg@xCo@tEg@lHKhDA|FR~GVpDh@lEjAzGnBtJpAbJ^nFNfEDhGMtP_@lNm@tMaBdT}BfRmAhH{AhGuBlG_BrDcCpEoFtHkBnC_B|CmAvCsAhEgAxEw@fFs@xIOrEWrQWfF]xEq@nFyA`IkBzGyBzFsBtD_@l@gBbCoBxBsBfByAfA}ChBgOfHq^xPe\\lOwJzEsCbBgCnBi@\\wDtDqA|AuD`FwDtGqDbIqDhKgJj[cQ`n@eEnOyA~DsBjEoChE_DjDiAbAeCbB}F~DkFnEyEbFOp@uHvJcDfEi@|@a@`Ai@rCGbAF`CZzDCbAz@hHX~BZh@NNP@xAgATi@JoAMcAKIO@ABC@_@tAOd@l@|@UiFHOL@HRIf@KAOlAWt@w@~@aDvBaA\\Kd@U@Km@HURALsFAcDRwAOaAkBuCmA{@o@Wk@IeCBwEbCaHxE}DdCy\\|^ce@fg@eHvGgBrAaE~BmCbAaFpA}Dh@oBLkHKiu@oK}^}EiX{Eg`@wHwC{@iEsBiF_E{BeCkCwD_IsOaCoDaBoBmKwJ{DgEyM_PuKaM_GmH_HkIsG}H}G}HiDaF}B{DmDsHeBiE{CsJigA}bEsYcgA{DsRkCsPkB{O{@{IqBm\\i@gTwDksBoAkXk@mH}@uFe@_Bs@_Aw@u@sB]s@_@sCQaIRaG[oALoCx@gE~@SkBQ_AaDeIw@yBw@mDk@{EQiEE_HDsEVoG~Doq@t@qw@I}A]qAkFgJ_HgOqBkDqC{DeCkCe@Qu@k@k@SOBe@Vg@n@}DpQI|@uApGi@bBk@rFYfC{DfSy@z@]Di@_@c@o@i@So@TcAlBYa@g@KAn@GNu@DaBQF_BHEJ@Xh@ZD@yBe@Aa@@?~@FDN^XV?Z\\@~@HL?LVXp@`CzEVf@";
-    // var polyline = L.Polyline.fromEncoded(encodingPolyline);
-    // // var coordinates = L.polyline.fromEncoded(encodingPolyline).getLatLngs();
-    // console.log(polyline.getLatLngs());
- 
-    // // var polyline = require('@mapbox/polyline');
-    // // var coordinates = polyline.decode(encodingPolyline);
-    // // console.log(coordinates);
 });
 
 
@@ -50,12 +42,10 @@ $('form').submit(function(e){
 
                 displayElements(obj);
 
-                // var encodingPolyline = route.overview_polyline.points;
-                // var polyline = require('@mapbox/polyline');
-                // var coordinates = polyline.decode(encodingPolyline);
-                // // var coordinates = google.maps.geometry.encoding.decodePath(encodingPolyline);
-                // console.log(coordinates);
-                // drawPolylineOnMap(coordinates);
+                var encodingPolyline = route.overview_polyline.points;
+                var coordinates = decode(encodingPolyline);
+                drawPolylineOnMap(coordinates);
+                
                 dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
 
@@ -100,21 +90,55 @@ function renderResultJourneySteps(steps) {
 }
 
 
-function dropMarkerOnMap(lat, lon){
+function dropMarkerOnMap(lat, lon, loactionn){
     var marker = 
     L.marker([lat, lon]) .bindPopup(`<b> ${location}</b>`);
     journeyLayer.addLayer(marker);
 }
 
-function drawPolylineOnMap(latlngs){
-    var polyline = L.polyline(latlngs, {color: 'red'});
+function drawPolylineOnMap(points){
+    var polyline = L.polyline(points, {color: 'red'});
     journeyLayer.addLayer(polyline);
     // zoom the map to the polyline
     map.fitBounds(polyline.getBounds());
 }
 
+// decoding encode polyline which get from google direction API
+// decode encode polyline to array which storing all points [lat,lng]
+function decode(encoded){
+
+    // array that holds the points
+
+    var points=[ ]
+    var index = 0, len = encoded.length;
+    var lat = 0, lng = 0;
+    while (index < len) {
+        var b, shift = 0, result = 0;
+        do {
+
+    b = encoded.charAt(index++).charCodeAt(0) - 63;//finds ascii                                                                                    //and substract it by 63
+              result |= (b & 0x1f) << shift;
+              shift += 5;
+             } while (b >= 0x20);
 
 
+       var dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+       lat += dlat;
+      shift = 0;
+      result = 0;
+     do {
+        b = encoded.charAt(index++).charCodeAt(0) - 63;
+        result |= (b & 0x1f) << shift;
+       shift += 5;
+         } while (b >= 0x20);
+     var dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+     lng += dlng;
+ 
+   points.push([(lat / 1E5), ( lng / 1E5)])  
+ 
+  }
+  return points
+}
     
 
     
