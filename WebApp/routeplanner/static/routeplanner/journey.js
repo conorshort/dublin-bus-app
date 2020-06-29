@@ -1,4 +1,8 @@
 $(document).ready(function () {
+
+    stopsLayer.clearLayers();
+    journeyLayer.clearLayers();
+    
     $("#journey_result_div").fadeOut(10);
     $("#journey_search_div").fadeIn(10);
 
@@ -42,11 +46,15 @@ $('form').submit(function(e){
 
                 displayElements(obj);
 
+                //get encoding journey polyline
                 var encodingPolyline = route.overview_polyline.points;
+                //decode polyline to latlngs array
                 var coordinates = decode(encodingPolyline);
-                drawPolylineOnMap(coordinates);
                 
+                drawPolylineOnMap(coordinates);
+                //drop destination marker
                 dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
+                //drop origin marker
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
 
             } catch (error) {
@@ -90,7 +98,7 @@ function renderResultJourneySteps(steps) {
 }
 
 
-function dropMarkerOnMap(lat, lon, loactionn){
+function dropMarkerOnMap(lat, lon, location){
     var marker = 
     L.marker([lat, lon]) .bindPopup(`<b> ${location}</b>`);
     journeyLayer.addLayer(marker);

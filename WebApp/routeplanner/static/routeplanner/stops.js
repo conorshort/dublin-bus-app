@@ -1,7 +1,9 @@
 
 $(document).ready(function() {
-    //clear all the markers in the layer
+
+    // //clear all the markers in the layer
     stopsLayer.clearLayers();
+    journeyLayer.clearLayers();
     showStops();
 });
 
