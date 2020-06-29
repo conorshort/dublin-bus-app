@@ -3,8 +3,8 @@
 // ====== TODO: currently the routes break when the user navigates to a different part of the sidebar
 // This will need fixing. Likely routeLayerObj will need to be moved to home.js as currnetly it will
 // be overwritten everytime Route menu button is pressed
-var routeLayerObj = {}
-
+var routeLayerObj = {};
+var stopsObj = {};
 // Will hold the route currently being displayed in the side bar
 var currentRoute = undefined;
 
@@ -111,14 +111,51 @@ function addOnclicksToVariations() {
                 return a.seq - b.seq;
             });
             // Create a list item for each stop and add it to the list
+            stopsObj = {};
             let content = '';
             stops.forEach(stop => {
-                content += renderStopListItem(stop.stop_name, stop.id);
+                content += renderStopListItem(stop.stop_name, stop.id)
+                let m = new L.CircleMarker([stop.lat, stop.lon], { radius: 6, fillOpacity: 0.5 });
+                m.setStyle({
+                    color: 'green',
+                });
+                m.addTo(map);
+                stopsObj[stop.id] = m;
+
+
             });
             $(`#stops-list-${index}`).append(content);
             // Add on clicks to the stops
-            addOnclicksToStops(shapeId)
+            addOnclicksToStops(shapeId);
+            addOnHoversToStops()
         });
+    });
+}
+
+function addOnHoversToStops() {
+
+    // .hover takes two functions, one for mouseover and one for mouse away
+    // Here we change the styling of the stop on the map for the list item that's
+    // hovered over
+    $(".stop-item").hover(function () {
+        let stopId = $(this).attr('data-stop-id');
+        console.log(stopsObj[stopId])
+        let latLng = stopsObj[stopId].getLatLng();
+        console.log(latLng)
+        stopsObj[stopId].setStyle({
+            color: 'orange',
+            weight: 10,
+            })
+        .setRadius(10)
+        .bringToFront();
+        map.panTo(latLng);
+    }, function () {
+        let stopId = $(this).attr("data-stop-id");
+        stopsObj[stopId].setStyle({
+            color: 'green',
+            weight: 5,
+        })
+        .setRadius(6);
     });
 }
 
@@ -212,7 +249,12 @@ function fillTimetableModal(stopName, timetables) {
 // Function to display a route on the map
 // Direction should be 1 for inbound, 0 for outbound
 // Colour will be used to display the route on the map
+
+
+
 function displayRouteOnMap(routeName, direction, colour) {
+
+    let routeObj = {};
 
     // Get the data geojson formate from django 
     return $.getJSON("/api/shapes/geo_json/",
@@ -221,30 +263,27 @@ function displayRouteOnMap(routeName, direction, colour) {
 
             // Some settings for displaying the line on the map
             var style = {
-                "color": colour,
+                "color": "#CD0000",
                 "weight": 5,
                 "opacity": 0.65
             };
 
-            let routes = [];
 
+            routeObj = {};
+            let routes = []
             routeGeoJson.forEach(route => {
-                routes.push(L.geoJSON(routeGeoJson, {
+                routes.push(L.geoJSON(route, {
                     style: style,
+                    onEachFeature: eachFeature
                 })
                 );
             });
-            // console.log(routeGeoJson);
-            // // Add the route geojson to the map
-            // let routeLayer = L.geoJSON(routeGeoJson, {
-            //     style: style,
-            // }).addTo(map);
+
 
 
             let routesLayer = L.featureGroup(routes).addTo(map);
 
             let bounds = routesLayer.getBounds();
-
 
             map.flyToBounds(bounds, { 'duration': 0.8 });
 
@@ -252,7 +291,45 @@ function displayRouteOnMap(routeName, direction, colour) {
             // to be easily deleted later
             routeLayerObj[routeName] = routesLayer;
         });
+
+
+
+
+    function eachFeature(feature, layer) {
+        // store reference
+        let shapeId = feature.properties.shapeId
+        routeObj[shapeId] = layer;
+        let button = $("#variations-accordion").find(`[data-shape-id='${shapeId}']`);
+
+        // .hover takes two functions, one for mouseover and one for mouse away
+        // Here we change the styling of the route on teh map for the button that's
+        // hovered over
+        button.hover(() => {
+            routeObj[shapeId].setStyle({
+                color: 'blue',
+                weight: 10,
+            });
+            routeObj[shapeId].bringToFront();
+        }, () => {
+            routeObj[shapeId].setStyle({
+                color: 'red',
+                weight: 5,
+            });
+        });
+    }
+    // call from outside map
+    function highlightFeature(id) {
+        layers[id].setStyle({
+            fillOpacity: 0.5
+        });
+    }
+
 }
+
+
+
+
+
 
 
 // function to remove a route from the map

@@ -2,4 +2,4 @@
 typing 'python manage.py runserver'. This python file can be run instead """
 
 import os
-os.system("python WebApp\manage.py runserver")
+os.system("python WebApp\manage.py runserver 0.0.0.0:8000")
