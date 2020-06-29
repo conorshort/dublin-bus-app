@@ -5,23 +5,26 @@
 // be overwritten everytime Route menu button is pressed
 var routeLayerObj = {}
 
+// Will hold the route currently being displayed in the side bar
+var currentRoute = undefined;
+
 // Wait for the document to finish loading
 $(document).ready(function () {
 
-
     // Add the route filter to the search box
-    $("#route-filter").keyup(function () {
+    $('#route-filter').on('keyup search', () => {
         filterRouteList()
     });
 
     // On click for the back button when route variations are
     // showing
-    // Hides the variations div and shows the routes 
+    // Hides the variations div and shows the routes list
     $("#back-to-routes").click(function () {
         $("#route-stop-div").fadeOut(10);
         $("#variations-accordion").html("");
         $("#routes-div").fadeIn(10);
         $("#route-stops-title").html("")
+        toggleRouteDisplay(currentRoute)
     });
 
 
@@ -48,7 +51,6 @@ $(document).ready(function () {
 
         // Add an on click to each route
         $(".route-item").click(function () {
-            
             // Hide the all routes div
             $("#routes-div").fadeOut(10);
 
@@ -60,6 +62,7 @@ $(document).ready(function () {
             $("#route-stops-title").html(routeName)
             $("#route-stop-div").fadeIn(400);
 
+            currentRoute = routeName;
             // Toggle display of the route on the map as needed
             toggleRouteDisplay(routeName)
 
@@ -166,7 +169,7 @@ function fillTimetableModal(stopName, timetables) {
     // so here they are sorted by day of the week
     timetableKeys = Object.keys(timetables);
     timetableKeys.sort(sortByDay);
-    
+
     // Loop through the keys
     let idx = 0
     timetableKeys.forEach(days => {
@@ -223,14 +226,31 @@ function displayRouteOnMap(routeName, direction, colour) {
                 "opacity": 0.65
             };
 
-            // Add the route geojson to the map
-            let routeLayer = L.geoJSON(routeGeoJson, {
-                style: style,
-            }).addTo(map);
+            let routes = [];
+
+            routeGeoJson.forEach(route => {
+                routes.push(L.geoJSON(routeGeoJson, {
+                    style: style,
+                })
+                );
+            });
+            // console.log(routeGeoJson);
+            // // Add the route geojson to the map
+            // let routeLayer = L.geoJSON(routeGeoJson, {
+            //     style: style,
+            // }).addTo(map);
+
+
+            let routesLayer = L.featureGroup(routes).addTo(map);
+
+            let bounds = routesLayer.getBounds();
+
+
+            map.flyToBounds(bounds, { 'duration': 0.8 });
 
             // routeLayerObj holds all routes currently on the map, allowing them
             // to be easily deleted later
-            routeLayerObj[routeName] = routeLayer
+            routeLayerObj[routeName] = routesLayer;
         });
 }
 
@@ -441,8 +461,8 @@ function renderTimetableRow(times) {
 
 // https://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
 function getTextColour(color) {
-    if (color.length == 7) { 
-        color = color.substring(1); 
+    if (color.length == 7) {
+        color = color.substring(1);
     }
     var R = parseInt(color.substring(0, 2), 16);
     var G = parseInt(color.substring(2, 4), 16);
