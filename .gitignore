@@ -144,3 +144,5 @@ config.py
 dublin_bus_gtfs/
 go_ahead_gtfs/
 
+#csv file too big for a comit
+d_mod.csv
