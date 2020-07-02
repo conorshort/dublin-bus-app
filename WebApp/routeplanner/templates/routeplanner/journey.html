@@ -5,8 +5,9 @@
     <div class="col">
         <div class="row sidebar_header">
             <div class="col">
-                Journey
-            </div>
+                Journey <br/>
+                <div class="sidebar_header_link"></div>
+            </div>            
         </div>
         <div class="row">
             <div id="journey_search_div" class="col">
@@ -44,29 +45,27 @@
                     <input type="submit" class="btn btn-primary float-right"></input>
                 </form>
             </div>
-            <div id="journey_result_div" class="col">
+            <div id="journey_result_div" class="col ">
                 <div class="row gray_content" id="journey_result_header">
                     <div class="col">
                         <div class="row">
-                            <div class="col"> From: </div>
-                            <div class="col" id="journey_result_from"> </div>
+                            <div class="col-4"> <b>From:</b> </div>
+                            <div class="col-8" id="journey_result_from"></div>
                         </div>
                         <div class="row">
-                            <div class="col"> To: </div>
-                            <div class="col" id="journey_result_to"> </div>
+                            <div class="col-4"> <b>To:</b> </div>
+                            <div class="col-8" id="journey_result_to"></div>
                         </div>
                         <div class="row">
-                            <div class="col"> Departure: </div>
-                            <div class="col" id="journey_result_datetime"> </div>
+                            <div class="col-4"> <b>Departure:</b> </div>
+                            <div class="col-8" id="journey_result_datetime"></div>
                         </div>
                     </div>
                 </div>
                 <div class="row" id="journey_result_content"> 
                     <div class="col">
-                        <div class="row" id="journey_result_travel_time">
-                        </div>
-                        <div class="row" id="journey_result_steps">
-                        </div>
+                        <h2><div class="row" id="journey_result_travel_time"></div></h2>
+                        <p class="row" id="journey_result_detail"></p>
                     </div>
                 </div>
             </div>

@@ -19,6 +19,7 @@ function validateForm() {
     }
 }
 
+
 $('form').submit(function(e){
     // Stop form refreshing page on submit
     e.preventDefault();
@@ -34,14 +35,18 @@ $('form').submit(function(e){
                 var leg = route.legs[0];
                 var arrive_time =  leg.arrival_time.text;
                 var departure_time =  leg.departure_time.text;
-                var renderSteps = renderResultJourneySteps(leg.steps)
+                var renderSteps = renderResultJourneySteps(leg.steps);
+                var distance = leg.distance.text;
+                var duration = leg.duration.text;
+                var content = renderContent({"Distance" : distance, 
+                                                    "Total" : duration});
 
                 var obj = {
                     "#journey_result_from" : origin,
                     "#journey_result_to" : destination,
                     "#journey_result_datetime" : "20:00",
                     "#journey_result_travel_time" : arrive_time + "  >  " + departure_time,
-                    "#journey_result_steps" : renderSteps
+                    "#journey_result_detail" : renderSteps + "</br>" + content
                 };
 
                 displayElements(obj);
@@ -90,12 +95,25 @@ function renderResultJourneySteps(steps) {
         } else if (step.travel_mode == "WALKING") {
             content +=  `<img src="./static/img/walking_small.png" alt="bus_icon" class="journey_result_icon">` 
         }
-        content += " "
+        content += " ";
         content += step.duration.text;
-        content += "  >  "
+        content += "  >  ";
     });
     return content
 }
+
+function renderContent(obj){ 
+    content = '';
+    $.each( obj, function( key, value ) {
+        content += "<br>"
+        content += "<b>" + key + "</b>";
+        content += "  ";
+        content += value;
+        content += "<br>";
+    });
+    return content
+}
+
 
 
 function dropMarkerOnMap(lat, lon, location){
@@ -147,8 +165,7 @@ function decode(encoded){
   }
   return points
 }
-    
 
-    
+
 
 
