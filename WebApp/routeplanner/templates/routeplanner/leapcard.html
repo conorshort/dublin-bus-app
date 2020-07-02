@@ -33,27 +33,27 @@
             $.ajaxSetup({  
                 data: {csrfmiddlewaretoken: '{{ csrf_token }}' },  
             });
-
-
+        // enact this function after form submission
         $('#formadd').submit(function(){  
+            //info is getting username and password values by their id
             info={      
-                    username:$('#un').val(),
+                    username:$('#un').val(),   
                     password:$('#pw').val(),
                  };
-                 console.log(info)
+
                 $.ajax({  
                     type:"POST",  
                     cache: false,  
                     dataType: "html",  
                     headers:{'Content-Type':"application/json"},
-
                     data: info,
-                    url: "http://127.0.0.1:8000/leapinfo", //后台处理函数的url 
+                    url: "http://127.0.0.1:8000/leapinfo", //url to handle variables
                     success: function(result, statues, xml){  
-                        console.log(result)
-                        $("#leap-info").html(result); 
+                        // if success, return the result back to html with id "#leap-info"
+                        $("#leap-info").html(result);    
                     },  
                     error: function(){  
+                        //otherwise alert false
                         alert("false");  
                     }  
                 });  

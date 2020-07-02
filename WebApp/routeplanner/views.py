@@ -6,10 +6,7 @@ from pyleapcard import *
 import re
 from django.http import HttpResponse, JsonResponse
 import requests
-
-
 from .forms import leapCardForm
-
 
 def home(request):
     #api key and url for weather data
@@ -27,82 +24,21 @@ def home(request):
         'icon' : city_weather['weather'][0]['icon']
     }}
 
-    
     return render(request, 'routeplanner/home.html', context)
-
-
-
-
 
 def journey(request):
     return render(request, 'routeplanner/journey.html')
 
-
-
-
 def stops(request):
     return render(request, 'routeplanner/stops.html')
-
-
 
 def routes(request):
     return render(request, 'routeplanner/routes.html')
 
-# @csrf_exempt
 def leapcard(request):
-    # if request.method == 'POST':
-    #     print('hi-----1')
-    #     form = leapCardForm(request.POST)
-
-    #     if form.is_valid():
-    #         print('hi-----')
-
-    #         username = form.cleaned_data['username'] 
-    #         password = form.cleaned_data['password']
-    #         print('asdfasdf')
-    #         login_url="https://www.leapcard.ie/en/login.aspx"
-    #         session = LeapSession()
-
-    #         # form = leapCardForm() 
-            
-    #         try:
-    #             print('1234345345345')
-    #             login_ok = session.try_login(username, password)
-    #             overview = session.get_card_overview()
-
-    #             card_info = {"card":vars(overview)['card_label'],
-    #                         "balance":vars(overview)['balance']}
-
-    #             # return render(request, 'routeplanner/leapcard.html',{'form': form,'result':card_info})
-    #             # return JsonResponse()
-    #             print('hi')
-    #             return JsonResponse(card_info, safe=False)
-    #             # return render(request, 'routeplanner/leapcard.html',{'form': form,'Result':error})
-
-    #         except Exception as e:
-
-    #             print("leapcard.ie | href="+login_url)
-    #             error="Error: Unable to retrieve Leap Card state."
-    #             return JsonResponse(error, safe=False)
-    #             # return render(request, 'routeplanner/leapcard.html',{'form': form,'Result':error})
+    #simply return the leapcard form and pass the data to 
     form = leapCardForm()
     return render(request, 'routeplanner/leapcard.html',{'form': form})
-
-
-    
-leap_card_content = [
-    {
-        'a': 'Error: Unable to retrieve Leap Card state.',
-        'b': 'leapcard.ie | href="https://www.leapcard.ie/en/login.aspx"',
-
-    },
-    # {
-    #     'route': '41',
-    #     'from': 'Lwr. Abbey St',
-    #     'to': 'Swords Manor',
-    #     'time': '15:55'
-    # }
-]
 
 @csrf_exempt
 def leapinfo(request):
@@ -116,28 +52,24 @@ def leapinfo(request):
         username=re.search("(?<=username=).[^']*",pre_username).group(0)
         password=re.search("(?<=password=).[^']*",userinfo).group(0)
 
-
-        login_url="https://www.leapcard.ie/en/login.aspx"
         #pass the username and password to leapcard api
         session = LeapSession()
 
-        
         try:
             #if the info is valid get the card overciew
             login_ok = session.try_login(username, password)
             overview = session.get_card_overview()
 
             #only extract card_label and balance
-            card_info = {"card":vars(overview)['card_label'],
-                        "balance":vars(overview)['balance']}
-            
+            card_info = {"Card ":vars(overview)['card_label'],
+            "Balance ":vars(overview)['balance']}
+
             #return them to the frontend
             return JsonResponse(card_info, safe=False)
         
         except Exception as e:
             #return error message if username and password is invalid
-            print("leapcard.ie | href="+login_url)
-            error="Error: Unable to retrieve Leap Card state. Please visit "+login_url
+            error="Error: Unable to retrieve Leap Card state."
             return JsonResponse(error, safe=False)
                         
 
