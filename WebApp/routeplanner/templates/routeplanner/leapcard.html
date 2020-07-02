@@ -9,7 +9,7 @@
     </div>
     <div class="row">
         <div class="col">
-            <form method="post" >
+            <form method="post" id="formadd">
                 <b>Leap card account information:</b></br></br>
                 {% csrf_token %}
                 {{ form }}
@@ -17,12 +17,47 @@
             </form>
         </div>
     </div>
-    <div>
-        <h2 id="leap-info">Card:</h2> 
+    <div id= "leap-info">
+        <!-- <h2 id="leap-info">Card:</h2> 
         <h4>{{ result.card }}</h4>
         <h2 id="leap-info">Balance: </h2> 
-        <h4>{{ result.balance }}</h4>
+        <h4>{{ result.balance }}</h4> -->
     </div>
 
 </div>
 
+
+<script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js"></script>  
+    <script>  
+        $(document).ready(function(){  
+            $.ajaxSetup({  
+                data: {csrfmiddlewaretoken: '{{ csrf_token }}' },  
+            });
+
+
+        $('#formadd').submit(function(){  
+            info={      
+                    username:$('#un').val(),
+                    password:$('#pw').val(),
+                 };
+                 console.log(info)
+                $.ajax({  
+                    type:"POST",  
+                    cache: false,  
+                    dataType: "html",  
+                    headers:{'Content-Type':"application/json"},
+
+                    data: info,
+                    url: "http://127.0.0.1:8000/leapinfo", //后台处理函数的url 
+                    success: function(result, statues, xml){  
+                        console.log(result)
+                        $("#leap-info").html(result); 
+                    },  
+                    error: function(){  
+                        alert("false");  
+                    }  
+                });  
+                return false;  
+            });  
+        });
+    </script> 
