@@ -70,9 +70,21 @@ div.weather#description {
   font-size: 15px;
 }
 
-.gray_content {
+.gray_box {
   background-color: rgb(206, 206, 206);
   padding: 10px;
+}
+
+.black_box {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#journey_search_div {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 

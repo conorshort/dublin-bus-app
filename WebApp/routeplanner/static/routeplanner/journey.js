@@ -9,24 +9,17 @@ $(document).ready(function () {
 });
 
 
-function validateForm() {
-    
-    var f_from_stop = document.forms["myForm"]["f_from_stop"].value;
-    var f_to_stop = document.forms["myForm"]["f_to_stop"].value;
-    if (f_from_stop == "" || f_to_stop == "") {
-      alert("Origin and destination must be filled out");
-      return false;
-    }
-}
 
 
 $('form').submit(function(e){
+
     // Stop form refreshing page on submit
     e.preventDefault();
     var origin = document.forms["journeyForm"]["f_from_stop"].value;
     var destination = document.forms["journeyForm"]["f_to_stop"].value;
 
 
+    //get direction from api /api/direction
     $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}`, function(data) {
 
         if (data.status == "OK"){
@@ -36,17 +29,22 @@ $('form').submit(function(e){
                 var arrive_time =  leg.arrival_time.text;
                 var departure_time =  leg.departure_time.text;
                 var renderSteps = renderResultJourneySteps(leg.steps);
-                var distance = leg.distance.text;
                 var duration = leg.duration.text;
-                var content = renderContent({"Distance" : distance, 
-                                                    "Total" : duration});
+                
+                var transferCount = ((renderSteps.match(/bus_icon/g) || []).length).toString() ;
+                console.log(transferCount);
+                var content = renderContent({"Total duration:" : "<b>" + duration + "</b>" 
+                                                                    + "&nbsp;&nbsp;&nbsp;&nbsp;" 
+                                                                    + "<b>" + transferCount + "</b>" 
+                                                                    + "  transfers"});
+
 
                 var obj = {
                     "#journey_result_from" : origin,
                     "#journey_result_to" : destination,
                     "#journey_result_datetime" : "20:00",
-                    "#journey_result_travel_time" : arrive_time + "  >  " + departure_time,
-                    "#journey_result_detail" : renderSteps + "</br>" + content
+                    "#journey_result_travel_time" : arrive_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + departure_time,
+                    "#journey_result_detail" : content + "<br>" + renderSteps
                 };
 
                 displayElements(obj);
@@ -72,6 +70,7 @@ $('form').submit(function(e){
 
     $("#journey_search_div").fadeOut(10);
     $("#journey_result_div").fadeIn(10);
+
 });
 
 
@@ -85,7 +84,7 @@ function displayElements(obj){
 
 // render result journey steps
 function renderResultJourneySteps(steps) {
-    content = '';
+    content = '<p>';
     $.each( steps, function( index, step ) {
 
         if (step.travel_mode == "TRANSIT"){
@@ -93,27 +92,32 @@ function renderResultJourneySteps(steps) {
             content +=  `<img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon">`
             content += line.short_name;
         } else if (step.travel_mode == "WALKING") {
-            content +=  `<img src="./static/img/walking_small.png" alt="bus_icon" class="journey_result_icon">` 
+            content +=  `<img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon">` 
         }
-        content += " ";
+        content += " (";
         content += step.duration.text;
-        content += "  >  ";
+        content += ") ";
+        var isLastElement = index == steps.length -1;
+        if (!isLastElement) {
+            content += "  &nbsp;<b style='font-size: 20px;'> &#8250; </b>&nbsp; ";
+        }
     });
+    content += '</p>'
     return content
 }
+
 
 function renderContent(obj){ 
-    content = '';
+    content = '<p>';
     $.each( obj, function( key, value ) {
-        content += "<br>"
-        content += "<b>" + key + "</b>";
-        content += "  ";
+        content += key;
+        content += '  ';
         content += value;
-        content += "<br>";
+        content += '<br>'
     });
+    content += '</p>';
     return content
 }
-
 
 
 function dropMarkerOnMap(lat, lon, location){
@@ -121,6 +125,7 @@ function dropMarkerOnMap(lat, lon, location){
     L.marker([lat, lon]) .bindPopup(`<b> ${location}</b>`);
     journeyLayer.addLayer(marker);
 }
+
 
 function drawPolylineOnMap(points){
     var polyline = L.polyline(points, {color: 'red'});
@@ -131,6 +136,7 @@ function drawPolylineOnMap(points){
 
 // decoding encode polyline which get from google direction API
 // decode encode polyline to array which storing all points [lat,lng]
+// code from: https://gist.github.com/ismaels/6636986
 function decode(encoded){
 
     // array that holds the points
