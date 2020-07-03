@@ -10,7 +10,7 @@
         </div>
         <div class="row">
             <div id="journey_search_div" class="col">
-                <form name="journeyForm" id="journeyForm" method="GET">
+                <form name="journeyForm" id="journeyForm" method="POST">
 
                     <!-- origin input row -->
                     <div class="form-group row">
@@ -33,7 +33,7 @@
                     <div class="form-group row">
                         <label for="datetime" class="col-sm-3 col-form-label">Departure: </label>
                         <div class="col-sm-9">
-                            <input type="datetime-local" id="datetime" required="required" name="datetime">
+                            <input type="datetime-local" id="datetimePicker" required="required" name="datetime">
                         </div>
                     </div>
                     
@@ -44,6 +44,8 @@
                     <input type="submit" class="btn btn-primary float-right"></input>
                 </form>
             </div>
+
+            <!-- Journey Planner result  -->
             <div id="journey_result_div" class="col ">
                 <div class="row gray_box" id="journey_result_header">
                     <div class="col">
@@ -63,12 +65,14 @@
                 </div>
                 <div class="row gray_box" id="edit_journey_input"> <i style='font-size:20px' class='fas'>  &#xf304;</i> &nbsp;&nbsp; Change Input</div>
                 <div class="row" id="journey_result_content">
+                    <!-- Showing total duration and other detail -->
                     <div class="col">
                         <h2><div class="row" id="journey_result_travel_time"></div></h2>
                         <div class="row" id="journey_result_detail"></div>
-                        
                     </div>
                 </div>
+
+                <!-- steps of the journey -->
                 <div class="accordion" id="journey_result_steps"></div>
             </div>
         </div>
