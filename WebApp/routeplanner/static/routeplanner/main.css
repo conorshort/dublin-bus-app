@@ -71,7 +71,7 @@ div.weather#description {
 }
 
 .gray_box {
-  background-color: rgb(206, 206, 206);
+  background-color: rgba(0, 0, 0, 0.1);
   padding: 10px;
 }
 
@@ -87,6 +87,12 @@ div.weather#description {
   margin-bottom: 10px;
 }
 
+#edit_journey_input {
+  border-top: 1px solid rgb(185, 185, 185);
+  border-bottom: 1px solid rgb(185, 185, 185);
+  padding: 10px 25px;
+
+}
 
 #map {
   max-height: 100vh;

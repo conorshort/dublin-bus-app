@@ -9,8 +9,7 @@ $(document).ready(function () {
 });
 
 
-
-
+// submit button click event 
 $('form').submit(function(e){
 
     // Stop form refreshing page on submit
@@ -18,61 +17,66 @@ $('form').submit(function(e){
     var origin = document.forms["journeyForm"]["f_from_stop"].value;
     var destination = document.forms["journeyForm"]["f_to_stop"].value;
 
+    // //get direction from api /api/direction
+    // $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}`, function(data) {
 
-    //get direction from api /api/direction
-    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}`, function(data) {
-
-        if (data.status == "OK"){
-            try {
-                var route = data.routes[0];
-                var leg = route.legs[0];
-                var arrive_time =  leg.arrival_time.text;
-                var departure_time =  leg.departure_time.text;
-                var renderSteps = renderResultJourneySteps(leg.steps);
-                var duration = leg.duration.text;
+    //     if (data.status == "OK"){
+    //         try {
+    //             var route = data.routes[0];
+    //             var leg = route.legs[0];
+    //             var arrive_time =  leg.arrival_time.text;
+    //             var departure_time =  leg.departure_time.text;
+    //             var renderSteps = renderResultJourneySteps(leg.steps);
+    //             var duration = leg.duration.text;
+    //             var transferCount = ((renderSteps.match(/bus_icon/g) || []).length).toString() ;
                 
-                var transferCount = ((renderSteps.match(/bus_icon/g) || []).length).toString() ;
-                console.log(transferCount);
-                var content = renderContent({"Total duration:" : "<b>" + duration + "</b>" 
-                                                                    + "&nbsp;&nbsp;&nbsp;&nbsp;" 
-                                                                    + "<b>" + transferCount + "</b>" 
-                                                                    + "  transfers"});
+    //             // render duration and count of transfer 
+    //             var content = renderContent({"Total duration:" : "<b>" + duration + "</b>" 
+    //                                                                 + "&nbsp;&nbsp;&nbsp;&nbsp;" 
+    //                                                                 + "<b>" + transferCount + "</b>" 
+    //                                                                 + "  transfers"});
 
 
-                var obj = {
-                    "#journey_result_from" : origin,
-                    "#journey_result_to" : destination,
-                    "#journey_result_datetime" : "20:00",
-                    "#journey_result_travel_time" : arrive_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + departure_time,
-                    "#journey_result_detail" : content + "<br>" + renderSteps
-                };
+    //             // dictionary to store all the elements which are going to display on frontend
+    //             // key: the element id or class name
+    //             // value: content to append to the element 
+    //             var obj = {
+    //                 "#journey_result_from" : origin,
+    //                 "#journey_result_to" : destination,
+    //                 "#journey_result_datetime" : "20:00",
+    //                 "#journey_result_travel_time" : arrive_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + departure_time,
+    //                 "#journey_result_detail" : content + "<br>" + renderSteps
+    //             };
 
-                displayElements(obj);
+    //             displayElements(obj);
 
-                //get encoding journey polyline
-                var encodingPolyline = route.overview_polyline.points;
-                //decode polyline to latlngs array
-                var coordinates = decode(encodingPolyline);
+    //             //get encoding journey polyline
+    //             var encodingPolyline = route.overview_polyline.points;
+    //             //decode polyline to latlngs array
+    //             var coordinates = decode(encodingPolyline);
                 
-                drawPolylineOnMap(coordinates);
-                //drop destination marker
-                dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
-                //drop origin marker
-                dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
+    //             drawPolylineOnMap(coordinates);
+    //             //drop destination marker
+    //             dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
+    //             //drop origin marker
+    //             dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
 
-            } catch (error) {
-                alert(error);
-            }
-        } else {
-            alert("Error occur, please try again");
-        }
-    });
+    //         } catch (error) {
+    //             alert(error);
+    //         }
+    //     } else {
+    //         alert("Error occur, please try again");
+    //     }
+    // });
 
     $("#journey_search_div").fadeOut(10);
     $("#journey_result_div").fadeIn(10);
-
 });
 
+$('#edit_journey_input').click(function () {
+    $("#journey_result_div").fadeOut(10);
+    $("#journey_search_div").fadeIn(10);
+});
 
 //append value to key element
 function displayElements(obj){
@@ -87,14 +91,19 @@ function renderResultJourneySteps(steps) {
     content = '<p>';
     $.each( steps, function( index, step ) {
 
+        // if the travel_mode is TRANSIT, add bus icon and bus route number to content
         if (step.travel_mode == "TRANSIT"){
             var line = step.transit_details.line;
             content +=  `<img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon">`
             content += line.short_name;
+
+        // if the travel_mode is WALKING, add walk icon to content
         } else if (step.travel_mode == "WALKING") {
             content +=  `<img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon">` 
         }
         content += " (";
+
+        // add duration for the step to content
         content += step.duration.text;
         content += ") ";
         var isLastElement = index == steps.length -1;
