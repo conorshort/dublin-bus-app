@@ -96,8 +96,13 @@ function renderResultJourneySteps(steps) {
     content = '';
     $.each( steps, function( index, step ) {
 
-        content += `<div class="card"> <div class="card-header" id="heading${index}"> <h5 class="mb-0">\
-        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">`;
+        // Using the card component, show the steps of journey on card header
+        // show detail of each step in card body 
+        // resource: https://getbootstrap.com/docs/4.0/components/collapse/
+        content += `
+            <div class="card"> 
+            <div class="card-header" id="heading${index}"><h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">`;
     
         // if the travel_mode is TRANSIT, add bus icon and bus route number to content
         if (step.travel_mode == "TRANSIT"){
@@ -107,20 +112,20 @@ function renderResultJourneySteps(steps) {
 
         // if the travel_mode is WALKING, add walk icon to content
         } else if (step.travel_mode == "WALKING") {
-            content +=  `<img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon">`;
+            content +=  `<img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon"> Walking`;
         }
 
         // add duration for the step to content
         content += " (" + step.duration.text + ") ";
 
-        content += `</button></h5></div>\
-        <div id="collapse${index}" class="collapse" aria-labelledby="heading${index}" data-parent="#journey_result_steps">\
-        <div class="card-body">`;
+        // add journey steps detail in card body
+        content += `
+            </button></h5></div>
+            <div id="collapse${index}" class="collapse" aria-labelledby="heading${index}" data-parent="#journey_result_steps">
+            <div class="card-body">`;
         content += "<p>Distance: <b>" + step.distance.text + "</b></p>";
-
         content += "<p>" + step.html_instructions + "</p>";
-        
-        content += '</div> </div> </div>';
+        content += '</div></div></div>';
       
     });
     return content
@@ -170,6 +175,8 @@ function clearSearchResult(){
     stopsLayer.clearLayers();
 }
 
+
+
 // decoding encode polyline which get from google direction API
 // decode encode polyline to array which storing all points [lat,lng]
 // code from: https://gist.github.com/ismaels/6636986
@@ -188,8 +195,6 @@ function decode(encoded){
               result |= (b & 0x1f) << shift;
               shift += 5;
              } while (b >= 0x20);
-
-
        var dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
        lat += dlat;
       shift = 0;
