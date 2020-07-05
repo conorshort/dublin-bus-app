@@ -1,12 +1,69 @@
 $(document).ready(function () {
 
+    //clear all markers and polyline on the map
     stopsLayer.clearLayers();
     journeyLayer.clearLayers();
-    
-    $("#journey_result_div").fadeOut(10);
-    $("#journey_search_div").fadeIn(10);
 
+    showSearchJourneyDiv();
+    initAutoComplete();
 });
+
+
+function initAutoComplete(){
+
+    //add restriction for autocomplete places API
+    var options = {
+        componentRestrictions: {country: "IE"}
+    };
+
+    var form_input = document.getElementById('form_input');
+    var to_input = document.getElementById('to_input');
+
+    function initAutocomplete(input){
+
+        //use Google Place Autocomplete for input box
+        //source: https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+
+        // Set the data fields to return when the user selects a place.
+        autocomplete.setFields(
+            ['address_components', 'geometry', 'icon', 'name']);
+
+        var infowindow = new google.maps.InfoWindow();
+        var infowindowContent = document.getElementById('infowindow-content');
+        infowindow.setContent(infowindowContent);
+    
+
+        autocomplete.addListener('place_changed', function() {
+        infowindow.close();
+
+        var place = autocomplete.getPlace();
+        if (!place.geometry) {
+            // User entered the name of a Place that was not suggested and
+            // pressed the Enter key, or the Place Details request failed.
+            window.alert("No details available for input: '" + place.name + "'");
+            return;
+        } 
+
+        var address = '';
+        if (place.address_components) {
+            address = [
+            (place.address_components[0] && place.address_components[0].short_name || ''),
+            (place.address_components[1] && place.address_components[1].short_name || ''),
+            (place.address_components[2] && place.address_components[2].short_name || '')
+            ].join(' ');
+        }
+
+        infowindowContent.children['place-icon'].src = place.icon;
+        infowindowContent.children['place-name'].textContent = place.name;
+        infowindowContent.children['place-address'].textContent = address;
+        });
+    }
+
+    initAutocomplete(form_input);
+    initAutocomplete(to_input);
+    
+}
 
 
 // submit button click event 
@@ -14,6 +71,7 @@ $('form').submit(function(e){
 
     // Stop form refreshing page on submit
     e.preventDefault();
+
     var origin = document.forms["journeyForm"]["f_from_stop"].value;
     var destination = document.forms["journeyForm"]["f_to_stop"].value;
 
@@ -31,10 +89,10 @@ $('form').submit(function(e){
                 var transferCount = ((renderSteps.match(/bus_icon/g) || []).length).toString() ;
                 
                 // render duration and count of transfer 
-                var content = renderContent({"Total duration:" : "<b>" + duration + "</b>" 
-                                                                    + "&nbsp;&nbsp;&nbsp;&nbsp;" 
-                                                                    + "<b>" + transferCount + "</b>" 
-                                                                    + "  transfers"});
+                var detail = renderContent({"Total duration:" : "<b>" + duration + "</b>" 
+                                                                + "&nbsp;&nbsp;&nbsp;&nbsp;" 
+                                                                + "<b>" + transferCount + "</b>" 
+                                                                + "  transfers"});
 
 
                 // dictionary to store all the elements which are going to display on frontend
@@ -44,9 +102,9 @@ $('form').submit(function(e){
                     "#journey_result_from" : origin,
                     "#journey_result_to" : destination,
                     "#journey_result_datetime" : "20:00",
-                    "#journey_result_travel_time" : arrive_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + departure_time,
+                    "#journey_result_travel_time" : departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time,
                     "#journey_result_steps" : renderSteps,
-                    "#journey_result_detail" : content
+                    "#journey_result_detail" : detail
                 };
 
                 displayElements(obj);
@@ -62,22 +120,20 @@ $('form').submit(function(e){
                 //drop origin marker
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
 
+                showResultJourneyDiv();
+
             } catch (error) {
                 alert(error);
             }
         } else {
             alert("Error occur, please try again");
         }
+        
     });
-
-    $("#journey_search_div").fadeOut(10);
-    $("#journey_result_div").fadeIn(10);
 });
 
 $('#edit_journey_input').click(function () {
-    $("#journey_result_div").fadeOut(10);
-    $("#journey_search_div").fadeIn(10);
-
+    showSearchJourneyDiv();
     clearSearchResult();
 
 });
@@ -146,8 +202,8 @@ function renderContent(obj){
 
 
 function dropMarkerOnMap(lat, lon, location){
-    var marker = 
-    L.marker([lat, lon]) .bindPopup(`<b> ${location}</b>`);
+ 
+    var marker = L.marker([lat, lon]) .bindPopup(`<b> ${location}</b>`);
     journeyLayer.addLayer(marker);
 }
 
@@ -175,6 +231,16 @@ function clearSearchResult(){
     stopsLayer.clearLayers();
 }
 
+
+function showSearchJourneyDiv(){
+    $("#journey_result_div").fadeOut(10);
+    $("#journey_search_div").fadeIn(10);
+}
+
+function showResultJourneyDiv(){
+    $("#journey_search_div").fadeOut(10);
+    $("#journey_result_div").fadeIn(10);
+}
 
 
 // decoding encode polyline which get from google direction API
@@ -212,7 +278,3 @@ function decode(encoded){
   }
   return points
 }
-
-
-
-
