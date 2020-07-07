@@ -144,3 +144,6 @@ config.py
 dublin_bus_gtfs/
 go_ahead_gtfs/
 
+#adding my csvs to gitignore
+dmod1.csv
+feat_df.csv
