@@ -144,3 +144,6 @@ config.py
 dublin_bus_gtfs/
 go_ahead_gtfs/
 
+#adding csv files
+dmod1.csv
+feat_df.csv
