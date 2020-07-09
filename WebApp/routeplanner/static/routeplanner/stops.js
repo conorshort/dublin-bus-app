@@ -26,7 +26,7 @@ function showStops(){
         content = '';
         $.each(data, function (i, stop) {
             // Get distance from centre location to every stop in kilometers
-            dist_kms = distance(centreLocation[0],stop.latitude,centreLocation[1],stop.longitude, 'K')
+            dist_kms = distance(centreLocation[0],centreLocation[1],stop.latitude, stop.longitude, 'K')
             content += renderListItem(stop,dist_kms);
             markStopsOnMap(stop)
         });
@@ -62,7 +62,7 @@ function renderListItem(stop, stop_dist) {
         <ul>
             <li><b>${ stop.fullname }</b></li>
             <li>${ stop.routes }</li>
-            <li>${ stop_dist } <li>
+            <li>${ stop_dist } Kilometres <li>
         </ul>
     </li>`;
     return content;
