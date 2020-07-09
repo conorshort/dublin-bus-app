@@ -58,7 +58,8 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # Comment below line to fix 'CSRF cookie not set' cookie not set issue
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -92,8 +93,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': db_config["schema_name"],
-        'USER': db_config["admin_username"],
-        'PASSWORD': db_config["admin_pw"],
+        'USER': db_config["read_only_username"],
+        'PASSWORD': db_config["read_only_pw"],
         'HOST': db_config["host"],
         'PORT': '3306',
     }
@@ -137,3 +138,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+CSRF_COOKIE_SECURE = True
