@@ -64,7 +64,7 @@ function renderListItem(stop, stop_dist) {
         <ul>
             <li><b>${ stop.fullname }</b></li>
             <li>${ stop.routes }</li>
-            <li>${ stop_dist } Kilometres <li>
+            <li>${ stop_dist } Metres <li>
         </ul>
     </li>`;
     return content;
