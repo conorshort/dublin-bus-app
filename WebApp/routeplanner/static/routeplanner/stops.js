@@ -26,8 +26,9 @@ function showStops(){
         content = '';
         $.each(data, function (i, stop) {
             // Get distance from centre location to every stop in kilometers
-            dist_kms = distance(centreLocation[0],centreLocation[1],stop.latitude, stop.longitude, 'K')
-            content += renderListItem(stop,dist_kms);
+            dist_kms = distance(centreLocation[0],centreLocation[1],stop.latitude, stop.longitude, 'K');
+            dist_ms = dist_kms*1000;
+            content += renderListItem(stop,dist_ms);
             markStopsOnMap(stop)
         });
         $( "#stopsListGroup" ).append(content);
