@@ -52,7 +52,7 @@ class GTFSManager(models.Manager):
                         GTFSCalendar,
                         GTFSCalendarDate,
                         GTFSRoute,
-                        GTFSShape,GTFSTrip,
+                        GTFSShape, GTFSTrip,
                         GTFSStopTime]
 
         for c in gtfs_classes:
@@ -67,7 +67,7 @@ class AbstractGTFS(models.Model):
 
     class Meta:
         abstract = True
-    
+
     # A list of agencies
     # If we want to add another agancy we can just add a new folder containing
     # the text files and add the ageny below
@@ -85,12 +85,12 @@ class AbstractGTFS(models.Model):
         throught that first '''
 
         # Create an instance of the class
-        gtfs_instance = cls()
+        gtfs_instance= cls()
 
         # Alter the dictionary with _proc_func if found
-        proc_func = getattr(gtfs_instance, "_dict_proc_func", None)
+        proc_func= getattr(gtfs_instance, "_dict_proc_func", None)
         if proc_func:
-            gtfs_dict = proc_func(gtfs_dict, agency_dict)
+            gtfs_dict= proc_func(gtfs_dict, agency_dict)
 
         # Loop through the dict and set the instance values
         for key, val in gtfs_dict.items():

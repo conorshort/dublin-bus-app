@@ -80,6 +80,7 @@ $('form').submit(function(e){
 
         if (data.status == "OK"){
             try {
+                console.log(data);
                 var route = data.routes[0];
                 var leg = route.legs[0];
                 var arrive_time =  leg.arrival_time.text;
