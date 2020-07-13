@@ -16,7 +16,7 @@ class GTFSStop(AbstractGTFS):
 
     def _dict_proc_func(self, stops_dict, agency_dict):
         try:
-            stop_name, stop_plate_code = stops_dict["stop_name"].split(", stop")
+            stop_name, stop_plate_code = stops_dict["stop_name"].split(", stop ")
         except: 
             stop_name = stops_dict["stop_name"]
             stop_plate_code = None
