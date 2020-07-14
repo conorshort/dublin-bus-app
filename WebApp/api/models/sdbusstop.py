@@ -4,8 +4,23 @@ from django.templatetags.static import static
 
 # ===== Bus Stops obtained from Smart Dublin API =====
 
-
 class SmartDublinBusStopManager(models.Manager):
+
+    def get_nearest_id(self, latitude, longitude):
+        """ Given a lat and lon get the nearest bus stops """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute("""select *, ST_Distance_Sphere(point ( %s ,  %s ),
+                              point(longitude, latitude))
+                        as distance_in_metres
+                from sd_bus_stops
+                order by distance_in_metres asc
+                limit 1;""" % (longitude, latitude))
+            result_list = []
+            # There should only be one nearest stop
+            for row in cursor.fetchall():
+                return row[0]
+        return None
 
     def __get_all_bus_stop_data(self):
         ''' Connect to smartdublin api and return a JSON of all bus stops '''
@@ -70,9 +85,6 @@ class SmartDublinBusStopManager(models.Manager):
         self.bulk_create(
             bus_stops, batch_size=1000, ignore_conflicts=True)
         print("Done")
-
-
-
 
 
 class SmartDublinBusStop(models.Model):
