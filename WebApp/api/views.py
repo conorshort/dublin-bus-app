@@ -106,18 +106,29 @@ class GTFSShapeViewSet(viewsets.ReadOnlyModelViewSet):
 
         today = datetime.datetime.today()
 
-        shape_id_queryset = GTFSTrip.objects.filter(
-                route__route_name=routename,
-                direction_id=inbound,
-                calendar__start_date__lte=today,
-                calendar__end_date__gte=today,).values("shape_id").distinct()
+        shape_queryset = GTFSTrip.objects.filter(
+            route__route_name=routename,
+            direction_id=inbound,
+            calendar__start_date__lte=today,
+            calendar__end_date__gte=today,).values("shape_id", towards=F("gtfsstoptime__stop_headsign")).distinct()
 
         shape_geo_jsons = []
-        for shape_id in shape_id_queryset:
-            shape_geo_jsons.append({
-                "type": "LineString",
-                "coordinates": GTFSShape.objects.get_points_by_id(shape_id["shape_id"])
-            })
+
+        for shape in shape_queryset:
+            geojsonFeature = {
+                "type": "Feature",
+                "properties": {
+                    "name": routename,
+                    "shapeId": shape["shape_id"],
+                    "popupContent": f"{routename} towards {shape['towards']}"
+                },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates":  GTFSShape.objects.get_points_by_id(shape["shape_id"])
+                }
+            }
+
+            shape_geo_jsons.append(geojsonFeature)
 
         return Response(shape_geo_jsons)
 
@@ -149,11 +160,10 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False)
     def timetable(self, response):
-        ''' Given a shape id and stop id, get a timetable for that route at that stop ''' 
+        ''' Given a shape id and stop id, get a timetable for that route at that stop '''
         shape_id = self.request.query_params.get("shape")
         stop_id = self.request.query_params.get("stop_id")
-        
-        
+
         trips = GTFSTrip.objects.filter(shape_id=shape_id)
 
         calendars = trips.values("calendar__display_days").distinct()
@@ -164,38 +174,33 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
             t = trips.filter(calendar__display_days=calendar_days,
                              gtfsstoptime__stop_id=stop_id)
 
-            trips_by_calendar[calendar_days] = t.values(time = F("gtfsstoptime__departure_time"))
+            trips_by_calendar[calendar_days] = t.values(
+                time=F("gtfsstoptime__departure_time"))
 
-        
         return Response(trips_by_calendar)
 
 
-
-
-
-
-
 class GTFSTripViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset=GTFSTrip.objects.all()
-    serializer_class=GTFSTripSerializer
+    queryset = GTFSTrip.objects.all()
+    serializer_class = GTFSTripSerializer
 
-    @ action(detail = False)
+    @ action(detail=False)
     def trips(self, response):
-        queryset=GTFSTrip.objects.all()
-        routeid=self.request.query_params.get('routeid')
-        shapeid=self.request.query_params.get('shapeid')
+        queryset = GTFSTrip.objects.all()
+        routeid = self.request.query_params.get('routeid')
+        shapeid = self.request.query_params.get('shapeid')
 
         # if shapeid paramater is given, filter trips data by shapeid
         if shapeid:
             print(shapeid)
-            queryset=queryset.filter(shape_id = shapeid)
+            queryset = queryset.filter(shape_id=shapeid)
 
         # elseif routeid paramater is given, filter trips data by routeid
         elif routeid:
-            queryset=queryset.filter(route_id = routeid)
+            queryset = queryset.filter(route_id=routeid)
             print(routeid)
 
-        serializer=GTFSTripSerializer(queryset, many = True)
+        serializer = GTFSTripSerializer(queryset, many=True)
 
         return Response(serializer.data)
 
