@@ -89,7 +89,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
         ''' Given a routeshape get all stops on the route'''
         shape_id = request.GET.get('shape')
 
-        stops = GTFSTrip.objects.on_route(shape_id).values(
+        stops = GTFSTrip.objects.stops_on_route(shape_id).values(
             stop_name=F("stop__stop_name"), seq=F("stop_sequence"), id=F("stop_id"))
 
         return Response(stops)

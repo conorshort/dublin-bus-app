@@ -9,8 +9,9 @@ from django.db.models import F
 
 
 class GTFSTripManager(GTFSManager):
+
     # TODO: See if timetables can be used to further narrow down if necessary
-    def get_stops_between(self, origin_id, destination_id, route_name, headsign=False, get_objects=False):
+    def get_stops_between(self, origin_id, destination_id, route_name, headsign=None, get_objects=False):
         """ Given two stop IDs and a route, get a list of lists of intermediate stops 
         
         It is possible (though hopefully rare) that there will be two possible sequences of stops
@@ -18,11 +19,14 @@ class GTFSTripManager(GTFSManager):
         
         origin_id, destination_id: (Integers) should be plate codes for the stops, such as 7185
         route_name: (string), common name of the route, such as "39A"
-        headsign (optional): (string), the headsign of the bus for this trip, such as "Ballymore"
-        get_objects (options): (Boolean), return a list of stop objects in casefuther processing is needed
+        headsign (optional): (string), the headsign of the bus for this trip, such as "UCD"
+        get_objects (options): (Boolean), return a list of stop objects in case futher processing is needed
         """
-
+        # Get today's date to fliter currently active routes
         today = datetime.datetime.today()
+
+        # Get shape_ids for the given route
+        # If a headsign is provided add it to the filter
         if headsign:
             shape_id_queryset = GTFSTrip.objects.filter(
                 route__route_name=route_name,
@@ -35,22 +39,36 @@ class GTFSTripManager(GTFSManager):
                 calendar__start_date__lte=today,
                 calendar__end_date__gte=today).values("shape_id").distinct()
 
+
         stop_query_set = []
         stops_as_lists = []
+
+        # Get the list of stops for each shape_id
         for shape in shape_id_queryset:
             shape = shape["shape_id"]
+
+            # Get all stops for this shape
             stops = self.stops_on_route(shape)
 
+            # Get the stops sequence number for origin and desitination stops
             origin_seq = stops.filter(
                 stop__plate_code=origin_id).values("stop_sequence")
             dest_seq = stops.filter(
                 stop__plate_code=destination_id).values("stop_sequence")
+
+            # The stops we want will have a sequence number between the origin and destination stops
             these_stops = stops.filter(stop_sequence__gte=origin_seq,
                                        stop_sequence__lte=dest_seq)
+
+            # Get the list of plate codes and stop sequences
             these_stops_list = list(these_stops.values("stop_sequence", plate_code=F("stop__plate_code")))
+
+            # append the stops to both lists
             if these_stops and these_stops_list not in stops_as_lists:
                 stop_query_set.append(these_stops)
                 stops_as_lists.append(these_stops_list)
+
+        # Return stop objects or a list as needed
         if get_objects:
             return stop_query_set
         else:

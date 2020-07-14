@@ -4,10 +4,10 @@ from django.templatetags.static import static
 
 # ===== Bus Stops obtained from Smart Dublin API =====
 
-
 class SmartDublinBusStopManager(models.Manager):
 
     def get_nearest_id(self, latitude, longitude):
+        """ Given a lat and lon get the nearest bus stops """
         from django.db import connection
         with connection.cursor() as cursor:
             cursor.execute("""select *, ST_Distance_Sphere(point ( %s ,  %s ),
