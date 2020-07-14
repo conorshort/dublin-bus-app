@@ -1,8 +1,5 @@
 
 // A global variable to hold all the currenly diplayed routed
-// ====== TODO: currently the routes break when the user navigates to a different part of the sidebar
-// This will need fixing. Likely routeLayerObj will need to be moved to home.js as currnetly it will
-// be overwritten everytime Route menu button is pressed
 var routeLayerObj = {};
 var stopsObj = {};
 // Will hold the route currently being displayed in the side bar
@@ -25,7 +22,14 @@ $(document).ready(function () {
         $("#routes-div").fadeIn(10);
         $("#route-stops-title").html("")
         toggleRouteDisplay(currentRoute)
+        removeRouteStopsFromMap()
     });
+
+
+    $('.nav_item, bottom_nav_item').click(function () {
+        removeRouteStopsFromMap()
+    });
+
 
 
     // get all routes from django
@@ -100,6 +104,7 @@ function showRouteVariations(routeName, inbound) {
 // Add the on click to the route variations 
 function addOnclicksToVariations() {
     $(".stops-list-button").click(function () {
+        removeRouteStopsFromMap()
         // Each variation in the list has its unique shape id
         // stored in a data-shape-id attribute
         let shapeId = $(this).attr('data-shape-id');
@@ -111,88 +116,116 @@ function addOnclicksToVariations() {
                 return a.seq - b.seq;
             });
             // Create a list item for each stop and add it to the list
+            console.log(stops)
             stopsObj = {};
             let content = '';
             stops.forEach(stop => {
-                content += renderStopListItem(stop.stop_name, stop.id)
-                let m = new L.CircleMarker([stop.lat, stop.lon], { radius: 6, fillOpacity: 0.5 });
-                m.setStyle({
+                content += renderStopListItem(stop.stop_name, stop.id, shapeId)
+                let stopMarker = new L.CircleMarker([stop.lat, stop.lon], { radius: 6, fillOpacity: 0.5 });
+                stopMarker.setStyle({
                     color: 'green',
                 });
-                m.addTo(map);
-                stopsObj[stop.id] = m;
+                stopMarker.stopId = stop.id;
+                stopMarker.shapeId = shapeId;
+                stopMarker.on("click", displayTimetable)
+                    .on("mouseover", highlightStop)
+                    .on("mouseout", unHighlightStop)
+                    .addTo(map);
+                stopsObj[stop.id] = stopMarker;
 
 
             });
+
             $(`#stops-list-${index}`).append(content);
+
             // Add on clicks to the stops
-            addOnclicksToStops(shapeId);
-            addOnHoversToStops()
+            $(".stop-item").off("click");
+            $(".stop-item").click(displayTimetable);
+            
+            $(".stop-item").off("hover");
+            // .hover takes two functions, one for mouseover and one for mouse away
+            // Here we change the styling of the stop on the map for the list item that's
+            // hovered over
+            $(".stop-item").hover(highlightStop, unHighlightStop);
         });
     });
 }
 
 function addOnHoversToStops() {
+  
+}
 
-    // .hover takes two functions, one for mouseover and one for mouse away
-    // Here we change the styling of the stop on the map for the list item that's
-    // hovered over
-    $(".stop-item").hover(function () {
-        let stopId = $(this).attr('data-stop-id');
-        console.log(stopsObj[stopId])
-        let latLng = stopsObj[stopId].getLatLng();
-        console.log(latLng)
-        stopsObj[stopId].setStyle({
-            color: 'orange',
-            weight: 10,
-            })
+
+function displayTimetable(e) {
+    // Get the stop id and stop name from the clicked element
+    let stopId = $(this).attr('data-stop-id');
+    let shapeId = $(this).attr('data-shape-id');
+    console.log(this);
+    console.log(stopId);
+    if (!stopId) {
+        stopId = this.stopId
+        shapeId = this.shapeId
+    }
+    let stopName = $("#stop-" + stopId).html()
+
+    // Set the title of the timetable
+    $("#timetable-title").html(stopName);
+
+    // Toggle display of the timetable modal (pop up box)
+    // And remove any previous info it contained
+    $('#timetable-modal').modal('toggle');
+
+    $("#timetable-tabs, #timetable-content").html("")
+        .hide();
+
+    $("#timetable-loader").show();
+
+    // Get the timetable for this route variation at this stop
+    return $.getJSON("/api/stoptime/timetable",
+        { shape: shapeId, stop_id: stopId },
+        function (timetables) {
+            // Show the modal content
+            $("#timetable-tabs").show();
+            $("#timetable-content").show();
+
+            $("#timetable-loader").hide();
+            // Populate the modal with the timetable
+            fillTimetableModal(stopName, timetables);
+        });
+}
+
+function highlightStop() {
+    let stopId = $(this).attr('data-stop-id');
+    let allowCentrePan = true;
+    if(!stopId){
+        stopId = this.stopId
+        allowCentrePan = false;
+    }
+    let latLng = stopsObj[stopId].getLatLng();
+    stopsObj[stopId].setStyle({
+        color: 'orange',
+        weight: 10,
+    })
         .setRadius(10)
         .bringToFront();
-        map.panTo(latLng);
-    }, function () {
-        let stopId = $(this).attr("data-stop-id");
-        stopsObj[stopId].setStyle({
-            color: 'green',
-            weight: 5,
-        })
+    if (allowCentrePan){
+        map.panTo(latLng);   
+    } 
+}
+
+function unHighlightStop() {
+    let stopId = $(this).attr('data-stop-id');
+    if (!stopId) {
+        stopId = this.stopId
+    }
+    stopsObj[stopId].setStyle({
+        color: 'green',
+        weight: 5,
+    })
         .setRadius(6);
-    });
 }
 
 
-function addOnclicksToStops(shapeId) {
-    $(".stop-item").click(function () {
-
-        // Get the stop id and stop name from the clicked element
-        let stopId = $(this).attr('data-stop-id');
-        let stopName = $("#stop-" + stopId).html()
-
-        // Set the title of the timetable
-        $("#timetable-title").html(stopName);
-
-        // Toggle display of the timetable modal (pop up box)
-        // And remove any previous info it contained
-        $('#timetable-modal').modal('toggle');
-
-        $("#timetable-tabs, #timetable-content").html("")
-            .hide();
-
-        $("#timetable-loader").show();
-
-        // Get the timetable for this route variation at this stop
-        return $.getJSON("/api/stoptime/timetable",
-            { shape: shapeId, stop_id: stopId },
-            function (timetables) {
-                // Show the modal content
-                $("#timetable-tabs").show();
-                $("#timetable-content").show();
-
-                $("#timetable-loader").hide();
-                // Populate the modal with the timetable
-                fillTimetableModal(stopName, timetables);
-            });
-    });
-}
 
 // Populate the modal with the timetable
 function fillTimetableModal(stopName, timetables) {
@@ -249,8 +282,6 @@ function fillTimetableModal(stopName, timetables) {
 // Function to display a route on the map
 // Direction should be 1 for inbound, 0 for outbound
 // Colour will be used to display the route on the map
-
-
 
 function displayRouteOnMap(routeName, direction, colour) {
 
@@ -328,7 +359,11 @@ function displayRouteOnMap(routeName, direction, colour) {
 
 
 
-
+function removeRouteStopsFromMap() {
+    for (const stop in stopsObj) {
+        map.removeLayer(stopsObj[stop]);
+    }
+}
 
 
 
@@ -443,9 +478,9 @@ function renderRouteListItem(route) {
     return content;
 }
 
-function renderStopListItem(stop, id) {
+function renderStopListItem(stop, id, shapeId) {
     const content = `
-        <li class="list-group-item stop-item" data-stop-id="${id}">
+        <li class="list-group-item stop-item" data-stop-id="${id}" data-shape-id="${shapeId}">
             <ul>
                 <li class="row"  id="stop-${id}">${stop}</li>
             </ul>
