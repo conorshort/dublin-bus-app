@@ -63,7 +63,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False)
     def routename(self, response):
         ''' Return a list of distinct route names found in the db '''
-        route_queryset = GTFSRoute.objects.values('route_name').distinct()
+        route_queryset = GTFSRoute.objects.values('route_name', operator=F("agency__agency_name")).distinct()
         return Response(route_queryset)
 
     @action(detail=False)
