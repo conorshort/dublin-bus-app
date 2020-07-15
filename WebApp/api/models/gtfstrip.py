@@ -74,7 +74,8 @@ class GTFSTripManager(GTFSManager):
                 # Get the list of plate codes and stop sequences
                 these_stops_list = list(these_stops.values("stop_sequence",
                                                             plate_code=F("stop__plate_code"),
-                                                            time=F("arrival_time")))
+                                                            time=F("arrival_time"),
+                                                            stop_name=F("stop__stop_name")))
 
                 # append the stops to both lists
                 if these_stops and these_stops_list not in stops_as_lists:
