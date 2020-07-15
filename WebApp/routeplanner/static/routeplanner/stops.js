@@ -89,10 +89,14 @@ function renderRealtimeListItem(bus) {
 
 
 function markStopsOnMap(stop) {
-
+    // fixing the printing of array issue on marker
+    var route_list = stop.routes;
+    route_list = route_list.slice(2,-2);
+    route_list = route_list.split("', '");
+    route_list = route_list.join(", ");
     var marker = 
     L.marker([stop.latitude, stop.longitude])
-    .bindPopup(`<b> ${stop.fullname}</b><br> ${stop.routes}`);
+    .bindPopup(`<b> ${stop.fullname}</b><br> ${route_list}`);
     stopsLayer.addLayer(marker);
 }
 
