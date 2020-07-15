@@ -180,13 +180,15 @@ function renderResultJourneySteps(steps) {
             <div id="collapse${index}" class="collapse" aria-labelledby="heading${index}" data-parent="#journey_result_steps">
             <div class="card-body">`;
         content += "<p>Distance: <b>" + step.distance.text + "</b></p>";
-
+        console.log('step'+step);
         // if the travel_mode is TRANSIT, add bus icon and bus route number to content
         if (step.travel_mode == "TRANSIT"){
             var stops = step.transit_details.stops[0];
-
+            console.log('step.transit_details:' + step.transit_details);
+            console.log(stops);
             if (stops) {
                 $.each(stops, function( index, value ) {
+                    
                     content += "<p> stopid: " + value.plate_code + "</p>";
                 });
             }

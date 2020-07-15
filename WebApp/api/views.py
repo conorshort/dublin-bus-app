@@ -10,7 +10,9 @@ import datetime
 from django.db.models import F
 import requests
 from dublin_bus.config import GOOGLE_DIRECTION_KEY
+import pandas as pd
 
+from prediction import prediction
 
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
@@ -213,6 +215,9 @@ def realtimeInfo(request, stop_id):
 
 
 def direction(request):
+
+
+
     # if request == "POST":
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
@@ -231,9 +236,11 @@ def direction(request):
     
     # extracting data in json format 
     data = r.json() 
-
     steps = data['routes'][0]['legs'][0]['steps']
 
+    
+
+    # get/store stops in json data if the transit agency is Dublin Bus or Go-Ahead
     for i in range(len(steps)):
         if steps[i]['travel_mode'] == 'TRANSIT' \
             and (steps[i]['transit_details']['line']['agencies'][0]['name'] == 'Dublin Bus' \
@@ -250,13 +257,27 @@ def direction(request):
                 (depStopCoordination['lat'], depStopCoordination['lng'])
 
             # get stops between origin and destination stops
-
             headsign = steps[i]['transit_details']['headsign']
             lineId = steps[i]['transit_details']['line']['short_name']
 
-            stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)
-            # sedments = 
+            stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)[0]
+          
+            # store stops info in data json for response 
             data['routes'][0]['legs'][0]['steps'][i]['transit_details']['stops'] = stops
+
+            # get all the segmentid
+            segments = []
+            for index in range(len(stops)-1):
+    
+                segments.append(stops[index]['plate_code'] + '-' + stops[index+1]['plate_code'])
+            
+            # predict traveling time for all segmentid
+            lineId = steps[i]['transit_details']['line']['short_name']
+         
+            journeyTime = prediction().predict_journey_time(lineId, segments, datetime.datetime.now())
+            data['routes'][0]['legs'][0]['steps'][i]['duration']['text'] = str(int(journeyTime) // 60) + ' mins'
 
     return JsonResponse(data, safe=False)
 
+
+    
