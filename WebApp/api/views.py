@@ -12,7 +12,7 @@ import requests
 from dublin_bus.config import GOOGLE_DIRECTION_KEY
 import pandas as pd
 
-from prediction import prediction
+from prediction import predict_journey_time
 
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
@@ -216,8 +216,6 @@ def realtimeInfo(request, stop_id):
 
 def direction(request):
 
-
-
     # if request == "POST":
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
@@ -238,7 +236,6 @@ def direction(request):
     data = r.json() 
     steps = data['routes'][0]['legs'][0]['steps']
 
-    
 
     # get/store stops in json data if the transit agency is Dublin Bus or Go-Ahead
     for i in range(len(steps)):
@@ -274,7 +271,7 @@ def direction(request):
             # predict traveling time for all segmentid
             lineId = steps[i]['transit_details']['line']['short_name']
          
-            journeyTime = prediction().predict_journey_time(lineId, segments, datetime.datetime.now())
+            journeyTime = predict_journey_time(lineId, segments, datetime.datetime.now())
             data['routes'][0]['legs'][0]['steps'][i]['duration']['text'] = str(int(journeyTime) // 60) + ' mins'
 
     return JsonResponse(data, safe=False)
