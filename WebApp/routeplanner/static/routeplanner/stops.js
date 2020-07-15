@@ -59,11 +59,16 @@ function showArrivingBusesOnSideBar(stopid){
 // create and return list-group-item for stop
 // stop_dist added as item
 function renderListItem(stop, stop_dist) {
+    // need to do some jiggery pokery to the stop routes to return without brackets or quotations
+    var route_list = stop.routes;
+    route_list = route_list.slice(2,-2);
+    route_list = route_list.split("', '");
+    route_list = route_list.join(", ");
     const content = `
     <li class="list-group-item stop" id="station-${stop.stopid}">
         <ul>
             <li><b>${ stop.fullname }</b></li>
-            <li>${ stop.routes }</li>
+            <li>${ route_list } </li>
             <li>${ stop_dist } Metres <li>
         </ul>
     </li>`;
