@@ -213,7 +213,6 @@ def realtimeInfo(request, stop_id):
 
 
 def direction(request):
-    print(request)
     # if request == "POST":
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
@@ -256,9 +255,8 @@ def direction(request):
             lineId = steps[i]['transit_details']['line']['short_name']
 
             stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)
+            # sedments = 
             data['routes'][0]['legs'][0]['steps'][i]['transit_details']['stops'] = stops
 
-
-    print(data)
     return JsonResponse(data, safe=False)
 

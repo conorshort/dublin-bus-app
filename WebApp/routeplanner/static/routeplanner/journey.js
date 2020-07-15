@@ -77,10 +77,9 @@ $('form').submit(function(e){
 
     //get direction from api /api/direction
     $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}`, function(data) {
-        console.log(data)
+    
         if (data.status == "OK"){
             try {
-                console.log(data);
                 var route = data.routes[0];
                 var leg = route.legs[0];
                 var arrive_time =  leg.arrival_time.text;
@@ -181,7 +180,22 @@ function renderResultJourneySteps(steps) {
             <div id="collapse${index}" class="collapse" aria-labelledby="heading${index}" data-parent="#journey_result_steps">
             <div class="card-body">`;
         content += "<p>Distance: <b>" + step.distance.text + "</b></p>";
-        content += "<p>" + step.html_instructions + "</p>";
+
+        // if the travel_mode is TRANSIT, add bus icon and bus route number to content
+        if (step.travel_mode == "TRANSIT"){
+            var stops = step.transit_details.stops[0];
+
+            if (stops) {
+                $.each(stops, function( index, value ) {
+                    content += "<p> stopid: " + value.plate_code + "</p>";
+                });
+            }
+
+
+        // if the travel_mode is WALKING, add walk icon to content
+        } else if (step.travel_mode == "WALKING") {
+            content += "<p>" + step.html_instructions + "</p>";
+        }
         content += '</div></div></div>';
       
     });
