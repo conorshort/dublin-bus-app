@@ -233,5 +233,32 @@ def direction(request):
     # extracting data in json format 
     data = r.json() 
 
+    steps = data['routes'][0]['legs'][0]['steps']
+
+    for i in range(len(steps)):
+        if steps[i]['travel_mode'] == 'TRANSIT' \
+            and (steps[i]['transit_details']['line']['agencies'][0]['name'] == 'Dublin Bus' \
+            or steps[i]['transit_details']['line']['agencies'][0]['name'] == 'Go-Ahead'):
+
+            arrStopCoordination = steps[i]['transit_details']['arrival_stop']['location']
+            depStopCoordination = steps[i]['transit_details']['departure_stop']['location']
+
+            # get stop id by stop coordinate
+            arrStopId = SmartDublinBusStop.objects.get_nearest_id \
+                (arrStopCoordination['lat'], arrStopCoordination['lng'])
+            
+            depStopId = SmartDublinBusStop.objects.get_nearest_id \
+                (depStopCoordination['lat'], depStopCoordination['lng'])
+
+            # get stops between origin and destination stops
+
+            headsign = steps[i]['transit_details']['headsign']
+            lineId = steps[i]['transit_details']['line']['short_name']
+
+            stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)
+            data['routes'][0]['legs'][0]['steps'][i]['transit_details']['stops'] = stops
+
+
+    print(data)
     return JsonResponse(data, safe=False)
 

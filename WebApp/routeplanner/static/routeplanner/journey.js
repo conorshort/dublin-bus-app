@@ -77,7 +77,7 @@ $('form').submit(function(e){
 
     //get direction from api /api/direction
     $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}`, function(data) {
-
+        console.log(data)
         if (data.status == "OK"){
             try {
                 console.log(data);
@@ -187,6 +187,8 @@ function renderResultJourneySteps(steps) {
     });
     return content
 }
+
+
 
 
 function renderContent(obj){ 
