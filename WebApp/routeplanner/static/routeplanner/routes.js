@@ -7,7 +7,7 @@ var currentRoute = undefined;
 
 // Wait for the document to finish loading
 $(document).ready(function () {
-
+    addOnclicksToVariations()
     // Add the route filter to the search box
     $('#route-filter').on('keyup search', () => {
         filterRouteList()
@@ -25,9 +25,23 @@ $(document).ready(function () {
         removeRouteStopsFromMap()
     });
 
+    $("#inbound-radio, #outbound-radio").click(function () {
+        let direction = $(this).attr("data-inbound")
+
+        console.log("radio click" + direction);
+        toggleRouteDisplay(currentRoute);
+        toggleRouteDisplay(currentRoute, direction);
+        removeRouteStopsFromMap()
+
+        // Show a list of the variations 
+        showRouteVariations(currentRoute, direction);
+    });
+
+
 
     $('.nav_item, bottom_nav_item').click(function () {
-        removeRouteStopsFromMap()
+        removeRouteStopsFromMap();
+        //toggleRouteDisplay(currentRoute);
     });
 
 
@@ -55,6 +69,7 @@ $(document).ready(function () {
 
         // Add an on click to each route
         $(".route-item").click(function () {
+            $("#inbound-radio").prop('checked', true);
             // Hide the all routes div
             $("#routes-div").fadeOut(10);
 
@@ -70,12 +85,11 @@ $(document).ready(function () {
             // Toggle display of the route on the map as needed
             toggleRouteDisplay(routeName)
 
+            // Show inbound routes by default
             let inbound = 1;
+
             // Show a list of the variations 
-            showRouteVariations(routeName, inbound).then(() => {
-                // Then add the onclicks to the variations
-                addOnclicksToVariations()
-            });
+            showRouteVariations(routeName, inbound);
         });
     });
 });
@@ -88,6 +102,7 @@ $(document).ready(function () {
 // when it is done
 function showRouteVariations(routeName, inbound) {
     // Get the variation based on route name and direction
+    $("#variations-accordion").html("");
     return $.getJSON("api/routes/variations/",
         { name: routeName, inbound: inbound },
         function (variations) {
@@ -103,7 +118,55 @@ function showRouteVariations(routeName, inbound) {
 
 // Add the on click to the route variations 
 function addOnclicksToVariations() {
-    $(".stops-list-button").click(function () {
+    // $(".stops-list-button").click(function () {
+    //     removeRouteStopsFromMap()
+    //     // Each variation in the list has its unique shape id
+    //     // stored in a data-shape-id attribute
+    //     let shapeId = $(this).attr('data-shape-id');
+    //     let index = $(this).attr('data-index');
+    //     // Get a list of stops using the shape id
+    //     $.getJSON("api/routes/stops/", { shape: shapeId }, function (stops) {
+    //         // Sort the stops in the order they appear on the route.
+    //         stops.sort((a, b) => {
+    //             return a.seq - b.seq;
+    //         });
+    //         // Create a list item for each stop and add it to the list
+    //         console.log(stops)
+    //         stopsObj = {};
+    //         let content = '';
+    //         stops.forEach(stop => {
+    //             content += renderStopListItem(stop.stop_name, stop.id, shapeId)
+    //             let stopMarker = new L.CircleMarker([stop.lat, stop.lon], { radius: 6, fillOpacity: 0.5 });
+    //             stopMarker.setStyle({
+    //                 color: 'green',
+    //             });
+    //             stopMarker.stopId = stop.id;
+    //             stopMarker.shapeId = shapeId;
+    //             stopMarker.on("click", displayTimetable)
+    //                 .on("mouseover", highlightStop)
+    //                 .on("mouseout", unHighlightStop)
+    //                 .addTo(map);
+    //             stopsObj[stop.id] = stopMarker;
+
+
+    //         });
+
+    //         $(`#stops-list-${index}`).append(content);
+
+    //         // Add on clicks to the stops
+    //         $(".stop-item").off("click");
+    //         $(".stop-item").click(displayTimetable);
+
+    //         $(".stop-item").off("hover");
+    //         // .hover takes two functions, one for mouseover and one for mouse away
+    //         // Here we change the styling of the stop on the map for the list item that's
+    //         // hovered over
+    //         $(".stop-item").hover(highlightStop, unHighlightStop);
+    //     });
+    // });
+}
+function addOnclicksToVariations() {
+    $(document).on("click", ".stops-list-button", function () {
         removeRouteStopsFromMap()
         // Each variation in the list has its unique shape id
         // stored in a data-shape-id attribute
@@ -141,7 +204,7 @@ function addOnclicksToVariations() {
             // Add on clicks to the stops
             $(".stop-item").off("click");
             $(".stop-item").click(displayTimetable);
-            
+
             $(".stop-item").off("hover");
             // .hover takes two functions, one for mouseover and one for mouse away
             // Here we change the styling of the stop on the map for the list item that's
@@ -149,10 +212,12 @@ function addOnclicksToVariations() {
             $(".stop-item").hover(highlightStop, unHighlightStop);
         });
     });
+
 }
 
+
 function addOnHoversToStops() {
-  
+
 }
 
 
@@ -197,7 +262,7 @@ function displayTimetable(e) {
 function highlightStop() {
     let stopId = $(this).attr('data-stop-id');
     let allowCentrePan = true;
-    if(!stopId){
+    if (!stopId) {
         stopId = this.stopId
         allowCentrePan = false;
     }
@@ -208,9 +273,9 @@ function highlightStop() {
     })
         .setRadius(10)
         .bringToFront();
-    if (allowCentrePan){
-        map.panTo(latLng);   
-    } 
+    if (allowCentrePan) {
+        map.panTo(latLng);
+    }
 }
 
 function unHighlightStop() {
@@ -380,53 +445,48 @@ function removeRouteFromMap(routeName) {
 
 // Function to toggle the display of a route using a route name
 // Also add the background colour to the list item in the sidebar
-function toggleRouteDisplay(routeName) {
+function toggleRouteDisplay(routeName, direction = 1) {
 
     // Get the list element for the route to be toggled
     let routeListElementID = $("#route-" + routeName)
 
     // Check is the route is being displayed or not
-    if (routeListElementID.hasClass("route-active")) {
-
+    if (routeLayerObj[routeName]) {
+        console.log(routeName)
+        console.log(currentRoute)
         // If it is make it no longer active
-        routeListElementID.removeClass("route-active")
-            .css('background-color', "")
-            .css('color', "");
+        // routeListElementID.removeClass("route-active")
+        //     .css('background-color', "")
+        //     .css('color', "");
 
         // Remove it from the map
         removeRouteFromMap(routeName);
 
     } else {
 
-        // Otherwise add the route
-
-        // Loading spinner
-        let span = routeListElementID.find('span');
-        span.html('<div class="loader"></div>');
-
         // Grey out the list elem when loading
         // Also disables click events to stop multiple
         // clicks
-        routeListElementID.addClass("route-loading");
+        // routeListElementID.addClass("route-loading");
 
-        // Generate a random colour
+        // // Generate a random colour
         let colour = '#' + Math.floor(seededRandom(funhash(routeName)) * 16777215).toString(16)
 
-        // Decide whether to display black or white text based on the background colour
-        let textColour = getTextColour(colour)
+        // // Decide whether to display black or white text based on the background colour
+        // let textColour = getTextColour(colour)
 
-        // Displays the route
+        // // Displays the route
         // .then will wait for the displayRouteOnMap function to finish
         // before running the function inside it
-        displayRouteOnMap(routeName, 1, colour)
+        displayRouteOnMap(routeName, direction, colour)
             .then(() => {
                 //Remove the loading spinner
-                span.html("");
+
                 // Set the list element as active and set the colours
-                routeListElementID.removeClass("route-loading")
-                    .addClass("route-active")
-                    .css('background-color', colour)
-                    .css('color', textColour);
+                // routeListElementID.removeClass("route-loading")
+                //     .addClass("route-active")
+                //     .css('background-color', colour)
+                //     .css('color', textColour);
             });
     }
 }
@@ -472,7 +532,7 @@ function renderRouteListItem(route) {
     const content = `
         <li class="list-group-item route-item" id="route-${route}">
             <ul>
-                <li class="row"><b>${route}</b> <span class="route-loading-span"></span></li>
+                <li class="row"><b class="col-6">${route}</b><span class="col-6">Dublin Bus</span></li>
             </ul>
         </li>`;
     return content;
