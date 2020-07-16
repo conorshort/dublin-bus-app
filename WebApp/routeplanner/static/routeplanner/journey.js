@@ -76,14 +76,15 @@ $('form').submit(function(e){
     var dateTime = document.querySelector('input[type="datetime-local"]').value;
 
     var dt = new Date(Date.parse(dateTime));
-
+     //set departure time mins to 0,
+    //if departure time given is 
     dt.setMinutes(0);
-    var unix = dt.getTime()/1000
+    var unix = dt.getTime()/1000;
 
     //get direction from api /api/direction
     $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}&departureUnix=${unix}`
     , function(data) {
-    
+
         if (data.status == "OK"){
             try {
                 var route = data.routes[0];
@@ -189,14 +190,14 @@ function renderResultJourneySteps(steps) {
         if (step.travel_mode == "TRANSIT"){
 
             var stops = step.transit_details.stops;
-
-            //show number of stops
-            content += "<p>Stops: <b>" + stops.length + "</b></p>";
-
+            
             if (stops) {
                 $.each(stops, function( index, value ) {
                     content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
                 });
+
+                //show number of stops
+                content += "<p>Stops: <b>" + stops.length + "</b></p>";
             }
 
 
