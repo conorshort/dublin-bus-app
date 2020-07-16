@@ -232,10 +232,9 @@ div.weather#description {
 }
 
 #route-stops-title{
-  padding: 10px 0px 10px 50px;
+  padding: 10px 0px 10px 40px;
   display: inline-block;
-  /* padding-left: 50px;
-  padding-right: 0px; */
+
 }
 
 #back-to-routes{
@@ -244,7 +243,7 @@ div.weather#description {
 }
 .direction-buttons{
   margin-top: 12px;
-  margin-left: 15px;
+  margin-left: 30px;
   margin-bottom: 8px;
 }
 .btn-outline-warning {
