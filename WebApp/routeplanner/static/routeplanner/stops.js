@@ -61,11 +61,10 @@ function showArrivingBusesOnSideBar(stopid){
 // create and return list-group-item for stop
 // stop_dist added as item
 function renderListItem(stop, stop_dist) {
-    // need to do some jiggery pokery to the stop routes to return without brackets or quotations
+    // need to do some jiggery pokery to the stop routes to return the info without brackets or quotations
     var route_list = stop.routes;
     route_list = route_list.slice(2,-2);
     route_list = route_list.split("', '");
-    //route_list = route_list.join(", ");
     // Getting routes to display as buttons for style purposes and also so route info is clickable
     route_buttons = '';
     for (var i = 0; i < route_list.length; i++) {
