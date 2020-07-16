@@ -1,3 +1,5 @@
+//TO DO: Bring User to Routes info page if they click a specific route
+
 
 $(document).ready(function() {
     //clear all the markers in the layer
@@ -63,12 +65,18 @@ function renderListItem(stop, stop_dist) {
     var route_list = stop.routes;
     route_list = route_list.slice(2,-2);
     route_list = route_list.split("', '");
-    route_list = route_list.join(", ");
+    //route_list = route_list.join(", ");
+    // Getting routes to display as buttons for style purposes and also so route info is clickable
+    route_buttons = '';
+    for (var i = 0; i < route_list.length; i++) {
+        route_buttons += '<button type="button" class="btn btn-info mr-1">' + route_list[i] + "</button>";
+      }
+    console.log(route_buttons)
     const content = `
     <li class="list-group-item stop" id="station-${stop.stopid}">
         <ul>
             <li><b>${ stop.fullname }</b></li>
-            <li>${ route_list } </li>
+            <li> ${ route_buttons }</li>
             <li>${ stop_dist } Metres <li>
         </ul>
     </li>`;
