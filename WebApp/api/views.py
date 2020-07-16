@@ -46,6 +46,7 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
                 ORDER BY distance;" % (latitude, longitude, latitude, radius)
 
             queryset = SmartDublinBusStop.objects.raw(sql)
+            
             serializer = SmartDublinBusStopSerializer(queryset, many=True)
 
             return Response(serializer.data)
