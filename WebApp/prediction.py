@@ -1,9 +1,11 @@
 import pandas as pd
+from weather import getWeather
 import datetime
+import time
 import pickle
 
 
-def predict_journey_time(lineId, segments, departure_dt):
+def predict_journey_time(lineId, segments, departure_unix):
     
     modelFile = f'//Users/wenghsin-ping/Desktop/dublin-bus-app/WebApp/pickles/{lineId}.pkl'
     
@@ -16,11 +18,19 @@ def predict_journey_time(lineId, segments, departure_dt):
 
     # create a dictionary and set key to features and value to [0]
     dic = {feature: [0] for feature in features}
+    departure_dt = datetime.datetime.fromtimestamp(departure_unix)
     
+
     hour = departure_dt.hour
     weekday = departure_dt.weekday
+    # isPeak = isPeaktime(departure_dt)
     isPeak = int(isPeaktime(departure_dt) == True)
 
+    weather = getWeather(int(departure_unix))
+    if weather:
+        dic['temp'] = [weather['temp']]
+        dic['wind_speed'] = [weather['wind_speed']]
+        dic['sun'] = [weather['wind_speed']]
 
     df = pd.DataFrame()
 
@@ -32,9 +42,7 @@ def predict_journey_time(lineId, segments, departure_dt):
             dic['weekday'] = [weekday]
             dic['isPeaktime'] = [isPeak]
 
-            dic['temp'] = [1]
-            dic['wind_speed'] = [2]
-            dic['sun'] = [0.0]
+            
         except:
             pass
         
@@ -52,6 +60,8 @@ def predict_journey_time(lineId, segments, departure_dt):
 
 
 def isPeaktime(dt):
-
     return (dt.time() >= datetime.time(6, 30) and dt.time() <= datetime.time(9, 30)) \
         or (dt.time() >= datetime.time(15, 30) and dt.time() <= datetime.time(18, 30))
+
+# isPeak = isPeaktime(datetime.datetime.now())
+# print(isPeak)

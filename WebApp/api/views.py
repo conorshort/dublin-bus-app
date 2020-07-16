@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import action
 from api.models import SmartDublinBusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
 from .serializers import SmartDublinBusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
-import datetime
+from datetime import datetime
 from django.db.models import F
 import requests
 from dublin_bus.config import GOOGLE_DIRECTION_KEY
@@ -219,7 +219,8 @@ def direction(request):
     # if request == "POST":
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
-
+    departureUnix = request.GET.get('departureUnix')
+   
     URL = 'https://maps.googleapis.com/maps/api/directions/json'
     
     # defining a params dict for the parameters to be sent to the API 
@@ -271,7 +272,7 @@ def direction(request):
             # predict traveling time for all segmentid
             lineId = steps[i]['transit_details']['line']['short_name']
          
-            journeyTime = predict_journey_time(lineId, segments, datetime.datetime.now())
+            journeyTime = predict_journey_time(lineId, segments, int(departureUnix))
             data['routes'][0]['legs'][0]['steps'][i]['duration']['text'] = str(int(journeyTime) // 60) + ' mins'
 
     return JsonResponse(data, safe=False)

@@ -68,15 +68,20 @@ function initAutoComplete(){
 
 // submit button click event 
 $('form').submit(function(e){
-
     // Stop form refreshing page on submit
     e.preventDefault();
 
     var origin = document.forms["journeyForm"]["f_from_stop"].value;
     var destination = document.forms["journeyForm"]["f_to_stop"].value;
+    var dateTime = document.querySelector('input[type="datetime-local"]').value;
+
+    var dt = new Date(Date.parse(dateTime));
+    dt.setMinutes(0);
+    var unix = dt.getTime()/1000
 
     //get direction from api /api/direction
-    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}`, function(data) {
+    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}&departureUnix=${unix}`
+    , function(data) {
     
         if (data.status == "OK"){
             try {
@@ -94,19 +99,18 @@ $('form').submit(function(e){
                                                                 + "<b>" + transferCount + "</b>" 
                                                                 + "  transfers"});
 
-
+                                                                console.log('2');                                         
                 // dictionary to store all the elements which are going to display on frontend
                 // key: the element id or class name
                 // value: content to append to the element 
                 var obj = {
                     "#journey_result_from" : origin,
                     "#journey_result_to" : destination,
-                    "#journey_result_datetime" : "20:00",
+                    "#journey_result_datetime" : dateTime,
                     "#journey_result_travel_time" : departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time,
                     "#journey_result_steps" : renderSteps,
                     "#journey_result_detail" : detail
                 };
-
                 displayElements(obj);
 
                 //get encoding journey polyline
@@ -148,6 +152,7 @@ function displayElements(obj){
 
 // render result journey steps
 function renderResultJourneySteps(steps) {
+    //  TODO: handling when no bus journey, steps will become 0
 
     content = '';
     $.each( steps, function( index, step ) {
