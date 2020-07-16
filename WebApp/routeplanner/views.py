@@ -115,3 +115,18 @@ leap_card_content = [
 def realtimeInfo(request, stop_id):
     r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
     return JsonResponse(r.text, safe=False)
+
+#function to format api geocoordinates request to get lat and long of user-entered address
+def longlatsearch(address):
+    res = tuple(map(str, address.split(' ')))
+    if len(res)==1:
+        r = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address={res[0]}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA")
+    #address needs to be formatted with + between each word
+    else:
+        address = ''
+        for i in range(0,len(res)-2):
+            address += res[i]
+            address += '+'
+        address += res[-1]
+        r = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address={address}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA")
+    return r
