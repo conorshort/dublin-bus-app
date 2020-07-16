@@ -76,6 +76,7 @@ $('form').submit(function(e){
     var dateTime = document.querySelector('input[type="datetime-local"]').value;
 
     var dt = new Date(Date.parse(dateTime));
+
     dt.setMinutes(0);
     var unix = dt.getTime()/1000
 
@@ -194,7 +195,6 @@ function renderResultJourneySteps(steps) {
 
             if (stops) {
                 $.each(stops, function( index, value ) {
-                    console.log(value);
                     content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
                 });
             }
