@@ -38,6 +38,17 @@ function showStops(){
     });
 }
 
+function moveMapToEnteredAddress(address){
+    $.getJSON(`http://127.0.0.1:8000/longlatsearch/${address}`, function(data){
+        obj = JSON.parse(data)
+        if(obj.errorcode == "0") {
+            lonlat = obj.results[0].geometry.location
+        }
+
+
+    });
+}
+
 function showArrivingBusesOnSideBar(stopid){
 
     //get realtime data
