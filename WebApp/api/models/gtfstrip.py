@@ -121,6 +121,17 @@ class GTFSTripManager(GTFSManager):
         trip = GTFSTrip.objects.filter(shape_id=shape_id).first()
         return trip.gtfsstoptime_set.all()
 
+
+    def get_all_routes(self):
+        today = datetime.datetime.today()
+        trips = GTFSTrip.objects.filter(
+            calendar__start_date__lte=today,
+            calendar__end_date__gte=today).values(route_name=F("route__route_name"),
+                                                 operator=F("route__agency__agency_name")).distinct()
+        return trips
+
+
+
 class GTFSTrip(AbstractGTFS):
     route = models.ForeignKey(GTFSRoute, on_delete=models.CASCADE)
     calendar = models.ForeignKey(GTFSCalendar, on_delete=models.CASCADE)
