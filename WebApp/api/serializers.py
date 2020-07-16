@@ -11,7 +11,8 @@ class SmartDublinBusStopSerializer(serializers.ModelSerializer):
         'latitude',
         'longitude',
         'lastupdated',
-        'routes')
+        'routes',
+        'localname')
 
 
 class GTFSRouteSerializer(serializers.ModelSerializer):
