@@ -51,17 +51,36 @@ $(document).ready(function () {
 
         // Get the routenames from the data
         let routes = [];
+        let operators = []
         data.forEach(route => {
-            routes.push(route.route_name);
+            routes.push([route.route_name, route.operator]);
+            if (operators.indexOf(route.operator) === -1){
+                operators.push(route.operator)
+            }
         });
-
+        
         // Sort them nicely
-        routes.sort(alphanumSort);
+        routes.sort((a,b) => {
+            return alphanumSort(a[0], b[0]);
+        });
+        let opFilter = $("#operator-filter");
+        opFilter.html("");
+
+        operators.sort();
+        console.log(operators)
+        operators.forEach((op, idx) => {
+                opFilter.append(`<div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox${idx}" value="option${idx}">
+                        <label class="form-check-label" for="inlineCheckbox${idx}">${op}</label>
+                    </div>`);
+            });
+
+
 
         // Add the routes to the list
         let content = '';
         routes.forEach(route => {
-            content += renderRouteListItem(route);
+            content += renderRouteListItem(route[0], route[1]);
         });
 
         // Display the routes
@@ -528,11 +547,11 @@ function filterRouteList() {
 
 
 // create and return list-group-item for route
-function renderRouteListItem(route) {
+function renderRouteListItem(route, operator) {
     const content = `
         <li class="list-group-item route-item" id="route-${route}">
             <ul>
-                <li class="row"><b class="col-6">${route}</b><span class="col-6">Dublin Bus</span></li>
+                <li class="row"><b class="col-6">${route}</b><span class="col-6">${operator}</span></li>
             </ul>
         </li>`;
     return content;

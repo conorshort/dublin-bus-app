@@ -13,26 +13,36 @@
                     <input class="form-control" id="route-filter" type="search" placeholder="Find a route"
                         aria-label="Search">
                 </div>
-                <div class="active-cyan-4 mb-4">
-                    <input class="form-control" id="route-filter" type="search" placeholder="Filter by operator" aria-label="Search">
-                </div>
+
+                <!-- <div class="active-cyan-4 mb-4" id="operator-filter">
+                </div> -->
+
                 <ul class="list-group list-group-flush" id="routes-list">
                 </ul>
             </div>
 
             <div class="col p-0" id="route-stop-div">
-                <h6 class="btn btn-outline-secondary" id="back-to-routes">
-                    Back
-                </h6>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-outline-secondary active">
-                        <input type="radio" name="options" id="inbound-radio" data-inbound="1" autocomplete="off" checked> Inbound
-                    </label>
-                    <label class="btn btn-outline-secondary">
-                        <input type="radio" name="options" id="outbound-radio" data-inbound="0" autocomplete="off"> Outbound
-                    </label>
+                <div class="row">
+                    <h6 class="btn btn-outline-secondary" id="back-to-routes">
+                        < Back </h6>
                 </div>
-                <h3 id="route-stops-title"></h3>
+                <div class="row">
+                    <h2 class="col-4" id="route-stops-title"></h2>
+                    <div class="col-8">
+                        <div class="btn-group btn-group-toggle direction-buttons" data-toggle="buttons">
+                            <label class="btn btn-outline-warning ">
+                                <input type="radio" name="options" id="inbound-radio" data-inbound="1"
+                                    autocomplete="off" checked>
+                                Inbound
+                            </label>
+                            <label class="btn btn-outline-warning">
+                                <input type="radio" name="options" id="outbound-radio" data-inbound="0"
+                                    autocomplete="off">
+                                Outbound
+                            </label>
+                        </div>
+                    </div>
+                </div>
                 <div class="accordion" id="variations-accordion">
                 </div>
             </div>
