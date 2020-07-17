@@ -4,6 +4,12 @@ $(document).ready(function () {
     stopsLayer.clearLayers();
     journeyLayer.clearLayers();
 
+    //init datetime picker
+    document.getElementsByClassName("datetimeInput").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+    });　
+
     showSearchJourneyDiv();
     initAutoComplete();
 });
@@ -73,7 +79,7 @@ $('form').submit(function(e){
 
     var origin = document.forms["journeyForm"]["f_from_stop"].value;
     var destination = document.forms["journeyForm"]["f_to_stop"].value;
-    var dateTime = document.querySelector('input[type="datetime-local"]').value;
+    var dateTime =document.querySelector(".datetimeInput").value;
 
     var dt = new Date(Date.parse(dateTime));
      //set departure time mins to 0,
