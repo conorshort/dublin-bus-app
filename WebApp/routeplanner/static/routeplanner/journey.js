@@ -198,12 +198,11 @@ function renderResultJourneySteps(steps) {
             var stops = step.transit_details.stops;
             
             if (stops) {
+                //show number of stops
+                content += "<p>Stops: <b>" + stops.length + "</b></p>";
                 $.each(stops, function( index, value ) {
                     content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
                 });
-
-                //show number of stops
-                content += "<p>Stops: <b>" + stops.length + "</b></p>";
             }
 
 
