@@ -1,3 +1,5 @@
+const RESP_WINDOW_SIZE = 768
+
 // Code in this block will be run one the page is loaded in the browser
 $(document).ready(function () {
 
@@ -97,7 +99,47 @@ function initMap(){
 }
 
 
+var MapUIControl = (function () {
 
+    return {
+        hidemap: function () {
+            if ($(window).width() < RESP_WINDOW_SIZE) {
+                $("#map").animate({ height: "0px" }, 500, () => {
+                    $("#map").hide();
+                    $("#mobile-show-content").hide();
+                });
+            }
+        },
+
+        halfscreen: function () {
+            if ($(window).width() < RESP_WINDOW_SIZE) {
+                $(".sidebar_header").hide();
+                $("#mobile-show-content").hide();
+                $('#sidebar').fadeIn(10);
+                $("#map").show()
+                    .animate({ height: "125px" }, 500, () => map.invalidateSize(false));
+            }
+        },
+
+        fullscreen: function () {
+            if ($(window).width() < RESP_WINDOW_SIZE) {
+                $(".sidebar_header").hide();
+
+                var newHeight = $(window).height() - 80 - 60 - 50;
+                $('#sidebar').fadeOut(10);
+                $("#mobile-show-content").show();
+                $("#map").show()
+                    .animate({ height: newHeight }, 500, () => map.invalidateSize(false));
+            }
+        },
+        reset: function () {
+            $("#map, content").removeAttr('style');
+            $("#mobile-show-content").show();
+            map.invalidateSize(false);
+        },
+
+    }
+})()
 
 
 
@@ -105,15 +147,24 @@ function initMap(){
 // 
 $(window).resize(function () {
     // Code in this block will run when the window
-    // is resized to greater than 955px
-    if ($(window).width() > 955) {
+    // is resized to greater than 768px
+    if ($(window).width() > RESP_WINDOW_SIZE) {
 
         // When hiding and showing elements with JQuery, a style tag is inserted into
         // the HTML element itself. The contents of this style tag then overwrite the css,
         // meaning the media queries no longer work. This line resets the "display" so
         // that it falls back to the css, allowing the media queries to work
-        $("#sidebar, #map, #resp-map-menu, #resp-sidebar-menu").css('display', '')
+        $("#sidebar, #map, #resp-map-menu, #resp-sidebar-menu").css('display', '');
+        MapUIControl.reset();
+
     }
+// if ($(window).width() <= 768) {
+//     $("#map").removeClass("col")
+//         .addClass("col-12");
+// }
+
+
+
 });
 
 
@@ -132,3 +183,8 @@ function loadSideBarContent(navId){
     $(".bottom_nav_item, .nav_item").removeClass("nav-active");
     $("#bottom-" + navId + ", #" + navId).addClass("nav-active");
 }
+
+$(document).on("click.mapUI", "#map", MapUIControl.fullscreen)
+$(document).on("click.mapUI", "#mobile-show-content", MapUIControl.halfscreen)
+
+

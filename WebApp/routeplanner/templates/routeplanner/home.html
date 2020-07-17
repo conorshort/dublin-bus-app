@@ -20,9 +20,14 @@
             Leap Card
         </div></a>
     </div>
-    <div id="sidebar"></div>
-    <div class="col" id="map"></div>
+    <div class="col-12 col-md order-md-2" id="map"></div>
+    <div id="sidebar" class="col-12 col-md order-md-1"></div>
+    <div class="col-12 order-md-3" id="mobile-show-content">
+        <img src="./static/img/up-arrow-yellow.png" class="mx-auto d-block" id="show-content-arrow" alt="up-arrow">
+    </div>
 </div>
+
+
 <div class="container" id="bottom-navibar">
     <div class="row" id="resp-sidebar-menu">
         <div class="bottom_nav_item col" id="bottom-journey"><img src="./static/img/journey.png" alt="nav_item_journey"
@@ -33,10 +38,6 @@
                 class="nav_img"> Routes</div>
         <div class="bottom_nav_item col" id="bottom-leapcard"> <img src="./static/img/leapcard.png"
                 alt="nav_item_leapcard" class="nav_img">Leap Card</div>
-        <div class="bottom_nav_item col" id="bottom-showmap"> Show Map</div>
-    </div>
-    <div class="row" id="resp-map-menu">
-        <div class="bottom_nav_item col" id="bottom-hidemap"> Hide Map</div>
     </div>
 </div>
 
@@ -47,9 +48,9 @@
 {% block js %}
 <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
     integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
-    crossorigin=""></script>  
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA&libraries=places"
-async defer></script>
+    crossorigin=""></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA&libraries=places" async
+    defer></script>
 <script src="{% static 'routeplanner/routes.js' %}" id="script"></script>
-<script src="{% static 'routeplanner/home.js' %}"></script> 
+<script src="{% static 'routeplanner/home.js' %}"></script>
 {% endblock %}
