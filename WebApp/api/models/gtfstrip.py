@@ -53,7 +53,7 @@ class GTFSTripManager(GTFSManager):
                 route__route_name=route_name,
                 calendar__start_date__lte=today,
                 calendar__end_date__gte=today).values("shape_id").distinct().values_list('shape_id', flat=True)
-            print(shape_id_queryset)
+            # print(shape_id_queryset)
         stop_query_set = []
         stops_as_lists = []
 
@@ -89,7 +89,7 @@ class GTFSTripManager(GTFSManager):
 
                 # Get all stops for this shape
                 stops = self.stops_on_route(shape)
-                print(stops)
+                # print(stops)
                 # Get the stops sequence number for origin and desitination stops
                 origin_seq = stops.filter(
                     stop_id=origin_id).values("stop_sequence")
