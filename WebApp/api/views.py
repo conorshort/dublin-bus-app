@@ -265,11 +265,15 @@ def direction(request):
 
         steps = newData['routes'][0]['legs'][0]['steps']
 
+        totalDuration = 0
+
         # forloop steps from google direction API response
         for i in range(len(steps)):
 
             # check if the step travel_mode is TRANSIT
             if steps[i]['travel_mode'] != 'TRANSIT':
+                duration = int(steps[i]['duration']['text'].split()[0])
+                totalDuration += duration
                 continue
             
             # check if the line model exist 
@@ -290,10 +294,10 @@ def direction(request):
             # get stops between origin and destination stops
             headsign = steps[i]['transit_details']['headsign']
             stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)[0]
-            print('depStopId', depStopId)
-            print('arrStopId', arrStopId)
-            print('lineId', lineId)
-            print('stops', stops)
+            print('depStopId:', depStopId)
+            print('arrStopId:', arrStopId)
+            print('lineId:', lineId)
+            print('stops:', stops)
 
 
             # store stops info in data json for response 
@@ -310,9 +314,13 @@ def direction(request):
             lineId = steps[i]['transit_details']['line']['short_name']
             journeyTime = predict_journey_time(lineId, segments, int(departureUnix))
 
+            totalDuration += int(journeyTime) // 60
+
             # update duration value in newData to our journey prediction
             newData['routes'][0]['legs'][0]['steps'][i]['duration']['text'] = str(int(journeyTime) // 60) + ' mins'
 
+        newData['routes'][0]['legs'][0]['duration']['text'] = str(totalDuration) + ' mins'
+        print("=====google prediction journey time:", data['routes'][0]['legs'][0]['duration']['text'], "========")
 
         return JsonResponse(newData, safe=False)
 
