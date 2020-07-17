@@ -248,6 +248,10 @@ def direction(request):
     
     # extracting data in json format 
     data = r.json() 
+    if data['status'] != 'OK':
+        return JsonResponse(data)
+
+
 
     # check if the specific route model exist
     # if yes: predict the jourent time
@@ -261,7 +265,7 @@ def direction(request):
 
         steps = newData['routes'][0]['legs'][0]['steps']
 
-        # get/store stops in json data if the transit agency is Dublin Bus or Go-Ahead
+        # forloop steps from google direction API response
         for i in range(len(steps)):
 
             # check if the step travel_mode is TRANSIT
@@ -296,16 +300,17 @@ def direction(request):
             newData['routes'][0]['legs'][0]['steps'][i]['transit_details']['stops'] = stops
 
 
-            # get all the segmentid
+            # get all the segmentid by stopsid
             segments = []
             for index in range(len(stops)-1):
-    
                 segments.append(stops[index]['plate_code'] + '-' + stops[index+1]['plate_code'])
+            
             
             # predict traveling time for all segmentid
             lineId = steps[i]['transit_details']['line']['short_name']
-        
             journeyTime = predict_journey_time(lineId, segments, int(departureUnix))
+
+            # update duration value in newData to our journey prediction
             newData['routes'][0]['legs'][0]['steps'][i]['duration']['text'] = str(int(journeyTime) // 60) + ' mins'
 
 
@@ -314,10 +319,7 @@ def direction(request):
     except Exception as e:
         print("type error: " + str(e))
         return JsonResponse(data, safe=False)
-    
-    return JsonResponse(data, safe=False)
-
-
+   
         
         
     

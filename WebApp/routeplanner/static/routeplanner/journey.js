@@ -84,7 +84,7 @@ $('form').submit(function(e){
     //get direction from api /api/direction
     $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}&departureUnix=${unix}`
     , function(data) {
-
+        console.log(data)
         if (data.status == "OK"){
             try {
                 var route = data.routes[0];
@@ -131,7 +131,7 @@ $('form').submit(function(e){
                 alert(error);
             }
         } else {
-            alert("Error occur, please try again");
+            alert("No journey planning result, please try input other locations.");
         }
         
     });
