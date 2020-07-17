@@ -96,21 +96,19 @@ def predict_journey_time_by_df(model, test_dataframe):
 def get_models_name():
 
     files = []
-    for (dirpath, dirnames, filenames) in walk('/Users/wenghsin-ping/Desktop/dublin-bus-app/WebApp/pickles/pickles'):
+    for (dirpath, dirnames, filenames) in walk('WebApp/pickles/pickles'):
         files.extend(filenames)
         break
     return files
 
-
-
 def get_route_model(lineId, hasWeather = False):
 
     # path for model pickle without weather
-    modelFile = f'//Users/wenghsin-ping/Desktop/dublin-bus-app/WebApp/pickles/pickles/route_{lineId}.pkl'
+    modelFile = f'WebApp/pickles/pickles/route_{lineId}.pkl'
     
     if hasWeather == False:
         # path for model pickle
-        modelFile = f'//Users/wenghsin-ping/Desktop/dublin-bus-app/WebApp/pickles/pickles_without_weather/route_{lineId}_without_weather.pkl'
+        modelFile = f'WebApp/pickles/pickles_without_weather/route_{lineId}_without_weather.pkl'
 
     
     # Load the Model back from file
