@@ -131,17 +131,17 @@ $('form').submit(function(e){
 
                 showResultJourneyDiv();
 
-                //hide leader after showing all the journey result
-                $("#loader").hide();
-
             } catch (error) {
                 alert(error);
             }
         } else {
             alert("No journey planning result, please try input other locations.");
         }
-        
     });
+
+    //hide leader after showing all the journey result
+    $("#loader").hide();
+
 });
 
 $('#edit_journey_input').click(function () {
@@ -195,12 +195,14 @@ function renderResultJourneySteps(steps) {
         content += "<p>Distance: <b>" + step.distance.text + "</b></p>";
         // if the travel_mode is TRANSIT, add bus icon and bus route number to content
         if (step.travel_mode == "TRANSIT"){
+            
+            //show number of stops
+            content += "<p> <b>" + step.transit_details.num_stops + " Stops</b></p>";
 
             var stops = step.transit_details.stops;
-            
+
             if (stops) {
-                //show number of stops
-                content += "<p>Stops: <b>" + stops.length + "</b></p>";
+                
                 $.each(stops, function( index, value ) {
                     content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
                 });
