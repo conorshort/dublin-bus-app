@@ -43,6 +43,11 @@
                     {% csrf_token %}
                     <input type="submit" class="btn btn-primary float-right"></input>
                 </form>
+
+                <div class="spinner-grow text-secondary" style="margin:auto;" id="journey-loader" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+
             </div>
 
             <!-- Journey Planner result  -->

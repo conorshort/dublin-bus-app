@@ -1,5 +1,8 @@
 $(document).ready(function () {
 
+    //hide loader
+    $("#journey-loader").hide();
+
     //clear all markers and polyline on the map
     stopsLayer.clearLayers();
     journeyLayer.clearLayers();
@@ -65,6 +68,10 @@ function initAutoComplete(){
 
 // submit button click event 
 $('form').submit(function(e){
+
+    //show loader when click submit btn
+    $("#journey-loader").show();
+
     // Stop form refreshing page on submit
     e.preventDefault();
 
@@ -73,7 +80,7 @@ $('form').submit(function(e){
     var dateTime =document.querySelector(".datetimeInput").value;
 
     var dt = new Date(Date.parse(dateTime));
-     //set departure time mins to 0,
+    //set departure time mins to 0,
     //if departure time given is 
     dt.setMinutes(0);
     var unix = dt.getTime()/1000;
@@ -123,6 +130,9 @@ $('form').submit(function(e){
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
 
                 showResultJourneyDiv();
+
+                //hide leader after showing all the journey result
+                $("#loader").hide();
 
             } catch (error) {
                 alert(error);

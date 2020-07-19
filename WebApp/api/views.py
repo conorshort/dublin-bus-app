@@ -290,10 +290,10 @@ def direction(request):
             # get stops between origin and destination stops
             headsign = steps[i]['transit_details']['headsign']
             stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)[0]
-            print('depStopId', depStopId)
-            print('arrStopId', arrStopId)
-            print('lineId', lineId)
-            print('stops', stops)
+            # print('depStopId', depStopId)
+            # print('arrStopId', arrStopId)
+            # print('lineId', lineId)
+            # print('stops', stops)
 
 
             # store stops info in data json for response 
