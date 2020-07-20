@@ -7,6 +7,7 @@ $(document).ready(function() {
     showStops();
 });
 
+
 //event will be called when map bounds change
 map.on('moveend', function(e) {
     var mapCentra = map.getCenter();
@@ -38,16 +39,33 @@ function showStops(){
     });
 }
 
+
+
+
 function moveMapToEnteredAddress(address){
+    console.log(address)
     $.getJSON(`http://127.0.0.1:8000/longlatsearch/${address}`, function(data){
         obj = JSON.parse(data)
-        if(obj.errorcode == "0") {
-            lonlat = obj.results[0].geometry.location
-        }
-
-
+        latlng = obj.results[0].geometry.location
+        //console.log(obj.results[0])
+        map.panTo(new L.LatLng(latlng.lat, latlng.lng))
+        //console.log("Panning to New Location, supplied to fx: " + address + "Recieved from JSON: " + obj.results[0].geometry.location)
     });
 }
+
+//Click function finding stops by Area
+$('.btn-outline-secondary').click(function() {
+    // declare variables
+    var input = input = $('#stops-loc');
+    moveMapToEnteredAddress(input);
+    //console.log(input)
+    //console.log("Made it to on-click input it:" + input)
+});
+
+
+
+
+
 
 function showArrivingBusesOnSideBar(stopid){
 
@@ -58,7 +76,6 @@ function showArrivingBusesOnSideBar(stopid){
         obj = JSON.parse(data)
         if (obj.errorcode == "0") {
             results = obj.results;
-            
             content = '';
             $.each(results, function (i, bus) {
                 content += renderRealtimeListItem(bus);
@@ -72,7 +89,7 @@ function showArrivingBusesOnSideBar(stopid){
 // create and return list-group-item for stop
 // stop_dist added as item
 function renderListItem(stop, stop_dist) {
-    // need to do some jiggery pokery to the stop routes to return the info without brackets or quotations
+    // need to do some jiggery pokery to the stop-routes to return the info without brackets or quotations
     var route_list = stop.routes;
     route_list = route_list.slice(2,-2);
     route_list = route_list.split("', '");
@@ -81,7 +98,6 @@ function renderListItem(stop, stop_dist) {
     for (var i = 0; i < route_list.length; i++) {
         route_buttons += '<button type="button" class="btn btn-info mr-1">' + route_list[i] + "</button>";
       }
-    console.log(route_buttons)
     const content = `
     <li class="list-group-item stop" id="station-${stop.stopid}">
         <ul>
@@ -123,6 +139,7 @@ function markStopsOnMap(stop) {
 $('.list-group-flush').on('click', '.stop', function(e) {
         // Get the name of tab on the navbar that was clicked
         var id = $(this).attr('id').replace("station-", "");;
+        console.log("Working NOW>>>>>>>>>>>>>>>>>>>>>?")
         showArrivingBusesOnSideBar(id);
         $("#stopsListGroup").empty();
 });
