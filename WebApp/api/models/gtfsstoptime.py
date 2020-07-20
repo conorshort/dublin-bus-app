@@ -31,6 +31,9 @@ class GTFSStopTime(AbstractGTFS):
 
         stop_time_dict["stop"] = GTFSStop(stop_id=stop_time_dict["stop_id"])
 
+
+        stop_time_dict["stop_headsign"] = str(stop_time_dict["stop_headsign"]).strip() 
+
         # Convery dept and arr time to secs after midnight
         stop_time_dict["arrival_time"] = self.__time_to_secs(
             stop_time_dict["arrival_time"])

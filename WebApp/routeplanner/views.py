@@ -1,15 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-
+from django.views.decorators.csrf import csrf_exempt,csrf_protect
 from pprint import pprint
 from pyleapcard import *
-
+import re
 from django.http import HttpResponse, JsonResponse
 import requests
-
-
+from dublin_bus.config import GOOGLE_DIRECTION_KEY
 from .forms import leapCardForm
-
 
 def home(request):
     #api key and url for weather data
@@ -27,91 +25,102 @@ def home(request):
         'icon' : city_weather['weather'][0]['icon']
     }}
 
-    
     return render(request, 'routeplanner/home.html', context)
 
 
-
-
-
-def journey(request):
+def journey(request, template_name="routeplanner/home.html"):
+    
     return render(request, 'routeplanner/journey.html')
 
+    # # If this is a POST request then process the Form data
+    # if request.method == 'POST':
+    #     # Create a form instance and populate it with data from the request (binding):
+    #     form = JourneyPlannerForm(request.POST)
 
+    #     # Check if the form is valid:
+    #     if form.is_valid():
 
+    #         print("is_valid")
+
+    #         from_location = form.cleaned_data['from_location'] 
+    #         to_location = form.cleaned_data['to_location']
+    #         date = form.cleaned_data['date'] 
+    #         time = form.cleaned_data['time'] 
+    #         # api-endpoint 
+    #         URL = "https://maps.googleapis.com/maps/api/directions/json"
+            
+            
+    #         # defining a params dict for the parameters to be sent to the API 
+    #         PARAMS = {'origin' : from_location,
+    #                 'destination' : to_location,
+    #                 'key' : GOOGLE_DIRECTION_KEY,
+    #                 'transit_mode' : 'bus',
+    #                 'mode' : 'transit'} 
+            
+    #         # sending get request and saving the response as response object 
+    #         r = requests.get(url = URL, params = PARAMS) 
+            
+    #         # extracting data in json format 
+    #         data = r.json() 
+    #         # return render(request, 'routeplanner/journey.html',{'form': form,'result':data})
+    #         print(data)
+    #     # Create a response
+    #     response = TemplateResponse(request, template_name, {'form': form,'result':'result'})
+    #     return response
+    #     # form = JourneyPlannerForm()
+    #     # return render(request, 'routeplanner/journey.html', {'form': form})
+
+    # else: 
+    
+        # form = JourneyPlannerForm()
+        # return render(request, 'routeplanner/journey.html', {'form': form})
+    
 
 def stops(request):
     return render(request, 'routeplanner/stops.html')
 
-
-
 def routes(request):
     return render(request, 'routeplanner/routes.html')
 
-
-
-
-
-
 def leapcard(request):
-
-    if request.method == 'POST':
-        form = leapCardForm(request.POST)
-        if form.is_valid():
-            #      leap = {
-            #     'leapInfo': leap_card_content
-            # }   
-            username = form.cleaned_data['username'] 
-            password = form.cleaned_data['password']
-
-            login_url="https://www.leapcard.ie/en/login.aspx"
-            session = LeapSession()
-
-            form = leapCardForm() 
-            
-            try:
-                login_ok = session.try_login(username, password)
-                overview = session.get_card_overview()
-
-                card_info = {"card":vars(overview)['card_label'],
-                            "balance":vars(overview)['balance']}
-
-                return render(request, 'routeplanner/leapcard.html',{'form': form,'result':card_info})
-                
-            except Exception as e:
-                print("x")
-                print("---")
-                print("Error: Unable to retrieve Leap Card state.")
-                print("---")
-                print("leapcard.ie | href="+login_url)
-                error="Error: Unable to retrieve Leap Card state."
-                return render(request, 'routeplanner/leapcard.html',{'form': form,'Result':error})
-                    
+    #simply return the leapcard form and pass the data 
     form = leapCardForm()
-
     return render(request, 'routeplanner/leapcard.html',{'form': form})
 
+@csrf_exempt
+def leapinfo(request):
+    if request.method == 'POST':
+        # after getting username nad passrod from the form convert it to a string
+        userinfo=str(request.body)
 
-    
-leap_card_content = [
-    {
-        'a': 'Error: Unable to retrieve Leap Card state.',
-        'b': 'leapcard.ie | href="https://www.leapcard.ie/en/login.aspx"',
+        #use regualr expression to get username and password
+        pre_username=re.search(".+?(?=&password=)",userinfo).group(0)
+        username=re.search("(?<=username=).[^']*",pre_username).group(0)
+        password=re.search("(?<=password=).[^']*",userinfo).group(0)
 
-    },
-    # {
-    #     'route': '41',
-    #     'from': 'Lwr. Abbey St',
-    #     'to': 'Swords Manor',
-    #     'time': '15:55'
-    # }
-]
+        #pass the username and password to leapcard api
+        session = LeapSession()
 
+        try:
+            #if the info is valid get the card overciew
+            login_ok = session.try_login(username, password)
+            overview = session.get_card_overview()
 
+            #only extract card_label and balance
+            card_info = {"Card ":vars(overview)['card_label'],
+            "Balance ":vars(overview)['balance']}
 
-
-
+            #return them to the frontend
+            return JsonResponse(card_info, safe=False)
+        
+        except Exception as e:
+            #return error message if username and password is invalid
+            error="Error: Unable to retrieve Leap Card state."
+            return JsonResponse(error, safe=False)
+                        
 
 def realtimeInfo(request, stop_id):
     r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
     return JsonResponse(r.text, safe=False)
+
+

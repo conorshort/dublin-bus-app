@@ -1,7 +1,9 @@
 
 $(document).ready(function() {
-    //clear all the markers in the layer
+
+    // //clear all the markers in the layer
     stopsLayer.clearLayers();
+    journeyLayer.clearLayers();
     showStops();
 });
 
@@ -17,12 +19,10 @@ map.on('moveend', function(e) {
     $("#stopsListGroup").empty();
     showStops();
  });
-
-
  
 function showStops(){
 
-    $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=1`, function(data) {
+    $.getJSON(`/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=1`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
             content += renderListItem(stop);
@@ -35,7 +35,7 @@ function showStops(){
 function showArrivingBusesOnSideBar(stopid){
 
     //get realtime data
-    $.getJSON(`http://127.0.0.1:8000/realtimeInfo/${stopid}`, function(data) {
+    $.getJSON(`/api/realtimeInfo/${stopid}`, function(data) {
 
         // parse response data to json 
         obj = JSON.parse(data)
