@@ -68,19 +68,25 @@ function initAutoComplete(){
 
 // submit button click event 
 $('form').submit(function(e){
-
     // Stop form refreshing page on submit
     e.preventDefault();
 
     var origin = document.forms["journeyForm"]["f_from_stop"].value;
     var destination = document.forms["journeyForm"]["f_to_stop"].value;
+    var dateTime = document.querySelector('input[type="datetime-local"]').value;
+
+    var dt = new Date(Date.parse(dateTime));
+     //set departure time mins to 0,
+    //if departure time given is 
+    dt.setMinutes(0);
+    var unix = dt.getTime()/1000;
 
     //get direction from api /api/direction
-    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}`, function(data) {
-
+    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}&departureUnix=${unix}`
+    , function(data) {
+        console.log(data)
         if (data.status == "OK"){
             try {
-                console.log(data);
                 var route = data.routes[0];
                 var leg = route.legs[0];
                 var arrive_time =  leg.arrival_time.text;
@@ -94,20 +100,18 @@ $('form').submit(function(e){
                                                                 + "&nbsp;&nbsp;&nbsp;&nbsp;" 
                                                                 + "<b>" + transferCount + "</b>" 
                                                                 + "  transfers"});
-
-
+                                        
                 // dictionary to store all the elements which are going to display on frontend
                 // key: the element id or class name
                 // value: content to append to the element 
                 var obj = {
                     "#journey_result_from" : origin,
                     "#journey_result_to" : destination,
-                    "#journey_result_datetime" : "20:00",
+                    "#journey_result_datetime" : dateTime,
                     "#journey_result_travel_time" : departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time,
                     "#journey_result_steps" : renderSteps,
                     "#journey_result_detail" : detail
                 };
-
                 displayElements(obj);
 
                 //get encoding journey polyline
@@ -127,7 +131,7 @@ $('form').submit(function(e){
                 alert(error);
             }
         } else {
-            alert("Error occur, please try again");
+            alert("No journey planning result, please try input other locations.");
         }
         
     });
@@ -149,6 +153,7 @@ function displayElements(obj){
 
 // render result journey steps
 function renderResultJourneySteps(steps) {
+    //  TODO: handling when no bus journey, steps will become 0
 
     content = '';
     $.each( steps, function( index, step ) {
@@ -181,12 +186,32 @@ function renderResultJourneySteps(steps) {
             <div id="collapse${index}" class="collapse" aria-labelledby="heading${index}" data-parent="#journey_result_steps">
             <div class="card-body">`;
         content += "<p>Distance: <b>" + step.distance.text + "</b></p>";
-        content += "<p>" + step.html_instructions + "</p>";
+        // if the travel_mode is TRANSIT, add bus icon and bus route number to content
+        if (step.travel_mode == "TRANSIT"){
+
+            var stops = step.transit_details.stops;
+            
+            if (stops) {
+                $.each(stops, function( index, value ) {
+                    content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
+                });
+
+                //show number of stops
+                content += "<p>Stops: <b>" + stops.length + "</b></p>";
+            }
+
+
+        // if the travel_mode is WALKING, add walk icon to content
+        } else if (step.travel_mode == "WALKING") {
+            content += "<p>" + step.html_instructions + "</p>";
+        }
         content += '</div></div></div>';
       
     });
     return content
 }
+
+
 
 
 function renderContent(obj){ 
