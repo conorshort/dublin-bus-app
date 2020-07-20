@@ -8,4 +8,5 @@ urlpatterns = [
     path('routes', views.routes, name="routes"),
     path('leapcard', views.leapcard, name="leapcard"),
     path('realtimeInfo/<str:stop_id>', views.realtimeInfo, name="realtimeInfo"),
+    path('longlatsearch/<str:address>', views.longlatsearch, name='longlatsearch')
 ]
