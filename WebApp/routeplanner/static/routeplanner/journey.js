@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+    twttr.widgets.load()
     //clear all markers and polyline on the map
     stopsLayer.clearLayers();
     journeyLayer.clearLayers();

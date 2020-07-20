@@ -7,6 +7,7 @@ function routes() {
     // Will hold the route currently being displayed in the side bar
     var currentRoute = undefined;
 
+
     // Wait for the document to finish loading
     $(document).ready(function () {
         $(document).off("click.routes")
@@ -22,7 +23,7 @@ function routes() {
         $(document).on("click.routes", "#back-to-routes", function () {
             removeRouteStopsFromMap();
             toggleRouteDisplay(currentRoute)
-            MapUIControl.hidemap()
+            MapUIControl.hidemap();
             $("#route-stop-div").fadeOut(10);
             $("#variations-accordion").html("");
             $("#routes-div").fadeIn(10);
@@ -44,8 +45,9 @@ function routes() {
 
 
 
-        $(document).on("click.routes", '.nav_item, bottom_nav_item', function () {
-            MapUIControl.reset();
+        $(document).on("click.routes", '.bottom_nav_item', function () {
+            // MapUIControl.reset();
+            MapUIControl.hidemap();
             removeRouteStopsFromMap();
             for (const route in routeLayerObj) {
                 removeRouteFromMap(route);
@@ -363,9 +365,8 @@ function routes() {
 
                 let routesLayer = L.featureGroup(routes).addTo(map);
 
-                let bounds = routesLayer.getBounds();
-
-                map.flyToBounds(bounds, { 'duration': 0.8 });
+                currentBounds = routesLayer.getBounds();
+                map.flyToBounds(currentBounds, { 'duration': 0.8 });
 
                 // routeLayerObj holds all routes currently on the map, allowing them
                 // to be easily deleted later
