@@ -3,7 +3,10 @@ from weather import getWeather
 import datetime
 import time
 import pickle
-from os import walk
+import os
+
+
+path = os.path.dirname(__file__)
 
 def predict_journey_time(lineId, segments, departure_unix):
     
@@ -75,7 +78,7 @@ def predict_journey_time_by_df(test_dataframe, lineId):
 def get_models_name():
 
     files = []
-    for (dirpath, dirnames, filenames) in walk('/Users/wenghsin-ping/Desktop/dublin-bus-app/WebApp/pickles'):
+    for (dirpath, dirnames, filenames) in os.walk(f'{path}/pickles'):
         files.extend(filenames)
         break
     return files
@@ -84,7 +87,7 @@ def get_models_name():
 
 def get_route_model(lineId):
     # path for model pickle
-    modelFile = f'//Users/wenghsin-ping/Desktop/dublin-bus-app/WebApp/pickles/route_{lineId}.pkl'
+    modelFile = f'{path}/pickles/route_{lineId}.pkl'
     
     # Load the Model back from file
     with open(modelFile, 'rb') as file:  
