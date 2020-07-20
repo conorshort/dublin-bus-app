@@ -241,6 +241,11 @@ def direction(request):
     destination = request.GET.get('destination')
     departureUnix = request.GET.get('departureUnix')
 
+    parameters = {'origin': origin,
+                    'destination': destination,
+                    'departureUnix': departureUnix}
+                    
+
     # check if 3 papameter all given
     # if yes, get journey plan for google direction API,
     # and predict the journey time for dublin bus transit
@@ -249,7 +254,7 @@ def direction(request):
     if not(origin and destination and departureUnix):
 
         # Log an error message
-        logger.error('Something went wrong!')
+        logger.error(f'Missing parameters. Given parameters {parameters}')
 
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)
@@ -270,6 +275,10 @@ def direction(request):
     # extracting data in json format 
     data = r.json() 
     if data['status'] != 'OK':
+
+        # Log an error message
+        logger.error(f'Google direction API status not OK. Given parameters {parameters}')
+
         return JsonResponse(data)
 
 
@@ -347,6 +356,10 @@ def direction(request):
 
     except Exception as e:
         print("type error: " + str(e))
+        
+        # Log an error message
+        logger.error(f'{str(e)}. Given parameters {parameters}')
+
         return JsonResponse(data, safe=False)
    
         
