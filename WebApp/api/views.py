@@ -16,6 +16,18 @@ import copy
 
 from prediction import predict_journey_time, get_models_name
 
+# import the logging library
+import logging
+ 
+# config logging
+logging.basicConfig(filename='WebApp/logs/debug.log',
+                            filemode='a',
+                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s [%(filename)s:%(lineno)s - %(funcName)10s()] %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S')
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SmartDublinBusStop.objects.all()
@@ -56,6 +68,12 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
 
         # If missing longitude and latitude value, return error message
         else:
+            # Log an error message
+            parameters = {'longitude': longitude,
+                        'latitude': latitude,
+                        'radius': radius}
+            logger.error(f'Missing parameters. Given parameters {parameters}')
+
             content = {'message': 'Longitude and latitude fields are required'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
@@ -230,6 +248,9 @@ def direction(request):
     # return a http 400 response with message
     if not(origin and destination and departureUnix):
 
+        # Log an error message
+        logger.error('Something went wrong!')
+
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)
         
@@ -294,10 +315,10 @@ def direction(request):
             # get stops between origin and destination stops
             headsign = steps[i]['transit_details']['headsign']
             stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)[0]
-            print('depStopId:', depStopId)
-            print('arrStopId:', arrStopId)
-            print('lineId:', lineId)
-            print('stops:', stops)
+            # print('depStopId:', depStopId)
+            # print('arrStopId:', arrStopId)
+            # print('lineId:', lineId)
+            # print('stops:', stops)
 
 
             # store stops info in data json for response 
