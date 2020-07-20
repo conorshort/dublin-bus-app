@@ -19,11 +19,6 @@ from prediction import predict_journey_time, get_models_name
 # import the logging library
 import logging
  
-# config logging
-logging.basicConfig(filename='WebApp/logs/debug.log',
-                            filemode='a',
-                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s [%(filename)s:%(lineno)s - %(funcName)10s()] %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S')
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
