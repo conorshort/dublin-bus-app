@@ -319,6 +319,20 @@ def direction(request):
             # get stops between origin and destination stops
             headsign = steps[i]['transit_details']['headsign']
             stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)[0]
+
+
+            # log error if return stops is empty
+            if len(stops) <= 0:
+                
+                params = {'depStopId': depStopId,
+                            'arrStopId': arrStopId,
+                            'lineId': lineId,
+                            'headsign': headsign}
+
+                # Log an error message
+                logger.error(f'return data Stops list is empty. Given parameters {params}')
+
+
             # print('depStopId:', depStopId)
             # print('arrStopId:', arrStopId)
             # print('lineId:', lineId)
