@@ -130,17 +130,20 @@ $('form').submit(function(e){
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
 
                 showResultJourneyDiv();
-
+                
             } catch (error) {
+                
                 alert(error);
             }
         } else {
             alert("No journey planning result, please try input other locations.");
         }
+
+        //hide loader
+        $("#journey-loader").hide();
     });
 
-    //hide leader after showing all the journey result
-    $("#loader").hide();
+    
 
 });
 
