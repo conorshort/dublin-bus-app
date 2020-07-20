@@ -11,6 +11,13 @@ $(document).ready(function () {
     document.getElementsByClassName("datetimeInput").flatpickr({
         enableTime: true,
         dateFormat: "Y-m-d H:i",
+        
+        //set datetime picker default value to current datetime
+        onReady: function (selectedDates, dateStr, instance) {
+            $('.datetimeInput').val(
+                instance.formatDate(new Date(), "Y-m-d H:i")
+            )
+        },
     });　
 
     showSearchJourneyDiv();
