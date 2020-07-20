@@ -107,16 +107,17 @@ def leapinfo(request):
             overview = session.get_card_overview()
 
             #only extract card_label and balance
-            card_info = {"Card ":vars(overview)['card_label'],
-            "Balance ":vars(overview)['balance']}
-
+            # card_info = {"Card ":vars(overview)['card_label'],
+            # "Balance ":vars(overview)['balance']}
+            resp="Card label: ",vars(overview)['card_label'],", "," balance: ",vars(overview)['balance']
             #return them to the frontend
-            return JsonResponse(card_info, safe=False)
-        
+            return HttpResponse(resp, content_type='application/json')
+
         except Exception as e:
             #return error message if username and password is invalid
-            error="Error: Unable to retrieve Leap Card state."
-            return JsonResponse(error, safe=False)
+            error="Error: Unable to retrieve Leap Card state"
+            return HttpResponse(error, content_type='application/json')
+            # return JsonResponse(error)
                         
 
 def realtimeInfo(request, stop_id):
