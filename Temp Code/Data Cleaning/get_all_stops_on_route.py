@@ -16,7 +16,7 @@ for stop in t["results"]:
             bac_present = True
             break
         else:
-            print("inc", bac_idx)
+            # print("inc", bac_idx)
             bac_present += 1
     else:
         continue
