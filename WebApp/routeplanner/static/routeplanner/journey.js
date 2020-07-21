@@ -114,9 +114,20 @@ $('form').submit(function(e){
                 };
                 displayElements(obj);
 
-                
+                var renderStops = '';
 
                 $.each( leg.steps, function( index, step ) {
+                    console.log('step:'+step);
+                    
+                    if (step.travel_mode == 'TRANSIT'){
+                        time = step.transit_details.departure_time.text;
+                        name = step.transit_details.departure_stop.name;
+                        console.log('time:'+time);
+                        console.log('name:'+name);
+                        var renderStep = renderTransitStop(time, name, coordinates);
+                        console.log('renderStep:'+renderStep);
+                        renderStops += renderStep;
+                    }
 
                     //get encoding journey polyline
                     var encodingPolyline = step.polyline.points;
@@ -129,6 +140,8 @@ $('form').submit(function(e){
                     dropMarkerOnMap(step.end_location.lat, step.end_location.lng, '');
                   
                 });
+                displayElements({"#journey_result_steps" : renderStops});
+
 
                 //drop destination marker
                 dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
@@ -158,6 +171,17 @@ function displayElements(obj){
     $.each( obj, function( key, value ) {
         $(key).html(value);
     });
+}
+
+
+function renderTransitStop(timeline, name, coordinates){
+    content = '<div class="transit-stop row"> ';
+    content += `<div class="transit-timeline col-2"> ${timeline} </div>`
+    content += '<div class="transit-stop-circle col-1"></div> ';
+    content += `<h2 class="transit-stop-name col-9"> ${name}</h2>`;
+    content += '</div>'
+
+    return content;
 }
 
 
@@ -220,9 +244,6 @@ function renderResultJourneySteps(steps) {
     });
     return content
 }
-
-
-
 
 function renderContent(obj){ 
     content = '<p>';
