@@ -10,8 +10,10 @@ $(document).ready(function () {
         // Get the name of tab on the navbar that was clicked
         var nav_id = $(this).attr('id');
 
-        // Update sidebar content with appropriate html
+        // log nav btn click event to firebase 
+        analytics.logEvent('select_content', { name: nav_id});
 
+        // Update sidebar content with appropriate html
         loadSideBarContent(nav_id)
     });
 
