@@ -45,8 +45,10 @@ function showStops(){
 function moveMapToEnteredAddress(address){
     // console.log(address)
     // console.log("MAde it to movemap")
-    $.getJSON(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA`, function(data){
+        $.getJSON(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA`, function(data){
         console.log(data);
+        var latlng = data.results[0].geometry.location
+        map.panTo(new L.LatLng(latlng.lat, latlng.lng))
         //console.log("Panning to New Location, supplied to fx: " + address + "Recieved from JSON: " + obj.results[0].geometry.location)
     });
 }
@@ -58,19 +60,6 @@ $('form').submit(function(e){
     //pass value to the address finding function
     moveMapToEnteredAddress(area);
 });
-
-// //Click function finding stops by Area
-// $('.btn-outline-secondary').click(function() {
-//     // declare variables
-//     var input = input = $('#stops-loc');
-//     moveMapToEnteredAddress(input);
-//     //console.log(input)
-//     //console.log("Made it to on-click input it:" + input)
-// });
-
-
-
-
 
 
 function showArrivingBusesOnSideBar(stopid){

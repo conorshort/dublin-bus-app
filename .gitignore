@@ -143,11 +143,4 @@ config.py
 # gtfs files, some are too big for git
 dublin_bus_gtfs/
 go_ahead_gtfs/
-<<<<<<< HEAD
-
-#adding my csvs to gitignore
-dmod1.csv
-feat_df.csv
-=======
 historical/
->>>>>>> origin/dev
