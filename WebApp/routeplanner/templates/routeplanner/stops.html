@@ -12,8 +12,18 @@
         <div class="row">
             <div class="col p-0">
                 <div class="active-cyan-4 mb-4">
-                    <input class="form-control" id="stops-loc" type="text" placeholder="See Stops by Area" aria-label="Search">
-                    <button class="btn btn-outline-secondary">Go</button>
+                    <form id='stops-area' method="post">
+                        <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-primary float-right"></input>
+                    </form>
+                    <div id="infowindow-content-area">
+                        <img src="" width="16" height="16" id="place-icon">
+                        <span id="place-name"  class="title"></span><br>
+                        <span id="place-address"></span>
+                    </div>
+                    <!-- <input class="form-control" id="stops-loc" type="text" placeholder="See Stops by Area" aria-label="Search">
+                    <button class="btn btn-outline-secondary">Go</button> -->
                 </div>
 
                 

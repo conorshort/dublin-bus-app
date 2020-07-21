@@ -2,10 +2,8 @@
 
 
 $(document).ready(function() {
-
-    // //clear all the markers in the layer
+    //clear all the markers in the layer
     stopsLayer.clearLayers();
-    journeyLayer.clearLayers();
     showStops();
 });
 
@@ -27,7 +25,7 @@ map.on('moveend', function(e) {
  // Shows Stops and distances 
 function showStops(){
 
-    $.getJSON(`/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=1`, function(data) {
+    $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=1`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
             // Get distance from centre location to every stop in kilometers
@@ -45,24 +43,30 @@ function showStops(){
 
 
 function moveMapToEnteredAddress(address){
-    console.log(address)
-    $.getJSON(`http://127.0.0.1:8000/longlatsearch/${address}`, function(data){
-        obj = JSON.parse(data)
-        latlng = obj.results[0].geometry.location
-        //console.log(obj.results[0])
-        map.panTo(new L.LatLng(latlng.lat, latlng.lng))
+    // console.log(address)
+    // console.log("MAde it to movemap")
+    $.getJSON(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA`, function(data){
+        console.log(data);
         //console.log("Panning to New Location, supplied to fx: " + address + "Recieved from JSON: " + obj.results[0].geometry.location)
     });
 }
-
-//Click function finding stops by Area
-$('.btn-outline-secondary').click(function() {
-    // declare variables
-    var input = input = $('#stops-loc');
-    moveMapToEnteredAddress(input);
-    //console.log(input)
-    //console.log("Made it to on-click input it:" + input)
+$('form').submit(function(e){
+    // Stop form refreshing page on submit
+    e.preventDefault();
+    //get value entered by users
+    var area = document.forms["stops-area"]["stops_area"].value
+    //pass value to the address finding function
+    moveMapToEnteredAddress(area);
 });
+
+// //Click function finding stops by Area
+// $('.btn-outline-secondary').click(function() {
+//     // declare variables
+//     var input = input = $('#stops-loc');
+//     moveMapToEnteredAddress(input);
+//     //console.log(input)
+//     //console.log("Made it to on-click input it:" + input)
+// });
 
 
 
@@ -72,7 +76,7 @@ $('.btn-outline-secondary').click(function() {
 function showArrivingBusesOnSideBar(stopid){
 
     //get realtime data
-    $.getJSON(`/api/realtimeInfo/${stopid}`, function(data) {
+    $.getJSON(`http://127.0.0.1:8000/realtimeInfo/${stopid}`, function(data) {
 
         // parse response data to json 
         obj = JSON.parse(data)
@@ -141,7 +145,6 @@ function markStopsOnMap(stop) {
 $('.list-group-flush').on('click', '.stop', function(e) {
         // Get the name of tab on the navbar that was clicked
         var id = $(this).attr('id').replace("station-", "");;
-        console.log("Working NOW>>>>>>>>>>>>>>>>>>>>>?")
         showArrivingBusesOnSideBar(id);
         $("#stopsListGroup").empty();
 });
@@ -170,3 +173,56 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 	}
 }
 
+function initAutoComplete(){
+
+    //add restriction for autocomplete places API
+    var options = {
+        componentRestrictions: {country: "IE"}
+    };
+
+    var form_input = document.getElementById('stops_area');
+
+    function initAutocomplete(input){
+
+        //use Google Place Autocomplete for input box
+        //source: https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+
+        // Set the data fields to return when the user selects a place.
+        autocomplete.setFields(
+            ['address_components', 'geometry', 'icon', 'name']);
+
+        var infowindow = new google.maps.InfoWindow();
+        var infowindowContent = document.getElementById('infowindow-content-area');
+        infowindow.setContent(infowindowContent);
+    
+
+        autocomplete.addListener('place_changed', function() {
+        infowindow.close();
+
+        var place = autocomplete.getPlace();
+        if (!place.geometry) {
+            // User entered the name of a Place that was not suggested and
+            // pressed the Enter key, or the Place Details request failed.
+            window.alert("No details available for input: '" + place.name + "'");
+            return;
+        } 
+
+        var address = '';
+        if (place.address_components) {
+            address = [
+            (place.address_components[0] && place.address_components[0].short_name || ''),
+            (place.address_components[1] && place.address_components[1].short_name || ''),
+            (place.address_components[2] && place.address_components[2].short_name || '')
+            ].join(' ');
+        }
+
+        infowindowContent.children['place-icon'].src = place.icon;
+        infowindowContent.children['place-name'].textContent = place.name;
+        infowindowContent.children['place-address'].textContent = address;
+        });
+    }
+
+    initAutocomplete(stops_area);
+    
+}
