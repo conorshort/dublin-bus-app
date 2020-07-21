@@ -114,12 +114,22 @@ $('form').submit(function(e){
                 };
                 displayElements(obj);
 
-                //get encoding journey polyline
-                var encodingPolyline = route.overview_polyline.points;
-                //decode polyline to latlngs array
-                var coordinates = decode(encodingPolyline);
                 
-                drawPolylineOnMap(coordinates);
+
+                $.each( leg.steps, function( index, step ) {
+
+                    //get encoding journey polyline
+                    var encodingPolyline = step.polyline.points;
+                    //decode polyline to latlngs array
+                    var coordinates = decode(encodingPolyline);
+                    
+                    drawPolylineOnMap(step.travel_mode, coordinates);
+
+                    //drop destination marker
+                    dropMarkerOnMap(step.end_location.lat, step.end_location.lng, '');
+                  
+                });
+
                 //drop destination marker
                 dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
                 //drop origin marker
@@ -234,8 +244,15 @@ function dropMarkerOnMap(lat, lon, location){
 }
 
 
-function drawPolylineOnMap(points){
-    var polyline = L.polyline(points, {color: 'red'});
+function drawPolylineOnMap(travel_mode, points){
+
+    if (travel_mode == "TRANSIT"){
+        var polyline = L.polyline(points, {color: 'red'});
+    } else {
+        var polyline = L.polyline(points, {color: 'red',  dashArray: '6, 6', dashOffset: '1'});
+    }
+
+    
     journeyLayer.addLayer(polyline);
     // zoom the map to the polyline
     map.fitBounds(polyline.getBounds());
