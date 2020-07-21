@@ -17,6 +17,7 @@ class GTFSManager(models.Manager):
         ''' Read data from a text file and import to mysql
         The text files are found as a class variable in each GTFS class'''
         import pandas as pd
+        print("Deleting...")
         self.all().delete()
         for agency_dict in self.model._agencies:
             text_file = agency_dict["path"] + self.model._text_file
@@ -30,7 +31,7 @@ class GTFSManager(models.Manager):
             for i, record in enumerate(df_records):
                 gtfs_instance = self.model.from_dict(record, agency_dict)
                 model_instances.append(gtfs_instance)
-                if i % 1000 == 0:
+                if i % 5000 == 0:
                     print(f"Adding entries up to {i} to db...")
                     self.bulk_create(model_instances, ignore_conflicts=True)
                     model_instances = []
@@ -52,7 +53,7 @@ class GTFSManager(models.Manager):
                         GTFSCalendar,
                         GTFSCalendarDate,
                         GTFSRoute,
-                        GTFSShape,GTFSTrip,
+                        GTFSShape, GTFSTrip,
                         GTFSStopTime]
 
         for c in gtfs_classes:
@@ -67,7 +68,7 @@ class AbstractGTFS(models.Model):
 
     class Meta:
         abstract = True
-    
+
     # A list of agencies
     # If we want to add another agancy we can just add a new folder containing
     # the text files and add the ageny below
@@ -85,12 +86,12 @@ class AbstractGTFS(models.Model):
         throught that first '''
 
         # Create an instance of the class
-        gtfs_instance = cls()
+        gtfs_instance= cls()
 
         # Alter the dictionary with _proc_func if found
-        proc_func = getattr(gtfs_instance, "_dict_proc_func", None)
+        proc_func= getattr(gtfs_instance, "_dict_proc_func", None)
         if proc_func:
-            gtfs_dict = proc_func(gtfs_dict, agency_dict)
+            gtfs_dict= proc_func(gtfs_dict, agency_dict)
 
         # Loop through the dict and set the instance values
         for key, val in gtfs_dict.items():
