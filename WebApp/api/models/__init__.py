@@ -1,3 +1,4 @@
+from .backend_log import BackendLog
 from .gtfsagency import GTFSAgency
 from .gtfscalendar import GTFSCalendar
 from .gtfscalendardate import GTFSCalendarDate

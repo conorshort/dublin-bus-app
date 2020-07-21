@@ -1,10 +1,12 @@
 from django.db import models
+from django.templatetags.static import static
 
-class BackendLog(models.Manager):
+
+class BackendLog(models.Model):
     date_time = models.DateField()
-    file_name = models.CharField(max_length=128)
-    level_name = models.CharField(max_length=128)
-    message = models.TextField()
+    file_name = models.CharField(max_length=128, blank=True, null=True)
+    level_name = models.CharField(max_length=128, blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = True
