@@ -207,6 +207,18 @@ div.weather#description {
   overflow-y: hidden;
 }
 
+#my_location_btn {
+  position: absolute;
+  bottom: 50px;
+  width: 80px;
+  height: 80px;
+  right: 20px;
+  padding: 10px;
+  z-index: 400000;
+  border-radius: 50%;
+  box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
+}
+
 
 
 /* ==== Dropdown element ==== */

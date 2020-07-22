@@ -94,6 +94,11 @@ function initMap(){
 
 
     map.on('locationfound', onLocationFound);
+
+    // on click function for my location btn
+    $('#my_location_btn').click(function () {
+        map.setView(centreLocation, 14);
+    });
 }
 
 
