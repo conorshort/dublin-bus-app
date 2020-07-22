@@ -9,6 +9,5 @@ urlpatterns = [
 
     path('leapcard', views.leapcard, name="leapcard"),
     path('leapinfo', views.leapinfo, name="leapinfo"),
-    path('realtimeInfo/<str:stop_id>', views.realtimeInfo, name="realtimeInfo"),
-    #path('longlatsearch/<str:address>', views.longlatsearch, name='longlatsearch')
+    path('realtimeInfo/<str:stop_id>', views.realtimeInfo, name="realtimeInfo")
     ]
