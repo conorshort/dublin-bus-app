@@ -113,9 +113,9 @@ $('form').submit(function(e){
                 appendElements({"#journey_result_steps" : destination_waypoint});
 
                 //drop origin marker
-                dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
+                dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address, "");
                 //drop destinaiton marker
-                dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
+                dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address, "");
 
                 showResultJourneyDiv();
 
@@ -261,7 +261,7 @@ function displayJourneySteps(steps){
 
         if (index !== (length - 1)) {
             //drop destination marker
-            dropMarkerOnMap(step.end_location.lat, step.end_location.lng);
+            dropMarkerOnMap(step.end_location.lat, step.end_location.lng, "", "circle");
         }
         
     });
@@ -329,10 +329,17 @@ function renderContent(obj){
 }
 
 
-function dropMarkerOnMap(lat, lon, location=""){
- 
-    var marker = L.marker([lat, lon]);
+function dropMarkerOnMap(lat, lon, location="", markerShape="default"){
 
+    if (markerShape == "circle"){
+        var marker = new L.CircleMarker([lat, lon], {
+            radius: 10,
+            color: '#FF0000'
+          });
+    } else {
+        var marker = L.marker([lat, lon]);
+
+    }
     if (location != ""){
         marker.bindPopup(`<b> ${location}</b>`)
     }
