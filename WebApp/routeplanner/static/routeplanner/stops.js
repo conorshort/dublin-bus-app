@@ -5,6 +5,7 @@ $(document).ready(function() {
     //clear all the markers in the layer
     stopsLayer.clearLayers();
     showStops();
+    initAutoComplete();
 });
 
 
@@ -48,8 +49,8 @@ function moveMapToEnteredAddress(address){
         $.getJSON(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA`, function(data){
         console.log(data);
         var latlng = data.results[0].geometry.location
-        map.panTo(new L.LatLng(latlng.lat, latlng.lng))
-        //console.log("Panning to New Location, supplied to fx: " + address + "Recieved from JSON: " + obj.results[0].geometry.location)
+        //map.panTo(new L.LatLng(latlng.lat, latlng.lng))
+        map.flyTo([latlng.lat, latlng.lng], 15)
     });
 }
 $('form').submit(function(e){
@@ -88,10 +89,10 @@ function renderListItem(stop, stop_dist) {
     var route_list = stop.routes;
     route_list = route_list.slice(2,-2);
     route_list = route_list.split("', '");
-    // Getting routes to display as buttons for style purposes and also so route info is clickable
+    // Getting routes to display as buttons for style purposes
     route_buttons = '';
     for (var i = 0; i < route_list.length; i++) {
-        route_buttons += '<button type="button" class="btn btn-info mr-1">' + route_list[i] + "</button>";
+        route_buttons += '<button type="button" class="btn btn-info mr-1" id="stop-button">' + route_list[i] + "</button>";
       }
     const content = `
     <li class="list-group-item stop" id="station-${stop.stopid}">
@@ -107,7 +108,7 @@ function renderListItem(stop, stop_dist) {
 function renderRealtimeListItem(bus) {
  
     const content = `
-    <li class="list-group-item">
+    <li class="list-group-item" id = "stop-info">
         <ul>
             <li><b>${ bus.route }</b> ${ bus.destination } </li>
             <li>${ bus.duetime } mins </li>
@@ -115,6 +116,11 @@ function renderRealtimeListItem(bus) {
     </li>`;
     return content;
 }
+
+$(document).on("click.stops", "#back-to-stops",function () {
+    $("#stopsListGroup").empty();
+    showStops();
+});
 
 
 function markStopsOnMap(stop) {
