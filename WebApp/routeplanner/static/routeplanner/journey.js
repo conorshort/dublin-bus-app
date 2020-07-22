@@ -661,11 +661,11 @@ function renderTransitDetail(step, index){
     content = '<div class="transit-stop row"> ';
     if (step.travel_mode == "TRANSIT"){
         content += `<div class="transit-timeline col-2"><img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon"></div>`
-        content += '<div class="transit-stop-circle col-1">o</div>';
+        content += '<div class="verticalLine col-1" style="border-left: 3px solid #ff0000;"></div>';
 
     } else {
         content += `<div class="transit-timeline col-2"><img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon"></div>`
-        content += '<div class="transit-stop-circle col-1">o</div>';
+        content += '<div class="transit-stop-circle col-1" style="border-left: 3px dotted #ff0000;">o</div>';
     }
 
     content +=  '<div class="transit-detail col-9">';

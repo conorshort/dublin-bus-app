@@ -134,6 +134,11 @@ div.weather#description {
 }
 
 
+.verticalLine {
+  border-left: thick solid #ff0000;
+  left: 50%;
+}
+
 /* ==== Navigation bar ==== */
 
 #side-navibar {
