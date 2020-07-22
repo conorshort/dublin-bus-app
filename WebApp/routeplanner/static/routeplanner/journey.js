@@ -88,6 +88,7 @@ $('form').submit(function(e){
     //get direction from api /api/direction
     $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}&departureUnix=${unix}`
     , function(data) {
+        console.log(data);
         if (data.status == "OK"){
             try {
                 var route = data.routes[0];
@@ -111,10 +112,10 @@ $('form').submit(function(e){
                 var destination_waypoint = renderTransitStop(arrive_time, leg.end_address, leg.end_location);
                 appendElements({"#journey_result_steps" : destination_waypoint});
 
-                //drop destination marker
-                dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
                 //drop origin marker
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
+                //drop destinaiton marker
+                dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
 
                 showResultJourneyDiv();
 
@@ -247,7 +248,6 @@ function displayJourneySteps(steps){
                 transit_details.arrival_stop.location);
 
 
-
         } else if (step.travel_mode == "WALKING") {
             content += renderTransitDetail(step, index);
         }
@@ -259,8 +259,11 @@ function displayJourneySteps(steps){
         
         drawPolylineOnMap(step.travel_mode, coordinates);
 
-        //drop destination marker
-        dropMarkerOnMap(step.end_location.lat, step.end_location.lng, '');
+        if (index !== (length - 1)) {
+            //drop destination marker
+            dropMarkerOnMap(step.end_location.lat, step.end_location.lng);
+        }
+        
     });
 
     appendElements({"#journey_result_steps" : content});
@@ -280,8 +283,9 @@ function renderStepCard(step, index){
         <div class="card" style="margin: 10px 0px;"> 
         <div class="card-header" id="heading${index}"><h5 class="mb-0">
         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">`;
-    
-    content +=  `<div class="transit-num-stops row">${step.transit_details.num_stops} stops </div>`;
+
+    content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;<b> ${step.transit_details.num_stops}</b> stops </div>`;   
+    content +=  `<div class="transit-num-stops row"> </div>`;
 
      
     // add journey steps detail in card body
@@ -293,7 +297,7 @@ function renderStepCard(step, index){
 
     // if the travel_mode is TRANSIT, add bus icon and bus route number to content
     var stops = step.transit_details.stops;
-        
+
    if (stops) {
         $.each(stops, function( index, value ) {
             content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
@@ -325,9 +329,14 @@ function renderContent(obj){
 }
 
 
-function dropMarkerOnMap(lat, lon, location){
+function dropMarkerOnMap(lat, lon, location=""){
  
-    var marker = L.marker([lat, lon]) .bindPopup(`<b> ${location}</b>`);
+    var marker = L.marker([lat, lon]);
+
+    if (location != ""){
+        marker.bindPopup(`<b> ${location}</b>`)
+    }
+
     journeyLayer.addLayer(marker);
 }
 
