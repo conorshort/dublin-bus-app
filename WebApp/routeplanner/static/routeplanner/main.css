@@ -139,6 +139,13 @@ div.weather#description {
   left: 50%;
 }
 
+.circle {
+  background: lightblue;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+}
+
 /* ==== Navigation bar ==== */
 
 #side-navibar {
