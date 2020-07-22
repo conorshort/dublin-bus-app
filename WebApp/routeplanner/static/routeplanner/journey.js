@@ -101,7 +101,15 @@ $('form').submit(function(e){
                 displayTripSummary(duration, '0', departure_time, arrive_time);
 
 
+                //render and append origin waypoint
+                var origin_waypoint = renderTransitStop(departure_time, leg.start_address, leg.start_location);
+                appendElements({"#journey_result_steps" : origin_waypoint});
+
                 displayJourneySteps(leg.steps);
+
+                //render and append origin waypoint
+                var destination_waypoint = renderTransitStop(arrive_time, leg.end_address, leg.end_location);
+                appendElements({"#journey_result_steps" : destination_waypoint});
 
                 //drop destination marker
                 dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
@@ -115,8 +123,7 @@ $('form').submit(function(e){
             }
         } else {
             alert("No journey planning result, please try input other locations.");
-        }
-        
+        }   
     });
 });
 
@@ -134,6 +141,13 @@ $('#edit_journey_input').click(function () {
 function displayElements(obj){
     $.each( obj, function( key, value ) {
         $(key).html(value);
+    });
+}
+
+//append value to key element
+function appendElements(obj){
+    $.each( obj, function( key, value ) {
+        $(key).append(value);
     });
 }
 
@@ -199,15 +213,15 @@ function renderTransitDetail(step, index){
         content += '<div class="col-1"><div style="border-left: 4px dotted red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
     }
 
-    content +=  '<div class="transit-detail col-8">';
-    content +=  `<div class="transit-mode row"> &#10;&#10;${step.travel_mode}</div>`;
+    content +=  '<div class="transit-detail col-8" style="padding-top: 20px; padding-bottom: 20px;">';
+    content +=  `<div class="transit-mode row"> ${step.travel_mode}</div>`;
     content +=  `<div class="transit-duration row">${step.duration.text}&nbsp;&nbsp;&nbsp;&nbsp;${step.distance.text}</div>`;
 
     if (step.travel_mode == "TRANSIT"){
         content += renderStepCard(step, index);
         // content +=  `<div class="transit-num-stops row">${step.transit_details.num_stops}</div>`;
     }
-    content += "&#10;&#10;";
+
     content += '</div></div>'
 
     return content;
@@ -249,7 +263,7 @@ function displayJourneySteps(steps){
         dropMarkerOnMap(step.end_location.lat, step.end_location.lng, '');
     });
 
-    displayElements({"#journey_result_steps" : content});
+    appendElements({"#journey_result_steps" : content});
 }
 
 
@@ -263,7 +277,7 @@ function renderStepCard(step, index){
     // show detail of each step in card body 
     // resource: https://getbootstrap.com/docs/4.0/components/collapse/
     content += `
-        <div class="card"> 
+        <div class="card" style="margin: 10px 0px;"> 
         <div class="card-header" id="heading${index}"><h5 class="mb-0">
         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">`;
     
