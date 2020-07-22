@@ -11,7 +11,7 @@ $(document).ready(function () {
         var nav_id = $(this).attr('id');
 
         // log nav btn click event to firebase 
-        analytics.logEvent('select_content', { content_id: nav_id});
+        analytics.logEvent('select_content', { content_type: 'navi_item', item_id: nav_id});
 
         // Update sidebar content with appropriate html
         loadSideBarContent(nav_id);
