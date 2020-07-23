@@ -33,15 +33,21 @@
                     <div class="form-group row">
                         <label for="datetime" class="col-sm-3 col-form-label">Departure: </label>
                         <div class="col-sm-9">
-                            <input type="datetime-local" id="datetimePicker" required="required" name="datetime">
+                            <!-- <input type="datetime-local" id="datetimePicker" required="required" name="datetime"> -->
+                            <input  class="datetimeInput" id="datetimePicker" required="required" name="datetime">
                         </div>
                     </div>
                     
-            
+                     
                     <!-- Cross Site Request Forgery protection-->
                     {% csrf_token %}
                     <input type="submit" class="btn btn-primary float-right"></input>
                 </form>
+
+                <div class="spinner-grow text-secondary" style="margin:auto;" id="journey-loader" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+
             </div>
 
             <!-- Journey Planner result  -->
@@ -78,14 +84,9 @@
             </div>
         </div>
         <div class="black_box">
-            <a class="twitter-timeline" data-width="500" data-height="500" href="https://twitter.com/dublinbusnews?ref_src=twsrc%5Etfw">Twitter Updates by Dublin Bus</a><!-- Twitter Timeline -->
+            <a class="twitter-timeline" data-width="700" data-height="500" href="https://twitter.com/dublinbusnews?ref_src=twsrc%5Etfw">Twitter Updates by Dublin Bus</a><!-- Twitter Timeline -->
         </div>
 
-        <div id="infowindow-content">
-            <img src="" width="16" height="16" id="place-icon">
-            <span id="place-name"  class="title"></span><br>
-            <span id="place-address"></span>
-        </div>
     </div>
     <script src="{% static 'routeplanner/journey.js' %}" id="script"></script> 
 </div>

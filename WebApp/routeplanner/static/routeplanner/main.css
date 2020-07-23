@@ -120,12 +120,18 @@ div.weather#description {
   position: relative;
   z-index: 1000;
   width: 100%;
+  margin: 0px;
   height: calc(100vh - 80px);
-  overflow:auto;
+  overflow-y:auto;
+  overflow-x: hidden;
 }
 
 #sidebar {
-    width: 430px;
+
+  width: 430px;
+  -ms-flex: 0 0 430px;
+  flex: 0 0 430px;
+  padding:0px;
 }
 
 
@@ -197,6 +203,8 @@ div.weather#description {
 
 .nav_img {
   height:60%;
+  max-height: 27px;
+  margin-top: 5px;
 }
 
 
@@ -217,9 +225,26 @@ div.weather#description {
   z-index: 400000;
   border-radius: 50%;
   box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
+
 }
 
 
+#mobile-show-content { 
+  border-radius: 10px 10px 0px 0px;
+  position: absolute;
+  display: none;
+  height: 53px;
+  background-color: #797878;
+  bottom: 58px;
+  z-index: 9000;
+}
+
+
+#show-content-arrow{
+  height: 40px;
+  margin: auto;
+  width: 20vw;
+}
 
 /* ==== Dropdown element ==== */
 
@@ -343,24 +368,28 @@ div.weather#description {
 
 
 
-/* CSS for when the page is less than 955px */
-@media (max-width: 955px) { 
+/* CSS for when the page is less than 768px */
+@media (max-width: 768px) { 
     #sidebar {
       width: 100vw;
       box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
       position: relative;
       z-index: 1000;
-      height:calc(100vh - 80px - 60px);
+      height: auto;
+      padding-bottom: 60px;
     }
 
     #content {
-      height:calc(100vh - 80px - 60px);
+      width: 100vw;
+      height: auto;
+      /* overflow-x: visible; */
+      overflow-y: visible;
     }
 
 
     #map {
-      display: none;
-      height: calc(100vh - 80px - 60px);
+      
+      height: 0px;
       overflow-y: hidden;
     }
 
@@ -369,8 +398,10 @@ div.weather#description {
     }
 
     #bottom-navibar {
+      position: fixed;
       display: block;
       min-width: 100vw !important;
+      bottom: 0;
     }
 
 

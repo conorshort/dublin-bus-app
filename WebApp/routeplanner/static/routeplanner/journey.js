@@ -1,8 +1,25 @@
 $(document).ready(function () {
+    twttr.widgets.load()
+
+    //hide loader
+    $("#journey-loader").hide();
 
     //clear all markers and polyline on the map
     stopsLayer.clearLayers();
     journeyLayer.clearLayers();
+
+    //init datetime picker
+    document.getElementsByClassName("datetimeInput").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        
+        //set datetime picker default value to current datetime
+        onReady: function (selectedDates, dateStr, instance) {
+            $('.datetimeInput').val(
+                instance.formatDate(new Date(), "Y-m-d H:i")
+            )
+        },
+    });　
 
     showSearchJourneyDiv();
     initAutoComplete();
@@ -29,34 +46,25 @@ function initAutoComplete(){
         autocomplete.setFields(
             ['address_components', 'geometry', 'icon', 'name']);
 
-        var infowindow = new google.maps.InfoWindow();
-        var infowindowContent = document.getElementById('infowindow-content');
-        infowindow.setContent(infowindowContent);
-    
 
         autocomplete.addListener('place_changed', function() {
-        infowindow.close();
 
-        var place = autocomplete.getPlace();
-        if (!place.geometry) {
-            // User entered the name of a Place that was not suggested and
-            // pressed the Enter key, or the Place Details request failed.
-            window.alert("No details available for input: '" + place.name + "'");
-            return;
-        } 
+            var place = autocomplete.getPlace();
+            if (!place.geometry) {
+                // User entered the name of a Place that was not suggested and
+                // pressed the Enter key, or the Place Details request failed.
+                window.alert("No details available for input: '" + place.name + "'");
+                return;
+            } 
 
-        var address = '';
-        if (place.address_components) {
-            address = [
-            (place.address_components[0] && place.address_components[0].short_name || ''),
-            (place.address_components[1] && place.address_components[1].short_name || ''),
-            (place.address_components[2] && place.address_components[2].short_name || '')
-            ].join(' ');
-        }
-
-        infowindowContent.children['place-icon'].src = place.icon;
-        infowindowContent.children['place-name'].textContent = place.name;
-        infowindowContent.children['place-address'].textContent = address;
+            var address = '';
+            if (place.address_components) {
+                address = [
+                (place.address_components[0] && place.address_components[0].short_name || ''),
+                (place.address_components[1] && place.address_components[1].short_name || ''),
+                (place.address_components[2] && place.address_components[2].short_name || '')
+                ].join(' ');
+            }
         });
     }
 
@@ -68,19 +76,23 @@ function initAutoComplete(){
 
 // submit button click event 
 $('form').submit(function(e){
+
+    //show loader when click submit btn
+    $("#journey-loader").show();
+
     // Stop form refreshing page on submit
     e.preventDefault();
 
     var origin = document.forms["journeyForm"]["f_from_stop"].value;
     var destination = document.forms["journeyForm"]["f_to_stop"].value;
-    var dateTime = document.querySelector('input[type="datetime-local"]').value;
+    var dateTime =document.querySelector(".datetimeInput").value;
 
     // var origin = 'dundrum';
     // var destination = 'dun la';
     // var dateTime = '20';
 
     var dt = new Date(Date.parse(dateTime));
-     //set departure time mins to 0,
+    //set departure time mins to 0,
     //if departure time given is 
     dt.setMinutes(0);
     var unix = dt.getTime()/1000;
@@ -91,6 +103,7 @@ $('form').submit(function(e){
         console.log(data);
         if (data.status == "OK"){
             try {
+                
                 var route = data.routes[0];
                 var leg = route.legs[0];
                 var arrive_time =  leg.arrival_time.text;
@@ -118,13 +131,17 @@ $('form').submit(function(e){
                 dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address, "");
 
                 showResultJourneyDiv();
-
+                MapUIControl.halfscreen();
             } catch (error) {
+                
                 alert(error);
             }
         } else {
             alert("No journey planning result, please try input other locations.");
-        }   
+        }
+
+        //hide loader
+        $("#journey-loader").hide();
     });
 });
 
@@ -235,17 +252,18 @@ function displayJourneySteps(steps){
     $.each( steps, function( index, step ) {
 
         if (step.travel_mode == "TRANSIT"){
+            
+            //show number of stops
+            content += "<p> <b>" + step.transit_details.num_stops + " Stops</b></p>";
 
-            var transit_details = step.transit_details;
-            content += renderTransitStop(transit_details.departure_time.text, 
-                transit_details.departure_stop.name,
-                transit_details.departure_stop.location);
+            var stops = step.transit_details.stops;
 
-            content += renderTransitDetail(step, index);
-
-            content += renderTransitStop(transit_details.arrival_time.text, 
-                transit_details.arrival_stop.name,
-                transit_details.arrival_stop.location);
+            if (stops) {
+                
+                $.each(stops, function( index, value ) {
+                    content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
+                });
+            }
 
 
         } else if (step.travel_mode == "WALKING") {
@@ -359,7 +377,8 @@ function drawPolylineOnMap(travel_mode, points){
     
     journeyLayer.addLayer(polyline);
     // zoom the map to the polyline
-    map.fitBounds(polyline.getBounds());
+    currentBounds = polyline.getBounds()
+    map.fitBounds(currentBounds);
 }
 
 
