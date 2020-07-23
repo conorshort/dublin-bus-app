@@ -9,8 +9,12 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
+import sys
 
+from .config import *
 import os
+from .config import db_config
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,13 +24,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '(zg1l-9*n7tj%g=l)e$)c7^iq!v121t#$y8x+8!hv&9ag@(gh_'
+SECRET_KEY = "6e$-u*$-g$6%7$dpe9j(%1a1s8^&4j(&l7fvtij9@4xwvr0fvn"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost',
-                 "127.0.0.1"]
+                 "127.0.0.1",
+                 "192.168.1.19"]
 
 
 # Application definition
@@ -38,14 +43,18 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles'
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'api',
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # Comment below line to fix 'CSRF cookie not set' cookie not set issue
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -78,14 +87,13 @@ WSGI_APPLICATION = 'dublin_bus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'djangomess',
-        'USER': 'root',
-        'PASSWORD': 'd6A2zQyaSHWDvw2pE8RBNeG3',
-        'HOST': 'localhost',
+        'NAME': db_config["schema_name"],
+        'USER': db_config["read_only_username"],
+        'PASSWORD': db_config["read_only_pw"],
+        'HOST': db_config["host"],
         'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -125,3 +133,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+CSRF_COOKIE_SECURE = True
