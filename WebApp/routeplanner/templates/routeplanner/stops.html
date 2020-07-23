@@ -11,16 +11,29 @@
         </div>
         <div class="row">
             <div class="col p-0">
-                <div class="active-cyan-4 mb-4">
-                    <input class="form-control" type="text" placeholder="Find a stop" aria-label="Search">
-                </div>
-
-                
+                <div class="active-cyan-4 mb-4 ml-4 mr-4">
+                    <form id='stops-area' method="post">
+                        <div class="row ml-1">
+                            <h6 class="btn btn-outline-secondary btn-sm" id="back-to-stops" >
+                                < Back </h6>
+                        </div>
+                        <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-primary float-right"></input>
+                    </form>
+                    <div id="infowindow-content-area">
+                        <!-- <img src="" width="16" height="16" id="place-icon">
+                        <span id="place-name"  class="title"></span><br>
+                        <span id="place-address"></span> -->
+                    </div>
+                </div>           
                 <ul class="list-group-flush p-0 vh-100" id="stopsListGroup">
 
                 </ul>
             </div>
         </div>
+
+        
     </div>
 
     <script src="{% static 'routeplanner/stops.js' %}" id="script"></script> 
