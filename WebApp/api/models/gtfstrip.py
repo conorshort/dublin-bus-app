@@ -29,30 +29,69 @@ class GTFSTripManager(GTFSManager):
 
         # Round the origin time to the nearest minute
         if origin_time:
-            origin_time = (origin_time // 60) * 60
+            am_or_pm = origin_time[-2:] 
+            origin_time = origin_time[:-2]
+            hrs, mins = origin_time.split(":")
+            origin_time = (int(hrs) * 3600) + (int(mins) * 60)
+            if am_or_pm == "pm":
+                origin_time += 43200
+            print(origin_time)
+
 
         origin_id = GTFSStop.objects.get(plate_code=origin_plate_code).stop_id
         destination_id = GTFSStop.objects.get(
             plate_code=destination_plate_code).stop_id
 
+
         # Get shape_ids for the given route
         # If a headsign is provided add it to the filter
+
         if headsign and origin_time:
+            # First try to get with all parameters given
             shape_id_queryset= None
             trips = GTFSTrip.objects.filter(
                 route__route_name=route_name,
                 calendar__start_date__lte=today,
                 calendar__end_date__gte=today,
+                gtfsstoptime__arrival_time__gte=(origin_time - 60),
+                gtfsstoptime__departure_time__lte=(origin_time + 60),
                 gtfsstoptime__stop_headsign=headsign,
-                gtfsstoptime__arrival_time__gte=(origin_time - 100),
-                gtfsstoptime__departure_time__lte=(origin_time + 100),
                 gtfsstoptime__stop_id=origin_id)
-        else:
-            trips= None
+
+            if origin_time and not trips:
+                # Then try without headsign, sometimes google's headsign doesn't match the gtfs data 
+                shape_id_queryset = None
+                trips = GTFSTrip.objects.filter(
+                    route__route_name=route_name,
+                    calendar__start_date__lte=today,
+                    calendar__end_date__gte=today,
+                    gtfsstoptime__arrival_time__gte=(origin_time - 60),
+                    gtfsstoptime__departure_time__lte=(origin_time + 60),
+                    gtfsstoptime__stop_id=origin_id)
+
+            # If there's still nothing try checking for buses after midnight
+            if origin_time and not trips:
+                origin_time += 86400
+                shape_id_queryset = None
+                trips = GTFSTrip.objects.filter(
+                    route__route_name=route_name,
+                    calendar__start_date__lte=today,
+                    calendar__end_date__gte=today,
+                    gtfsstoptime__arrival_time__gte=(origin_time - 60),
+                    gtfsstoptime__departure_time__lte=(origin_time + 60),
+                    gtfsstoptime__stop_id=origin_id)
+
+
+        # 
+        if not trips:
+            trips = None
             shape_id_queryset = GTFSTrip.objects.filter(
                 route__route_name=route_name,
                 calendar__start_date__lte=today,
                 calendar__end_date__gte=today).values("shape_id").distinct().values_list('shape_id', flat=True)
+
+
+
             # print(shape_id_queryset)
         stop_query_set = []
         stops_as_lists = []
@@ -101,7 +140,7 @@ class GTFSTripManager(GTFSManager):
                                         stop_sequence__lte=dest_seq)
 
                 # Get the list of plate codes and stop sequences
-                these_stops_list = list(these_stops.values("stop_sequence", plate_code=F("stop__plate_code")))
+                these_stops_list = list(these_stops.values("stop_sequence",  stop_name=F("stop__stop_name"), plate_code=F("stop__plate_code"),))
 
                 # append the stops to both lists
                 if these_stops and these_stops_list not in stops_as_lists:
