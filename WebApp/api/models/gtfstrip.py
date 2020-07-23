@@ -44,8 +44,8 @@ class GTFSTripManager(GTFSManager):
                 calendar__start_date__lte=today,
                 calendar__end_date__gte=today,
                 gtfsstoptime__stop_headsign=headsign,
-                gtfsstoptime__arrival_time__gte=origin_time,
-                gtfsstoptime__departure_time__lte=(origin_time + 60),
+                gtfsstoptime__arrival_time__gte=(origin_time - 100),
+                gtfsstoptime__departure_time__lte=(origin_time + 100),
                 gtfsstoptime__stop_id=origin_id)
         else:
             trips= None

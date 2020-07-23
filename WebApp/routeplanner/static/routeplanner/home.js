@@ -86,13 +86,20 @@ function initMap() {
 
     map.locate({ setView: true, watch: true });
 
-    var onLocationFound = function (e) {
-        L.marker(e.latlng)
-            .addTo(map)
-            .bindPopup("You are here!")
-            .openPopup();
+    var onLocationFound = function(e){
+
+        // create custom icon
+        var customIcon = L.icon({
+            iconUrl: './static/img/user_marker.png',
+            iconSize: [45, 45], // size of the icon
+            });
+
+        L.marker(e.latlng, {icon: customIcon})
+        .addTo(map)
+        .bindPopup("Centre")
+        // .openPopup();
         centreLocation = e.latlng;
-        map.setView(e.latlng, 14);
+        // map.setView(e.latlng, 14);
     };
 
 
