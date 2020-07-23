@@ -249,21 +249,23 @@ function renderTransitDetail(step, index){
 
 function displayJourneySteps(steps){
     content = '';
+
+    console.log(JSON.stringify(steps));
+
     $.each( steps, function( index, step ) {
 
         if (step.travel_mode == "TRANSIT"){
             
-            //show number of stops
-            content += "<p> <b>" + step.transit_details.num_stops + " Stops</b></p>";
+            var transit_details = step.transit_details;
+            content += renderTransitStop(transit_details.departure_time.text, 
+                transit_details.departure_stop.name,
+                transit_details.departure_stop.location);
 
-            var stops = step.transit_details.stops;
+            content += renderTransitDetail(step, index);
 
-            if (stops) {
-                
-                $.each(stops, function( index, value ) {
-                    content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
-                });
-            }
+            content += renderTransitStop(transit_details.arrival_time.text, 
+                transit_details.arrival_stop.name,
+                transit_details.arrival_stop.location);
 
 
         } else if (step.travel_mode == "WALKING") {
@@ -302,7 +304,7 @@ function renderStepCard(step, index){
         <div class="card-header" id="heading${index}"><h5 class="mb-0">
         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">`;
 
-    content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;<b> ${step.transit_details.num_stops}</b> stops </div>`;   
+    content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;<b> ${step.transit_details.num_stops}</b>&nbsp;stops </div>`;   
     content +=  `<div class="transit-num-stops row"> </div>`;
 
      

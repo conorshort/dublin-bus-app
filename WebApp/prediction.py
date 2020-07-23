@@ -106,8 +106,10 @@ def get_models_name():
         break
     return files
 
-def get_route_model(lineId, hasWeather = False):
 
+
+def get_route_model(lineId, hasWeather = False):
+    
     # path for model pickle without weather
     modelFile = f'{path}/pickles/pickles/route_{lineId}.pkl'
     
@@ -115,16 +117,11 @@ def get_route_model(lineId, hasWeather = False):
         # path for model pickle
         modelFile = f'{path}/pickles/pickles_without_weather/route_{lineId}_without_weather.pkl'
 
+    # Load the Model back from file
+    with open(modelFile, 'rb') as file:  
+        model = pickle.load(file)
 
-# def get_route_model(lineId):
-#     # path for model pickle
-#     modelFile = f'{path}/pickles/route_{lineId}.pkl'
-
-#     # Load the Model back from file
-#     with open(modelFile, 'rb') as file:  
-#         model = pickle.load(file)
-
-#     return model
+    return model
 
 
 def isPeaktime(dt):
