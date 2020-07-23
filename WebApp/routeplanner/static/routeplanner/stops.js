@@ -2,13 +2,16 @@
 
 
 // Stop stops from showing on other tabs
-$(document).on("click.stops", '.nav_item, bottom_nav_item', function () {
+$(document).on("click.stops", '.nav_item, .bottom_nav_item', function () {
     stopsLayer.clearLayers();
     map.off('moveend');
 });
 
-
+currentBounds = undefined;
+currentCentre = [53.346967, -6.259923];
+MapUIControl.halfscreen();
 $(document).ready(function() {
+
     //clear all the markers in the layer
     stopsLayer.clearLayers();
     showStops();

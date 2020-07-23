@@ -41,13 +41,13 @@
                         <div class="col-2 weather">
                             <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" id="weather_img">
                         </div>
-                        <div class="col-3 weather" id="temp">
+                        <!-- <div class="col-3 weather" id="temp">
                             {{ weather.temperature }}°C
                         </div>
                         <div class="col-7 weather" id="description">
                             {{ weather.description }}
 
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -61,11 +61,13 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> <!-- Twitter Javascript for Widget JavaScript -->
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <!-- Twitter Javascript for Widget JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
@@ -74,7 +76,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <!-- Font Awesome html Icons -->
-    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin="anonymous"></script>
 
     {% block js %}
 
