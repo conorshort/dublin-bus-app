@@ -36,7 +36,7 @@ a:hover, a:active {
   font-size: 30px;
   box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.3); ;
   position: relative;
-  z-index: 1000;
+  z-index: 99999999;
 }
 
 .weather {
@@ -60,10 +60,39 @@ div.weather#description {
 /* ==== Sidebar ==== */
 .sidebar_header {
   height: 70px; 
+  line-height: 30px;
   font-size: 30px;
   background-color: #ffbf00;
 }
 
+.sidebar_header_link {
+  color: blue;
+  font-size: 15px;
+}
+
+.gray_box {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.black_box {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#journey_search_div {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#edit_journey_input {
+  border-top: 1px solid rgb(185, 185, 185);
+  border-bottom: 1px solid rgb(185, 185, 185);
+  padding: 10px 25px;
+
+}
 
 #map {
   max-height: 100vh;
@@ -98,6 +127,12 @@ div.weather#description {
 #sidebar {
     width: 430px;
 }
+
+
+#journey_result_content {
+  padding: 15px;
+}
+
 
 /* ==== Navigation bar ==== */
 
@@ -196,6 +231,26 @@ div.weather#description {
   padding-top: 4px;
 }
 
+#route-stops-title{
+  padding: 10px 0px 10px 40px;
+  display: inline-block;
+
+}
+
+#back-to-routes{
+  margin-top: 5px;
+  margin-left: 30px;
+}
+.direction-buttons{
+  margin-top: 12px;
+  margin-left: 30px;
+  margin-bottom: 8px;
+}
+.btn-outline-warning {
+  color: black !important;
+}
+
+
 #route-stop-div {
   display: none;
 }
@@ -213,6 +268,11 @@ div.weather#description {
 
 #timetable-modal {
   top: 10%;
+}
+
+
+.journey_result_icon {
+  width: 20px;
 }
 
 /* #timetable-loader {

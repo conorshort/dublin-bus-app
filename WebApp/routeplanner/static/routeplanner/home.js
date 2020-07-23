@@ -32,7 +32,7 @@ $(document).ready(function () {
 
             // Leaflet needs this to update the map display
             // after being hidden
-            mymap.invalidateSize();
+            map.invalidateSize();
         
         // Hide the map
         } else if (nav_id === "hidemap") {
@@ -57,12 +57,20 @@ var centreLocation = [53.3482, -6.2641]
 var map = L.map('map').setView(centreLocation, 14);
 //init layer for storeing all stop markers
 var stopsLayer = L.layerGroup().addTo(map);
+//init layer for storeing journey 
+var journeyLayer = L.layerGroup().addTo(map);
+
+
+
+function clearElementsInLayers(){
+    //clear all the markers in the layer
+    stopsLayer.clearLayers();
+    journeyLayer.clearLayers();
+}
+
 
 
 function initMap(){
-
-    // Set map hight 
-    // $("#map").height($(window).height()-80);
 
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -76,12 +84,19 @@ function initMap(){
     map.locate({setView: true, watch: true});
 
     var onLocationFound = function(e){
-        L.marker(e.latlng)
+
+        // create custom icon
+        var customIcon = L.icon({
+            iconUrl: './static/img/user_marker.png',
+            iconSize: [45, 45], // size of the icon
+            });
+
+        L.marker(e.latlng, {icon: customIcon})
         .addTo(map)
-        .bindPopup("You are here!")
-        .openPopup();
+        .bindPopup("Centre")
+        // .openPopup();
         centreLocation = e.latlng;
-        map.setView(e.latlng, 14);
+        // map.setView(e.latlng, 14);
     };
 
 
@@ -111,6 +126,11 @@ $(window).resize(function () {
 
 
 function loadSideBarContent(navId){
+
+    if( navId == "routes"){
+        routes()
+    }
+
     // Load the appropriate HTML using the navId
     $("#sidebar").load("/" + navId);
 
