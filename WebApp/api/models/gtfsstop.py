@@ -11,6 +11,7 @@ class GTFSStop(AbstractGTFS):
     plate_code = models.CharField(max_length=20, blank=True, null=True)
     stop_lat = models.FloatField()
     stop_lon = models.FloatField()
+    # sd_stop = models.ForeignKey(SmartDublinBusStop, on_delete=models.CASCADE)
 
     _text_file = "stops.txt"
 

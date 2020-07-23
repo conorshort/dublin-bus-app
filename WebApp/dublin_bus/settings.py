@@ -44,15 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # 'crispy_forms',
-
     'rest_framework',
     'api',
 
 ]
-
-# CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -93,8 +88,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': db_config["schema_name"],
-        'USER': db_config["admin_username"],
-        'PASSWORD': db_config["admin_pw"],
+        'USER': db_config["read_only_username"],
+        'PASSWORD': db_config["read_only_pw"],
         'HOST': db_config["host"],
         'PORT': '3306',
     }

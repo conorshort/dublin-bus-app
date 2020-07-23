@@ -44,8 +44,8 @@ class GTFSTripManager(GTFSManager):
                 calendar__start_date__lte=today,
                 calendar__end_date__gte=today,
                 gtfsstoptime__stop_headsign=headsign,
-                gtfsstoptime__arrival_time__gte=origin_time,
-                gtfsstoptime__departure_time__lte=(origin_time + 60),
+                gtfsstoptime__arrival_time__gte=(origin_time - 100),
+                gtfsstoptime__departure_time__lte=(origin_time + 100),
                 gtfsstoptime__stop_id=origin_id)
         else:
             trips= None
@@ -120,6 +120,17 @@ class GTFSTripManager(GTFSManager):
 
         trip = GTFSTrip.objects.filter(shape_id=shape_id).first()
         return trip.gtfsstoptime_set.all()
+
+
+    def get_all_routes(self):
+        today = datetime.datetime.today()
+        trips = GTFSTrip.objects.filter(
+            calendar__start_date__lte=today,
+            calendar__end_date__gte=today).values(route_name=F("route__route_name"),
+                                                 operator=F("route__agency__agency_name")).distinct()
+        return trips
+
+
 
 class GTFSTrip(AbstractGTFS):
     route = models.ForeignKey(GTFSRoute, on_delete=models.CASCADE)

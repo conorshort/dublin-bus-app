@@ -97,7 +97,8 @@ class SmartDublinBusStop(models.Model):
     longitude = models.FloatField(blank=True, null=True)
     lastupdated = models.DateField(blank=True, null=True)
     routes = models.TextField(blank=True, null=True)
-
+    localname = models.CharField(
+        max_length=200, blank=True, null=True)
     # Model manager
     objects = SmartDublinBusStopManager()
 

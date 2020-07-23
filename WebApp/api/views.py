@@ -50,6 +50,7 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
                 ORDER BY distance;" % (latitude, longitude, latitude, radius)
 
             queryset = SmartDublinBusStop.objects.raw(sql)
+            
             serializer = SmartDublinBusStopSerializer(queryset, many=True)
 
             return Response(serializer.data)
@@ -67,7 +68,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False)
     def routename(self, response):
         ''' Return a list of distinct route names found in the db '''
-        route_queryset = GTFSRoute.objects.values('route_name').distinct()
+        route_queryset = GTFSTrip.objects.get_all_routes()
         return Response(route_queryset)
 
     @action(detail=False)
@@ -76,7 +77,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
         route_name = request.GET.get('name')
         inbound = request.GET.get("inbound")
 
-        today = datetime.datetime.today()
+        today = datetime.today()
 
         # Get distint shape ids and destinations for the given route name and direction
         # that are currently in service
@@ -94,7 +95,11 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
         shape_id = request.GET.get('shape')
 
         stops = GTFSTrip.objects.stops_on_route(shape_id).values(
-            stop_name=F("stop__stop_name"), seq=F("stop_sequence"), id=F("stop_id"))
+                    stop_name=F("stop__stop_name"),
+                    seq=F("stop_sequence"),
+                    id=F("stop_id"),
+                    lat=F("stop__stop_lat"),
+                    lon=F("stop__stop_lon"))
 
         return Response(stops)
 
@@ -108,7 +113,7 @@ class GTFSShapeViewSet(viewsets.ReadOnlyModelViewSet):
         routename = request.GET.get("routename")
         inbound = request.GET.get("inbound")
 
-        today = datetime.datetime.today()
+        today = datetime.today()
 
         shape_queryset = GTFSTrip.objects.filter(
             route__route_name=routename,
@@ -265,11 +270,15 @@ def direction(request):
 
         steps = newData['routes'][0]['legs'][0]['steps']
 
+        totalDuration = 0
+
         # forloop steps from google direction API response
         for i in range(len(steps)):
 
             # check if the step travel_mode is TRANSIT
             if steps[i]['travel_mode'] != 'TRANSIT':
+                duration = int(steps[i]['duration']['text'].split()[0])
+                totalDuration += duration
                 continue
             
             # check if the line model exist 
@@ -290,10 +299,12 @@ def direction(request):
             # get stops between origin and destination stops
             headsign = steps[i]['transit_details']['headsign']
             stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)[0]
+
             # print('depStopId', depStopId)
             # print('arrStopId', arrStopId)
             # print('lineId', lineId)
             # print('stops', stops)
+
 
 
             # store stops info in data json for response 
@@ -310,9 +321,13 @@ def direction(request):
             lineId = steps[i]['transit_details']['line']['short_name']
             journeyTime = predict_journey_time(lineId, segments, int(departureUnix))
 
+            totalDuration += int(journeyTime) // 60
+
             # update duration value in newData to our journey prediction
             newData['routes'][0]['legs'][0]['steps'][i]['duration']['text'] = str(int(journeyTime) // 60) + ' mins'
 
+        newData['routes'][0]['legs'][0]['duration']['text'] = str(totalDuration) + ' mins'
+        print("=====google prediction journey time:", data['routes'][0]['legs'][0]['duration']['text'], "========")
 
         return JsonResponse(newData, safe=False)
 

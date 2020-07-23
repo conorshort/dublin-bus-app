@@ -10,11 +10,39 @@ path = os.path.dirname(__file__)
 
 def predict_journey_time(lineId, segments, departure_unix):
     
-    # get route model
-    model = get_route_model(lineId)
+    segments_df = create_test_dataframe(lineId, segments, departure_unix)
+
+    # cheak if df has weather features
+    weatherFeatures = ['temp', 'wind_speed', 'rain']
+    hasWeatherFeatures =  all(elem in weatherFeatures for elem in segments_df.columns)
+    if hasWeatherFeatures:
+        model = get_route_model(lineId)
+    else:
+        model = get_route_model(lineId, hasWeather = False)
+
+    # ger journey time prediction for all segments
+    journeyTime = predict_journey_time_by_df(model, segments_df)
     
+    return journeyTime
+
+
+
+def create_test_dataframe(lineId, segments, departure_unix):
+    
+    # cheak if the departure unix within 48 hour,
+    # forecase weather only provide within 48 hour
+   
+    weather = getWeather(int(departure_unix))
+    
+    if weather != None:
+        model = get_route_model(lineId)
+    else:
+        model = get_route_model(lineId, hasWeather = False)
+    
+        
     # get all features of the route model
     features = model.get_booster().feature_names
+
 
     # create a dictionary as data for creating tested dataframe 
     # set dictionary key to features and value to [0]
@@ -24,14 +52,6 @@ def predict_journey_time(lineId, segments, departure_unix):
     hour = departure_dt.hour
     weekday = departure_dt.weekday
     isPeak = int(isPeaktime(departure_dt) == True)
-
-    weather = getWeather(int(departure_unix))
-    if weather:
-        data['temp'] = [weather['temp']]
-        data['wind_speed'] = [weather['wind_speed']]
-        if 'rain' in weather:
-            data['rain'] = [weather['rain']['1h']]
-        
 
     segments_df = pd.DataFrame()
 
@@ -45,6 +65,14 @@ def predict_journey_time(lineId, segments, departure_unix):
         except:
             pass
         
+
+        if weather:
+            data['temp'] = [weather['temp']]
+            data['wind_speed'] = [weather['wind_speed']]
+            if 'rain' in weather:
+                data['rain'] = [weather['rain']['1h']]
+        
+
         # create segment dataframe which storing segment data
         seg_df = pd.DataFrame(data=data)
 
@@ -53,42 +81,45 @@ def predict_journey_time(lineId, segments, departure_unix):
 
         # add each segment dataframe to df dataframe
         segments_df = segments_df.append(seg_df, ignore_index=True)
-
-    # ger journey time prediction for all segments
-    journeyTime = predict_journey_time_by_df(segments_df, lineId)
     
-    print(journeyTime)
-
-    return journeyTime
+    return segments_df
 
 
 
 
-def predict_journey_time_by_df(test_dataframe, lineId):
+def predict_journey_time_by_df(model, test_dataframe):
 
-    model = get_route_model(lineId)
-
-    # predict journey time
     prediction = model.predict(test_dataframe)
     journeyTime = sum(prediction)
 
     return journeyTime
 
 
+
 def get_models_name():
 
     files = []
+
     for (dirpath, dirnames, filenames) in os.walk(f'{path}/pickles'):
+
         files.extend(filenames)
         break
     return files
 
+def get_route_model(lineId, hasWeather = False):
+
+    # path for model pickle without weather
+    modelFile = f'WebApp/pickles/pickles/route_{lineId}.pkl'
+    
+    if hasWeather == False:
+        # path for model pickle
+        modelFile = f'WebApp/pickles/pickles_without_weather/route_{lineId}_without_weather.pkl'
 
 
 def get_route_model(lineId):
     # path for model pickle
     modelFile = f'{path}/pickles/route_{lineId}.pkl'
-    
+
     # Load the Model back from file
     with open(modelFile, 'rb') as file:  
         model = pickle.load(file)

@@ -32,7 +32,7 @@ $(document).ready(function () {
 
             // Leaflet needs this to update the map display
             // after being hidden
-            mymap.invalidateSize();
+            map.invalidateSize();
         
         // Hide the map
         } else if (nav_id === "hidemap") {
@@ -126,6 +126,11 @@ $(window).resize(function () {
 
 
 function loadSideBarContent(navId){
+
+    if( navId == "routes"){
+        routes()
+    }
+
     // Load the appropriate HTML using the navId
     $("#sidebar").load("/" + navId);
 
