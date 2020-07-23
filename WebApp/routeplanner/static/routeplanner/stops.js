@@ -1,6 +1,13 @@
 //TO DO: Bring User to Routes info page if they click a specific route
 
 
+// Stop stops from showing on other tabs
+$(document).on("click.stops", '.nav_item, bottom_nav_item', function () {
+    stopsLayer.clearLayers();
+    map.off('moveend');
+});
+
+
 $(document).ready(function() {
     //clear all the markers in the layer
     stopsLayer.clearLayers();
@@ -53,6 +60,9 @@ function moveMapToEnteredAddress(address){
         map.flyTo([latlng.lat, latlng.lng], 15)
     });
 }
+
+
+
 $('form').submit(function(e){
     // Stop form refreshing page on submit
     e.preventDefault();
@@ -131,7 +141,7 @@ function markStopsOnMap(stop) {
     route_list = route_list.join(", ");
     var marker = 
     L.marker([stop.latitude, stop.longitude])
-    .bindPopup(`<b> ${stop.fullname}</b><br> ${route_list}`);
+    .bindPopup(`<b> ${stop.localname}</b><br> ${route_list}`);
     stopsLayer.addLayer(marker);
 }
 
