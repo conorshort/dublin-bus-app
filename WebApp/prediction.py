@@ -107,14 +107,17 @@ def get_models_name():
     return files
 
 def get_route_model(lineId, hasWeather = False):
-
-    # path for model pickle without weather
+    print("Trying to get model")
+    # path for model pickle with weather
     modelFile = f'{path}/pickles/pickles/route_{lineId}.pkl'
     
     if hasWeather == False:
-        # path for model pickle
+        # path for model pickle without weather
         modelFile = f'{path}/pickles/pickles_without_weather/route_{lineId}_without_weather.pkl'
+    with open(modelFile, 'rb') as file:
+        model = pickle.load(file)
 
+    return model
 
 # def get_route_model(lineId):
 #     # path for model pickle

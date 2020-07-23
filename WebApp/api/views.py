@@ -304,7 +304,7 @@ def direction(request):
             # print('depStopId', depStopId)
             # print('arrStopId', arrStopId)
             # print('lineId', lineId)
-            # print('stops', stops)
+            print('stops', stops)
 
 
 
