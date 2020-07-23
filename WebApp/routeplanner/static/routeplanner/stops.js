@@ -26,6 +26,7 @@ function showStops(){
         content = '';
         $.each(data, function (i, stop) {
             content += renderListItem(stop);
+            // content += document.getElementById('routes-list').innerHTML = "<a href='#'><i class='far fa-star star'></a>"
             markStopsOnMap(stop)
         });
         $( "#stopsListGroup" ).append(content);

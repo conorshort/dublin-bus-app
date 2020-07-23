@@ -6,8 +6,11 @@ urlpatterns = [
     path('journey', views.journey, name="journey"),
     path('stops', views.stops, name="stops"),
     path('routes', views.routes, name="routes"),
-
     path('leapcard', views.leapcard, name="leapcard"),
     path('leapinfo', views.leapinfo, name="leapinfo"),
-    path('realtimeInfo/<str:stop_id>', views.realtimeInfo, name="realtimeInfo")]
+    path('favourite', views.favourite, name="favourite"),
+    path('realtimeInfo/<str:stop_id>', views.realtimeInfo, name="realtimeInfo")
+    # path('set_cookie', views.set_cookie, name="set_cookie"),
+    # path('get_cookie', views.get_cookie, name="get_cookie")
+    ]
 
