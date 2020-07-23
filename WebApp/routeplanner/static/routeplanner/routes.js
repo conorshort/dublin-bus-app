@@ -85,7 +85,6 @@ function routes() {
             let content = '';
             routes.forEach(route => {
                 content += renderRouteListItem(route[0], route[1]);
-                content += document.getElementById('routes-list').innerHTML = "<i class='far fa-star star'></i>";
             });
 
             // Display the routes
@@ -99,7 +98,8 @@ function routes() {
 
 
              $('.star').click(function(){
-                alert("hihi");
+                 let starredRoute = $(this).attr("data-route");
+                 alert(starredRoute);
                 // e.preventDefault;
                 var routes = [];
                 if (document.getElementById("route_id").value === ""){
@@ -567,7 +567,11 @@ function routes() {
         const content = `
             <li class="list-group-item route-item" id="route-${route}">
                 <ul>
-                    <li class="row"><b class="col-6">${route}</b><span class="col-6">${operator}</span></li>
+                    <li class="row">
+                        <span class="col-1"><i class='far fa-star star' data-route="${route}"></i></span>
+                        <b class="col-6">${route}</b>
+                        <span class="col-5">${operator}</span>
+                    </li>
                 </ul>
             </li>`;
         return content;
