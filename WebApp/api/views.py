@@ -77,7 +77,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
         route_name = request.GET.get('name')
         inbound = request.GET.get("inbound")
 
-        today = datetime.datetime.today()
+        today = datetime.today()
 
         # Get distint shape ids and destinations for the given route name and direction
         # that are currently in service
@@ -113,7 +113,7 @@ class GTFSShapeViewSet(viewsets.ReadOnlyModelViewSet):
         routename = request.GET.get("routename")
         inbound = request.GET.get("inbound")
 
-        today = datetime.datetime.today()
+        today = datetime.today()
 
         shape_queryset = GTFSTrip.objects.filter(
             route__route_name=routename,
