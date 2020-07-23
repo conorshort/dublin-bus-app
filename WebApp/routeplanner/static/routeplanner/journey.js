@@ -99,6 +99,7 @@ $('form').submit(function(e){
         console.log(data)
         if (data.status == "OK"){
             try {
+                
                 var route = data.routes[0];
                 var leg = route.legs[0];
                 var arrive_time =  leg.arrival_time.text;
@@ -138,7 +139,7 @@ $('form').submit(function(e){
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
 
                 showResultJourneyDiv();
-                
+                MapUIControl.halfscreen();
             } catch (error) {
                 
                 alert(error);
@@ -257,7 +258,8 @@ function drawPolylineOnMap(points){
     var polyline = L.polyline(points, {color: 'red'});
     journeyLayer.addLayer(polyline);
     // zoom the map to the polyline
-    map.fitBounds(polyline.getBounds());
+    currentBounds = polyline.getBounds()
+    map.fitBounds(currentBounds);
 }
 
 

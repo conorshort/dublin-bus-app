@@ -1,5 +1,6 @@
 const RESP_WINDOW_SIZE = 768
 let currentBounds;
+let currentCentre;
 
 // Code in this block will be run one the page is loaded in the browser
 $(document).ready(function () {
@@ -9,6 +10,7 @@ $(document).ready(function () {
 
     // on click function for nav-items
     $('.nav_item').click(function () {
+
 
         // Get the name of tab on the navbar that was clicked
         var nav_id = $(this).attr('id');
@@ -23,6 +25,7 @@ $(document).ready(function () {
     // as it also shows and hides the map
     $('.bottom_nav_item').click(function () {
         // Get the name of tab on the navbar that was clicked
+        MapUIControl.hidemap();
         var nav_id = $(this).attr('id');
 
         // remove "bottom" from the nav-id
@@ -99,6 +102,7 @@ function initMap() {
         .bindPopup("Centre")
         // .openPopup();
         centreLocation = e.latlng;
+        currentCentre = centreLocation;
         // map.setView(e.latlng, 14);
     };
 
@@ -115,7 +119,7 @@ var MapUIControl = (function () {
                 $('#sidebar').fadeIn(200);
                 $(".sidebar_header").fadeIn(200);
                 $("#map").animate({ height: "0px" }, 500, () => {
-                    $("#map").hide();
+                    // $("#map").hide();
                     $("#mobile-show-content").hide();
                 });
             }
@@ -126,11 +130,18 @@ var MapUIControl = (function () {
                 $(".sidebar_header").hide();
                 $("#mobile-show-content").hide();
                 $('#sidebar').fadeIn(10);
-                $("#map").show()
-                    .animate({ height: "125px" }, 500, () => {
+                // $("#map").show()
+                $("#map").animate({ height: "200px" }, 500, () => {
+                        console.log("Invalidating size")
                         map.invalidateSize(false);
                         if (currentBounds) {
+                            console.log("flyint to bounds");
+                            console.log(currentBounds);
                             map.flyToBounds(currentBounds, { 'duration': 0.5 });
+                        } else if (currentCentre){
+                            console.log("flyint to centre");
+                            console.log(currentCentre);
+                            map.flyTo(currentCentre, 12, { 'duration': 0.5 });
                         }
                     });
             }
@@ -143,11 +154,13 @@ var MapUIControl = (function () {
                 var newHeight = $(window).height() - 80 - 60 - 50 + 5;
                 $('#sidebar').fadeOut(10);
                 $("#mobile-show-content").show();
-                $("#map").show()
-                    .animate({ height: newHeight }, 500, () => {
+                // $("#map").show()
+                $("#map").animate({ height: newHeight }, 500, () => {
                         map.invalidateSize(false);
                         if (currentBounds) {
                             map.flyToBounds(currentBounds, { 'duration': 0.5 });
+                        } else if (currentCentre) {
+                            map.flyTo(currentCentre, 12, { 'duration': 0.5 })
                         }
                     });
             }

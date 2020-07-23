@@ -321,10 +321,11 @@ function routes() {
                 $(`#timetable-table-${idx}`).append(row)
             });
 
-            // Initialise the tooltips
-            $('[data-toggle="tooltip"]').tooltip()
             idx++;
         });
+
+        // Initialise the tooltips
+        $('[data-toggle="tooltip"]').tooltip()
     }
 
 
