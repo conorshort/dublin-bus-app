@@ -124,4 +124,20 @@ def realtimeInfo(request, stop_id):
     r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
     return JsonResponse(r.text, safe=False)
 
+def favourite(request):
+    return render(request, 'routeplanner/favourite.html')
+
+# def set_cookie(request):
+#     if request.method =="POST":
+#         routeName = request.POST['route-item']
+#         response = HttpResponse('Save successfully')
+#     response.set_cookie('route', routeName)
+#     return response
+
+# def get_cookie(request):
+#     route = request.COOKIES.get('route')
+#     context={}
+#     context['route'] = route
+
+#     return JsonResponse(context)
 

@@ -80,15 +80,67 @@ function routes() {
             });
 
 
-
             // Add the routes to the list
+            // Add the stars to the list
             let content = '';
             routes.forEach(route => {
                 content += renderRouteListItem(route[0], route[1]);
+                content += document.getElementById('routes-list').innerHTML = "<i class='far fa-star star'></i>";
             });
 
             // Display the routes
-            $("#routes-list").append(content);
+             $("#routes-list").append(content);
+
+
+             $(".star").click(function () {
+                $(this).toggleClass("far fa-star fas fa-star");
+             });
+
+
+
+             $('.star').click(function(){
+                alert("hihi");
+                // e.preventDefault;
+                var routes = [];
+                if (document.getElementById("route_id").value === ""){
+                    alert('empty')
+                }
+                else{
+                    routes.push(document.getElementById("route_id").value);
+                    $(this).toggleClass("fa fa-star fa fa-star");
+                    try{
+                        cookiemonster.get('routes');
+                        cookiemonster.append('routes', routes, 3650);
+                    } catch(err){
+                        cookiemonster.set('routes', routes, 3650);
+                    }
+                    alert('Save Sucessfully');
+                }
+            });
+        
+        
+            $(function(){
+                $("#favourite").click(function(e){
+                $("#FavouriteResult").html("");
+                // alert("hi");
+                var tableContent = "<br>";
+                var routesArr = cookiemonster.get('routes');
+               
+                for (let i = 0; i<routesArr.length; i++){
+                    var count = i+1;
+                    let routes = routesArr[i];
+                    // console.log(stop);
+                    tableContent += routes;
+                    console.log(tableContent);
+                }
+                $("#FavouriteResult").html(tableContent);
+            });
+            });
+
+
+
+
+
 
             // Add an on click to each route
             $(".route-item").click(function () {
@@ -120,6 +172,9 @@ function routes() {
             });
         });
     });
+
+
+
 
 
 
@@ -597,17 +652,6 @@ function routes() {
         content += "</tr>";
         return content;
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
