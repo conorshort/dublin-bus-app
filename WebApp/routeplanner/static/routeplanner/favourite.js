@@ -15,20 +15,20 @@ $(function(){
 });
 // thisRoute='${route}
 
-// $('.starSolid').click(function(e){
-//     alert('hil');
-//     e.preventDefault;
-//     let addedRoute = $(this).attr("thisRoute");
-//     // var routesList = [];
-//     // routesList.push(starredRoute);
-//     // $(this).toggleClass("fa fa-star fa fa-star");
-//     // alert(routesList);
+$('.starSolid').click(function(e){
+    alert('hil');
+    e.preventDefault;
+    let addedRoute = $(this).attr("thisRoute");
+    // var routesList = [];
+    // routesList.push(starredRoute);
+    // $(this).toggleClass("fa fa-star fa fa-star");
+    // alert(routesList);
 
-//     try{
-//         cookiemonster.splice(addedRoute, 1, 1, 3650);
+    try{
+        cookiemonster.splice(addedRoute, 1, 1, 3650);
         
-//     } catch(err){
-//         cookiemonster.splice(addedRoute, 1, 1, 3650);
-//     }
-//     alert('remove Sucessfully');
-// });
+    } catch(err){
+        cookiemonster.splice(addedRoute, 1, 1, 3650);
+    }
+    alert('remove Sucessfully');
+});

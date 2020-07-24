@@ -101,25 +101,45 @@ function routes() {
             //  });
 
 
-
+//第一次會catch然後return，第二次如果存在就不save
              $('.star').click(function(e){
                 e.preventDefault;
                 let starredRoute = $(this).attr("data-route");
                 var routesList = [];
                 routesList.push(starredRoute);
-                $(this).toggleClass("far fa-star fas fa-star");
-                alert(routesList);
-
                 try{
                     cookiemonster.get('routesList');
-                    cookiemonster.append('routesList', routesList, 3650);
-                    
-                } catch(err){
+                }catch{
                     cookiemonster.set('routesList', routesList, 3650);
+                    alert('Save Sucessfully');
+                    return ;
                 }
-                alert('Save Sucessfully');
-                console.log(routesList);
-            });
+
+                var previous_route = cookiemonster.get('routesList');
+                var flag = 0;
+
+                for(let i=0;i<previous_route.length;i++){
+                    if(starredRoute==previous_route[i]){
+                        alert('This route is already in the list');
+                        flag = 1;
+                    }
+                }
+                    if (flag==0){
+                        try{
+                            cookiemonster.get('routesList');
+                            cookiemonster.append('routesList', routesList, 3650);
+                            
+                        } catch{
+                            cookiemonster.set('routesList', routesList, 3650);
+                        }
+                        alert('Save Sucessfully');
+                    }
+
+                });
+
+
+
+
 
 
             // Add an on click to each route
