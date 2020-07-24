@@ -91,55 +91,30 @@ function routes() {
              $("#routes-list").append(content);
 
 
-             $(".star").click(function () {
+            //  $(".star").click(function () {
+            //     $(this).toggleClass("far fa-star fas fa-star");
+            //  });
+
+
+
+             $('.star').click(function(e){
+                e.preventDefault;
+                let starredRoute = $(this).attr("data-route");
+                var routesList = [];
+                routesList.push(starredRoute);
                 $(this).toggleClass("far fa-star fas fa-star");
-             });
+                alert(routesList);
 
-
-
-             $('.star').click(function(){
-                 let starredRoute = $(this).attr("data-route");
-                 alert(starredRoute);
-                // e.preventDefault;
-                var routes = [];
-                if (document.getElementById("route_id").value === ""){
-                    alert('empty')
+                try{
+                    cookiemonster.get('routesList');
+                    cookiemonster.append('routesList', routesList, 3650);
+                    
+                } catch(err){
+                    cookiemonster.set('routesList', routesList, 3650);
                 }
-                else{
-                    routes.push(document.getElementById("route_id").value);
-                    $(this).toggleClass("fa fa-star fa fa-star");
-                    try{
-                        cookiemonster.get('routes');
-                        cookiemonster.append('routes', routes, 3650);
-                    } catch(err){
-                        cookiemonster.set('routes', routes, 3650);
-                    }
-                    alert('Save Sucessfully');
-                }
+                alert('Save Sucessfully');
+                console.log(routesList);
             });
-        
-        
-            $(function(){
-                $("#favourite").click(function(e){
-                $("#FavouriteResult").html("");
-                // alert("hi");
-                var tableContent = "<br>";
-                var routesArr = cookiemonster.get('routes');
-               
-                for (let i = 0; i<routesArr.length; i++){
-                    var count = i+1;
-                    let routes = routesArr[i];
-                    // console.log(stop);
-                    tableContent += routes;
-                    console.log(tableContent);
-                }
-                $("#FavouriteResult").html(tableContent);
-            });
-            });
-
-
-
-
 
 
             // Add an on click to each route
@@ -561,14 +536,14 @@ function routes() {
     // ========= RENDER FUNCTIONS =========
     // These are all functions for rendering various elements dynamically
 
-
     // create and return list-group-item for route
     function renderRouteListItem(route, operator) {
         const content = `
+        
             <li class="list-group-item route-item" id="route-${route}">
                 <ul>
                     <li class="row">
-                        <span class="col-1"><i class='far fa-star star' data-route="${route}"></i></span>
+                    <span class="col-1"><i class='far fa-star star' data-route="${route}"></i></span>
                         <b class="col-6">${route}</b>
                         <span class="col-5">${operator}</span>
                     </li>
