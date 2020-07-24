@@ -7,6 +7,7 @@ function routes() {
     // Will hold the route currently being displayed in the side bar
     var currentRoute = undefined;
 
+
     // Wait for the document to finish loading
     $(document).ready(function () {
         $(document).off("click.routes")
@@ -19,13 +20,15 @@ function routes() {
         // On click for the back button when route variations are
         // showing
         // Hides the variations div and shows the routes list
-        $(document).on("click.routes", "#back-to-routes",function () {
+        $(document).on("click.routes", "#back-to-routes", function () {
+            removeRouteStopsFromMap();
+            toggleRouteDisplay(currentRoute)
+            MapUIControl.hidemap();
             $("#route-stop-div").fadeOut(10);
             $("#variations-accordion").html("");
             $("#routes-div").fadeIn(10);
             $("#route-stops-title").html("")
-            removeRouteStopsFromMap();
-            toggleRouteDisplay(currentRoute)
+
         });
 
         $(document).on("click.routes", "#inbound-radio, #outbound-radio", function () {
@@ -42,7 +45,9 @@ function routes() {
 
 
 
-        $(document).on("click.routes",'.nav_item, bottom_nav_item', function () {
+        $(document).on("click.routes", '.bottom_nav_item', function () {
+            // MapUIControl.reset();
+            MapUIControl.hidemap();
             removeRouteStopsFromMap();
             for (const route in routeLayerObj) {
                 removeRouteFromMap(route);
@@ -118,7 +123,11 @@ function routes() {
 
 
             // Add an on click to each route
-            $(".route-item").click(function () {
+            $(document).on("click.routes", ".route-item", function () {
+
+                MapUIControl.halfscreen()
+
+
                 $("#inbound-radio").prop('checked', true)
                     .parent().addClass("active");
                 $("#outbound-radio").prop('checked', false)
@@ -163,6 +172,7 @@ function routes() {
         return $.getJSON("api/routes/variations/",
             { name: routeName, inbound: inbound },
             function (variations) {
+                $("#variations-accordion").html("");
                 // Display the variations
                 let content = '';
                 variations.forEach((variation, index) => {
@@ -205,9 +215,9 @@ function routes() {
                         .addTo(map);
                     stopMarkers.push(stopMarker);
                     stopsObj[stop.id] = stopMarker
-                    
+
                 });
-                
+
                 routeStopsLayer = L.featureGroup(stopMarkers).addTo(map);
                 $(`#stops-list-${index}`).append(content);
 
@@ -341,10 +351,11 @@ function routes() {
                 $(`#timetable-table-${idx}`).append(row)
             });
 
-            // Initialise the tooltips
-            $('[data-toggle="tooltip"]').tooltip()
             idx++;
         });
+
+        // Initialise the tooltips
+        $('[data-toggle="tooltip"]').tooltip()
     }
 
 
@@ -355,7 +366,7 @@ function routes() {
     // Colour will be used to display the route on the map
 
     function displayRouteOnMap(routeName, direction, colour) {
-
+        map.invalidateSize(false);
         let routeObj = {};
 
         // Get the data geojson formate from django 
@@ -385,9 +396,8 @@ function routes() {
 
                 let routesLayer = L.featureGroup(routes).addTo(map);
 
-                let bounds = routesLayer.getBounds();
-
-                map.flyToBounds(bounds, { 'duration': 0.8 });
+                currentBounds = routesLayer.getBounds();
+                map.flyToBounds(currentBounds, { 'duration': 0.8 });
 
                 // routeLayerObj holds all routes currently on the map, allowing them
                 // to be easily deleted later
@@ -433,7 +443,7 @@ function routes() {
     function removeRouteStopsFromMap() {
         console.log("removing siots");
 
-        if (routeStopsLayer){
+        if (routeStopsLayer) {
             map.removeLayer(routeStopsLayer);
             routeStopsLayer = undefined;
         }
@@ -462,41 +472,14 @@ function routes() {
 
         // Check is the route is being displayed or not
         if (routeLayerObj[routeName]) {
-            console.log(routeName)
-            console.log(currentRoute)
-            // If it is make it no longer active
-            // routeListElementID.removeClass("route-active")
-            //     .css('background-color', "")
-            //     .css('color', "");
 
-            // Remove it from the map
             removeRouteFromMap(routeName);
 
         } else {
 
-            // Grey out the list elem when loading
-            // Also disables click events to stop multiple
-            // clicks
-            // routeListElementID.addClass("route-loading");
-
-            // // Generate a random colour
-            let colour = '#' + Math.floor(seededRandom(funhash(routeName)) * 16777215).toString(16)
-
-            // // Decide whether to display black or white text based on the background colour
-            // let textColour = getTextColour(colour)
-
-            // // Displays the route
-            // .then will wait for the displayRouteOnMap function to finish
-            // before running the function inside it
-            displayRouteOnMap(routeName, direction, colour)
+            displayRouteOnMap(routeName, direction, '#FFFFFF')
                 .then(() => {
-                    //Remove the loading spinner
 
-                    // Set the list element as active and set the colours
-                    // routeListElementID.removeClass("route-loading")
-                    //     .addClass("route-active")
-                    //     .css('background-color', colour)
-                    //     .css('color', textColour);
                 });
         }
     }
@@ -704,17 +687,23 @@ function routes() {
         return results;
     }
 
-
-    function seededRandom(seed) {
-        var x = Math.sin(seed) * 10000;
-        return x - Math.floor(x);
-    }
-
-    var funhash = function (s) {
-        for (var i = 0, h = 0xdeadbeef; i < s.length; i++)
-            h = Math.imul(h ^ s.charCodeAt(i), 2654435761);
-        return (h ^ h >>> 16) >>> 0;
-    };
-
-
 }
+
+
+// function toggleMobileMap() {
+//     $(".sidebar_header").hide();
+//     $("#map").show()
+//         .height(0)
+//         .animate({ height: "200px" }, 500, () => map.invalidateSize(false));
+
+// }
+
+// function fullscreenMobileMap() {
+//     $(".sidebar_header").hide();
+//     $("#map").show()
+//         .animate({ height: "500px" }, 500, () => map.invalidateSize(false));
+// }
+
+
+
+

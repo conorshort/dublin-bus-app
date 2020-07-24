@@ -14,3 +14,4 @@ urlpatterns = [
     # path('get_cookie', views.get_cookie, name="get_cookie")
     ]
 
+

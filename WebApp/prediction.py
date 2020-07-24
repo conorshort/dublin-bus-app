@@ -3,7 +3,10 @@ from weather import getWeather
 import datetime
 import time
 import pickle
-from os import walk
+import os
+
+
+path = os.path.dirname(__file__)
 
 def predict_journey_time(lineId, segments, departure_unix):
     
@@ -96,26 +99,35 @@ def predict_journey_time_by_df(model, test_dataframe):
 def get_models_name():
 
     files = []
-    for (dirpath, dirnames, filenames) in walk('WebApp/pickles/pickles'):
+    print(path)
+    for (dirpath, dirnames, filenames) in os.walk(f'{path}/pickles/pickles'):
+
         files.extend(filenames)
         break
     return files
 
 def get_route_model(lineId, hasWeather = False):
-
-    # path for model pickle without weather
-    modelFile = f'WebApp/pickles/pickles/route_{lineId}.pkl'
+    print("Trying to get model")
+    # path for model pickle with weather
+    modelFile = f'{path}/pickles/pickles/route_{lineId}.pkl'
     
     if hasWeather == False:
-        # path for model pickle
-        modelFile = f'WebApp/pickles/pickles_without_weather/route_{lineId}_without_weather.pkl'
-
-    
-    # Load the Model back from file
-    with open(modelFile, 'rb') as file:  
+        # path for model pickle without weather
+        modelFile = f'{path}/pickles/pickles_without_weather/route_{lineId}_without_weather.pkl'
+    with open(modelFile, 'rb') as file:
         model = pickle.load(file)
 
     return model
+
+# def get_route_model(lineId):
+#     # path for model pickle
+#     modelFile = f'{path}/pickles/route_{lineId}.pkl'
+
+#     # Load the Model back from file
+#     with open(modelFile, 'rb') as file:  
+#         model = pickle.load(file)
+
+#     return model
 
 
 def isPeaktime(dt):

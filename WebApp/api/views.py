@@ -267,13 +267,13 @@ def direction(request):
     try:
         # copy another data for editing
         newData = copy.deepcopy(data) 
-
         steps = newData['routes'][0]['legs'][0]['steps']
 
         totalDuration = 0
 
         # forloop steps from google direction API response
         for i in range(len(steps)):
+
 
             # check if the step travel_mode is TRANSIT
             if steps[i]['travel_mode'] != 'TRANSIT':
@@ -282,10 +282,9 @@ def direction(request):
                 continue
             
             # check if the line model exist 
-            lineId = steps[i]['transit_details']['line']['short_name']
+            lineId = steps[i]['transit_details']['line']['short_name'].upper()
             if ('route_'+lineId) not in lines:
                 continue
-
             arrStopCoordination = steps[i]['transit_details']['arrival_stop']['location']
             depStopCoordination = steps[i]['transit_details']['departure_stop']['location']
 
@@ -298,11 +297,15 @@ def direction(request):
 
             # get stops between origin and destination stops
             headsign = steps[i]['transit_details']['headsign']
-            stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)[0]
-            print('depStopId:', depStopId)
-            print('arrStopId:', arrStopId)
-            print('lineId:', lineId)
-            print('stops:', stops)
+            origin_time = steps[i]['transit_details']['departure_time']['text']
+            
+            stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, origin_time=origin_time, headsign=headsign)[0]
+
+            # print('depStopId', depStopId)
+            # print('arrStopId', arrStopId)
+            # print('lineId', lineId)
+            print('stops', stops)
+
 
 
             # store stops info in data json for response 
@@ -330,7 +333,7 @@ def direction(request):
         return JsonResponse(newData, safe=False)
 
     except Exception as e:
-        print("type error: " + str(e))
+        print("type error:", str(e))
         return JsonResponse(data, safe=False)
    
         
