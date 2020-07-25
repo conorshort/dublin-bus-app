@@ -47,8 +47,8 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
 
         # create new dictionary to store direction data
         newData = {'leg': 
-                    {'distance' : 0,
-                     'duration' : 0,
+                    {'distance' : leg['distance'],
+                     'duration' : leg['duration'],
                      'arrival_time': leg['arrival_time'],
                      'departure_time': leg['departure_time'],
                      'start_location' : leg['start_location'],
@@ -78,22 +78,24 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                     # store stops info in data json for response 
                     steps[i]['transit_details']['stops'] = stops
                     duration = int(journeyTime)
-                    print('predict duration:', duration)
+                    # print('predict duration:', duration)
                 else:
                     duration = int(steps[i]['duration']['value'])
-                    print('original duration:', duration)
+                    # print('original duration:', duration)
                     
 
                 distance = int(steps[i]['distance']['value'])
                 totalDuration += duration
                 totalDistance += distance
-                print('duration:', duration, ', totalDuration:', totalDuration)
+                # print('duration:', duration, ', totalDuration:', totalDuration)
                 
                 newData['leg']['steps'].append(steps[i])
 
                 newData['leg']['end_location'] = steps[i]['end_location']
-                newData['leg']['duration'] = totalDuration
-                newData['leg']['distance'] = totalDistance
+                newData['leg']['duration']['value'] = totalDuration
+                newData['leg']['distance']['value'] = totalDistance
+                newData['leg']['duration']['text'] = secondsIntToTimeString(totalDuration)
+                newData['leg']['distance']['text'] = meterIntToKMString(totalDistance)
                 newData['leg']['arrival_time']['value'] += totalDuration
                 newData['leg']['arrival_time']['text'] = datetime.utcfromtimestamp(newData['leg']['arrival_time']['value']).strftime('%H:%M')
 
@@ -108,7 +110,7 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                 totalDuration += duration
                 totalDistance += distance
                 
-                print('duration:', duration, ', totalDuration:', totalDuration)
+                # print('duration:', duration, ', totalDuration:', totalDuration)
 
                # append the step to newData['leg']['steps']
                 newData['leg']['steps'].append(steps[i])
@@ -116,8 +118,10 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                 # if the step is the last step
                 if i == len(steps)-1:
                     newData['leg']['end_location'] = steps[i]['end_location']
-                    newData['leg']['duration'] = totalDuration
-                    newData['leg']['distance'] = totalDistance
+                    newData['leg']['duration']['value'] = totalDuration
+                    newData['leg']['distance']['value'] = totalDistance
+                    newData['leg']['duration']['text'] = secondsIntToTimeString(totalDuration)
+                    newData['leg']['distance']['text'] = meterIntToKMString(totalDistance)
                     newData['leg']['arrival_time']['value'] += totalDuration
                     newData['leg']['arrival_time']['text'] = datetime.utcfromtimestamp(newData['leg']['arrival_time']['value']).strftime('%H:%M')
                     
@@ -141,6 +145,9 @@ def isValidStepForPrediction(step):
         if ('route_'+lineId) in lines:
             return True
     return False
+
+
+
 
 def getStopsByStep(step, lineId):
 
@@ -173,6 +180,9 @@ def getStopsByStep(step, lineId):
         return stops[0] 
     return []
 
+
+
+
 def getSegmentsByStops(stops):
 
     if len(stops) >= 2: 
@@ -182,7 +192,26 @@ def getSegmentsByStops(stops):
         return segments
     return []
 
-    
+
+
+
+def secondsIntToTimeString(seconds):
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+
+    if h == 0:
+        return str(m) + ' mins'
+    return str(h) + ' hour ' + str(m) + ' mins' 
+
+
+
+def meterIntToKMString(meter):
+    km, m = divmod(meter, 1000)
+
+    if km == 0:
+        return str(m) + ' m'
+    return str(km) + ' km ' + str(m) + ' m' 
+
 
 
 

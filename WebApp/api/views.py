@@ -15,7 +15,7 @@ import pandas as pd
 import copy 
 import json
 from geopy.distance import great_circle
-from .direction import directionUntilFirstTransit
+from .direction import directionUntilFirstTransit, secondsIntToTimeString, meterIntToKMString
 
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
@@ -239,26 +239,22 @@ def direction(request):
 
     destination_coord = (destination.split(",")[0], destination.split(",")[1])
     
-    newData = {'leg': 
-                    {'distance' : 0,
-                     'duration' : 0,
-                     'steps' : []}}
+    newData = {'leg': {'steps' : []}}
 
     
     isFirstTimeRequest = True
-    i = 0
-    while (i <= 6) and ((isFirstTimeRequest) or  \
+    requestCount = 0
+
+    while (requestCount <= 6) and ((isFirstTimeRequest) or  \
             ((great_circle((origin.split(",")[0], origin.split(",")[1]), destination_coord).meters) >= 50)):
-        
-        if isFirstTimeRequest == False:
-            print('distance:', great_circle((origin.split(",")[0], origin.split(",")[1]), destination_coord).meters) 
-
-
-        i+=1
+         
+        requestCount += 1
 
         data = directionUntilFirstTransit(origin, destination, departureUnix)
 
         if isFirstTimeRequest == True:
+            newData['leg']['distance'] = {'value': 0, 'text': ''}
+            newData['leg']['duration'] = {'value': 0, 'text': ''}
             newData['leg']['start_location'] = data['leg']['start_location']
             newData['leg']['start_address'] = data['leg']['start_address']
             newData['leg']['departure_time'] = data['leg']['departure_time']
@@ -267,17 +263,17 @@ def direction(request):
         departureUnix = data['leg']['departure_time']['value']
 
 
-
-
         if data['status'] != 'OK':
             return JsonResponse(data)
 
-        newData['leg']['distance'] += int(data['leg']['distance'])
-        newData['leg']['duration'] += int(data['leg']['duration'])
-      
+        # add reponsed steps' data to newData
+        newData['leg']['distance']['value'] += int(data['leg']['distance']['value'])
+        newData['leg']['duration']['value'] += int(data['leg']['duration']['value'])
+        newData['leg']['distance']['text'] = meterIntToKMString(int(newData['leg']['distance']['value']))
+        newData['leg']['duration']['text'] = secondsIntToTimeString(int(newData['leg']['duration']['value']))
         newData['leg']['end_location'] = data['leg']['end_location']
         newData['leg']['steps'] += data['leg']['steps']
-        newData['leg']['arrival_time'] = data['leg']['departure_time']
+        newData['leg']['arrival_time'] = data['leg']['arrival_time']
 
         isFirstTimeRequest = False
 
