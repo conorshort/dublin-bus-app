@@ -25,9 +25,12 @@ $('.starSolid').click(function(e){
     // alert(routesList);
 
     try{
-        cookiemonster.splice(addedRoute, 1, 1, 3650);
+        let routess = cookiemonster.get('routesList')
+        for (let i=0;i<routess.length;i++){
+            if(routess[i]===addedRoute.value){
+                cookiemonster.splice(outesList, i, 1, 3650);
         
-    } catch(err){
+    }}} catch(err){
         cookiemonster.splice(addedRoute, 1, 1, 3650);
     }
     alert('remove Sucessfully');
