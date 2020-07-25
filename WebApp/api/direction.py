@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from .prediction import predict_journey_time, get_models_name
 from .models import SmartDublinBusStop, GTFSTrip
 from datetime import datetime
-
 import requests
 
 

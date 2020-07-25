@@ -89,10 +89,11 @@ $('form').submit(function(e){
 
     var fromInput = document.forms["journeyForm"]["f_from_stop"]
     var toInput = document.forms["journeyForm"]["f_to_stop"]
+    var dateTime = document.forms["journeyForm"]["datetime"]
 
     var originCoord = JSON.parse(fromInput.id.trim());
     var destinationCoord = JSON.parse(toInput.id.trim());
-    var dateTime =document.querySelector(".datetimeInput").value;
+    // var dateTime = document.querySelector(".datetimeInput").value;
 
     var dt = new Date(Date.parse(dateTime));
     var unix = dt.getTime()/1000;
@@ -251,8 +252,6 @@ function renderTransitDetail(step, index){
 
 function displayJourneySteps(steps){
     content = '';
-
-    console.log(JSON.stringify(steps));
 
     $.each( steps, function( index, step ) {
 

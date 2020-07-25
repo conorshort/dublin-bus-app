@@ -43,9 +43,8 @@ def getWeather(unixTime):
     # check if the request unixTime within 48 hour
     if unixTime >= weather_dt_values[0] and unixTime <= weather_dt_values[len(weather_dt_values)-1]:
 
-        # find the clostest dt value in the list
+        # find the clostest dt value in the list by binary search
         weatherIndex = bisect.bisect(weather_dt_values, unixTime)
-        
         return weather_hourly_data[weatherIndex]
     return None
     
