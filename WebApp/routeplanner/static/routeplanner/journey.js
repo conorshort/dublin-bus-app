@@ -156,6 +156,53 @@ $('form').submit(function(e){
 
 });
 
+
+$('#star').click(function(e){
+    e.preventDefault;
+    let starredOrigin = document.forms["journeyForm"]["f_from_stop"].value;
+    let starredDestination=document.forms["journeyForm"]["f_to_stop"].value;
+    let starredLine = document.getElementById("lineName").textContent;
+    var perJourney = [];
+    var journeyList=[];
+    perJourney.push(starredOrigin);
+    perJourney.push(starredDestination);
+    perJourney.push(starredLine);
+    journeyList.push(perJourney);
+    try{
+        cookiemonster.get('journeyList');
+    }catch{
+        cookiemonster.set('journeyList', journeyList, 3650);
+        alert('Save Sucessfully');
+        return ;
+    }
+
+    var previous_journey = cookiemonster.get('journeyList');
+    var flag = 0;
+
+    for(let i=0;i<previous_journey.length;i++){
+        if(perJourney==previous_journey[i]){
+            alert('This journey is already in the list');
+            flag = 1;
+        }
+    }
+        if (flag==0){
+            try{
+                cookiemonster.get('journeyList');
+                cookiemonster.append('journeyList', journeyList, 3650);
+                
+            } catch{
+                cookiemonster.set('journeyList', journeyList, 3650);
+            }
+            alert('Save Sucessfully');
+        }
+
+    });
+
+
+
+
+
+
 $('#edit_journey_input').click(function () {
     showSearchJourneyDiv();
     clearSearchResult();
@@ -189,7 +236,7 @@ function renderResultJourneySteps(steps) {
         if (step.travel_mode == "TRANSIT"){
             var line = step.transit_details.line;
             content +=  `<img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon"> &nbsp;`;
-            content += line.short_name;
+            content += "<span id='lineName'>"+line.short_name+"</span>";
 
         // if the travel_mode is WALKING, add walk icon to content
         } else if (step.travel_mode == "WALKING") {
@@ -212,15 +259,16 @@ function renderResultJourneySteps(steps) {
             content += "<p> <b>" + step.transit_details.num_stops + " Stops</b></p>";
 
             var stops = step.transit_details.stops;
-
+            
             if (stops) {
                 
                 $.each(stops, function( index, value ) {
                     content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
+                   
                 });
             }
 
-
+            
         // if the travel_mode is WALKING, add walk icon to content
         } else if (step.travel_mode == "WALKING") {
             content += "<p>" + step.html_instructions + "</p>";

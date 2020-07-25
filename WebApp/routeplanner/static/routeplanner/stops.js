@@ -96,6 +96,25 @@ function showArrivingBusesOnSideBar(stopid){
     });
 }
 
+$('.star2').click(function(){
+    alert('hi');
+//     let starredStop = $(this).attr("data-stop");
+//     alert(starredStop);
+//    var stops = [];
+//    routes.push(starredStop);
+//    $(this).toggleClass("fa fa-star fa fa-star");
+//    alert(routes);
+
+//    try{
+//        cookiemonster.get('stops');
+//        cookiemonster.append('stops', routes, 3650);
+       
+//    } catch(err){
+//        cookiemonster.set('stops', routes, 3650);
+//    }
+//    alert('Save Sucessfully');
+//    console.log(stops);
+});
 
 // create and return list-group-item for stop
 // stop_dist added as item
@@ -110,9 +129,8 @@ function renderListItem(stop, stop_dist) {
         route_buttons += '<button type="button" class="btn btn-info mr-1" id="stop-button">' + route_list[i] + "</button>";
       }
     const content = `
-    
+    <span class="col-1"><i class="far fa-star star2"></i></span>
     <li class="list-group-item stop" id="station-${stop.stopid}">
-    <span class="col-1"><i class='far fa-star star1' data-stop="${stop.stopid}"></i></span>
         <ul>
             <li><b>${ stop.fullname }</b></li>
             <li> ${ route_buttons }</li>
@@ -121,6 +139,8 @@ function renderListItem(stop, stop_dist) {
     </li>`;
     return content;
 }
+
+
 
 function renderRealtimeListItem(bus) {
  
@@ -161,25 +181,7 @@ $('.list-group-flush').on('click', '.stop', function(e) {
         $("#stopsListGroup").empty();
 });
 
-$('.star1').click(function(){
-    alert('hi');
-    let starredStop = $(this).attr("data-stop");
-    alert(starredStop);
-   var stops = [];
-   routes.push(starredStop);
-   $(this).toggleClass("fa fa-star fa fa-star");
-   alert(routes);
 
-   try{
-       cookiemonster.get('stops');
-       cookiemonster.append('stops', routes, 3650);
-       
-   } catch(err){
-       cookiemonster.set('stops', routes, 3650);
-   }
-   alert('Save Sucessfully');
-   console.log(stops);
-});
 
 // Function to calculate the distance between two points
 function distance(lat1, lon1, lat2, lon2, unit) {
