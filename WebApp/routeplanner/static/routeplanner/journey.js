@@ -33,8 +33,8 @@ function initAutoComplete(){
         componentRestrictions: {country: "IE"}
     };
 
-    var form_input = document.getElementById('form_input');
-    var to_input = document.getElementById('to_input');
+    var from_input = document.forms["journeyForm"]["f_from_stop"];
+    var to_input = document.forms["journeyForm"]["f_to_stop"];
 
     function initAutocomplete(input){
 
@@ -57,6 +57,10 @@ function initAutoComplete(){
                 return;
             } 
 
+            //TODO: not the good way to store coordinate, fund a way to replace this
+            //save place coordinate to element id
+            input.id = `{"lat":${place.geometry.location.lat()}, "lng":${place.geometry.location.lng()}}`;
+
             var address = '';
             if (place.address_components) {
                 address = [
@@ -68,7 +72,7 @@ function initAutoComplete(){
         });
     }
 
-    initAutocomplete(form_input);
+    initAutocomplete(from_input);
     initAutocomplete(to_input);
     
 }
@@ -83,13 +87,13 @@ $('form').submit(function(e){
     // Stop form refreshing page on submit
     e.preventDefault();
 
-    var origin = document.forms["journeyForm"]["f_from_stop"].value;
-    var destination = document.forms["journeyForm"]["f_to_stop"].value;
-    var dateTime =document.querySelector(".datetimeInput").value;
+    var fromInput = document.forms["journeyForm"]["f_from_stop"]
+    var toInput = document.forms["journeyForm"]["f_to_stop"]
 
-    // var origin = 'dundrum';
-    // var destination = 'dun la';
-    // var dateTime = '20';
+
+    var originCoord = JSON.parse(fromInput.id);
+    var destinationCoord = JSON.parse(toInput.id);
+    var dateTime =document.querySelector(".datetimeInput").value;
 
     var dt = new Date(Date.parse(dateTime));
     //set departure time mins to 0,
@@ -98,9 +102,10 @@ $('form').submit(function(e){
     var unix = dt.getTime()/1000;
 
     //get direction from api /api/direction
-    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}&departureUnix=${unix}`
+    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${originCoord.lat},${originCoord.lng}
+                                            &destination=${destinationCoord.lat},${destinationCoord.lng}
+                                            &departureUnix=${unix}`
     , function(data) {
-        console.log(data);
         if (data.status == "OK"){
             try {
                 
@@ -111,7 +116,7 @@ $('form').submit(function(e){
                 var duration = leg.duration.text;
                 // var transferCount = ((renderSteps.match(/bus_icon/g) || []).length).toString() ;
                 
-                displaySearchInfoOnHeader(origin, destination, dateTime);
+                displaySearchInfoOnHeader(fromInput.data, toInput.data, dateTime);
                 displayTripSummary(duration, '0', departure_time, arrive_time);
 
 
