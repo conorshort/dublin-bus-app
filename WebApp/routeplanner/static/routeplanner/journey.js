@@ -90,15 +90,11 @@ $('form').submit(function(e){
     var fromInput = document.forms["journeyForm"]["f_from_stop"]
     var toInput = document.forms["journeyForm"]["f_to_stop"]
 
-
-    var originCoord = JSON.parse(fromInput.id);
-    var destinationCoord = JSON.parse(toInput.id);
+    var originCoord = JSON.parse(fromInput.id.trim());
+    var destinationCoord = JSON.parse(toInput.id.trim());
     var dateTime =document.querySelector(".datetimeInput").value;
 
     var dt = new Date(Date.parse(dateTime));
-    //set departure time mins to 0,
-    //if departure time given is 
-    dt.setMinutes(0);
     var unix = dt.getTime()/1000;
 
     //get direction from api /api/direction
@@ -106,18 +102,19 @@ $('form').submit(function(e){
                                             &destination=${destinationCoord.lat},${destinationCoord.lng}
                                             &departureUnix=${unix}`
     , function(data) {
+
+
         if (data.status == "OK"){
             try {
                 
-                var route = data.routes[0];
-                var leg = route.legs[0];
+                var leg = data.leg;
                 var arrive_time =  leg.arrival_time.text;
                 var departure_time =  leg.departure_time.text;
                 var duration = leg.duration.text;
-                // var transferCount = ((renderSteps.match(/bus_icon/g) || []).length).toString() ;
+                var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length
                 
                 displaySearchInfoOnHeader(fromInput.data, toInput.data, dateTime);
-                displayTripSummary(duration, '0', departure_time, arrive_time);
+                displayTripSummary(duration, transferCount, departure_time, arrive_time);
 
 
                 //render and append origin waypoint

@@ -237,6 +237,7 @@ def direction(request):
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)
 
+
     destination_coord = (destination.split(",")[0], destination.split(",")[1])
     
     newData = {'leg': {'steps' : []}}
@@ -257,7 +258,9 @@ def direction(request):
             newData['leg']['duration'] = {'value': 0, 'text': ''}
             newData['leg']['start_location'] = data['leg']['start_location']
             newData['leg']['start_address'] = data['leg']['start_address']
+            newData['leg']['end_address'] = data['leg']['end_address']
             newData['leg']['departure_time'] = data['leg']['departure_time']
+            
    
         origin = str(data['leg']['end_location']['lat'])+","+ str(data['leg']['end_location']['lng'])
         departureUnix = data['leg']['departure_time']['value']
@@ -277,7 +280,7 @@ def direction(request):
 
         isFirstTimeRequest = False
 
-
+    newData['status'] = 'OK'
     return JsonResponse(newData, safe=False)
 
     # except Exception as e:

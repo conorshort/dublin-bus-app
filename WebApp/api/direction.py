@@ -54,6 +54,7 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                      'start_location' : leg['start_location'],
                      'start_address' : leg['start_address'],
                      'end_location' : leg['end_location'],
+                     'end_address' : leg['end_address'],
                      'steps' : []}}
 
         # create variable totalDuration and totalDistance to store updated duration and distance

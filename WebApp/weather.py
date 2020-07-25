@@ -2,6 +2,7 @@ from dublin_bus.config import OPENWEATHER_KEY
 import requests
 import json
 import ast
+import bisect 
 
 
 def getWeatherHourly():
@@ -12,10 +13,18 @@ def getWeatherHourly():
     weatherObj = requests.get(url).json()
     weatherList = weatherObj['hourly']
 
+    # get all dt values and store in a list
+    # to make the future query faster 
+    dt_values = [i['dt'] for i in weatherList]
 
-    # as requested in comment
     with open('weatherData.txt', 'w') as file:
-        file.write(json.dumps(weatherList)) 
+
+        # weather_dt_values : store the whole weather list which within 48 hours
+        # weather_hourly_data : store the dt of each weather in a list
+        obj = { 'weather_dt_values' : dt_values,
+                'weather_hourly_data' :weatherList }
+
+        file.write(json.dumps(obj)) 
         file.close()
 
 
@@ -23,17 +32,25 @@ def getWeather(unixTime):
 
     with open("weatherData.txt", "r") as file:
         contents = file.read()
-        hourlyWeather = ast.literal_eval(contents)
+        data = ast.literal_eval(contents)
+        weather_hourly_data = data['weather_hourly_data']
+        weather_dt_values = data['weather_dt_values']
         file.close()
 
+    if len(weather_hourly_data) == 0:
+        return None
 
-    for weather in hourlyWeather:
-        if weather['dt'] == unixTime:
-            return weather
+    # check if the request unixTime within 48 hour
+    if unixTime >= weather_dt_values[0] and unixTime <= weather_dt_values[len(weather_dt_values)-1]:
+
+        # find the clostest dt value in the list
+        weatherIndex = bisect.bisect(weather_dt_values, unixTime)
+        
+        return weather_hourly_data[weatherIndex]
     return None
     
 
-getWeatherHourly()
+# getWeatherHourly()
 # weather = getWeather(1595016000)
 # print(weather)
 

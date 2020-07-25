@@ -6,7 +6,7 @@ import pickle
 import os
 
 
-path = os.path.dirname(__file__)
+ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
 
 def predict_journey_time(lineId, segments, departure_unix):
     
@@ -31,7 +31,8 @@ def create_test_dataframe(lineId, segments, departure_unix):
     
     # cheak if the departure unix within 48 hour,
     # forecase weather only provide within 48 hour
-   
+    departure_unix = (int(departure_unix) // 3600) * 3600
+    print('departure_unix:', departure_unix)
     weather = getWeather(int(departure_unix))
     
     if weather != None:
@@ -99,7 +100,7 @@ def predict_journey_time_by_df(model, test_dataframe):
 def get_models_name():
 
     files = []
-    ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
+    
 
     print(ROOT_DIR)
     for (dirpath, dirnames, filenames) in os.walk(f'{ROOT_DIR}/WebApp/pickles/pickles'):
@@ -111,7 +112,6 @@ def get_models_name():
 
 def get_route_model(lineId, hasWeather = False):
     
-    ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
     # path for model pickle without weather
     modelFile = f'{ROOT_DIR}/WebApp/pickles/pickles/route_{lineId}.pkl'
     if hasWeather == False:
