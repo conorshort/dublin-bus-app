@@ -152,22 +152,25 @@ $('form').submit(function(e){
         $("#journey-loader").hide();
     });
 
-    
-
 });
 
-
+//save the selected journey to favourite
 $('#star').click(function(e){
     e.preventDefault;
+    //get the selected origin, destination and line info 
     let starredOrigin = document.forms["journeyForm"]["f_from_stop"].value;
     let starredDestination=document.forms["journeyForm"]["f_to_stop"].value;
     let starredLine = document.getElementById("lineName").textContent;
+
+    //push all of them into a list then push every new selected journey into a journey list
     var perJourney = [];
     var journeyList=[];
     perJourney.push(starredOrigin);
     perJourney.push(starredDestination);
     perJourney.push(starredLine);
     journeyList.push(perJourney);
+
+    //if the journey is not in the list it will be saved in cookies
     try{
         cookiemonster.get('journeyList');
     }catch{
@@ -179,12 +182,15 @@ $('#star').click(function(e){
     var previous_journey = cookiemonster.get('journeyList');
     var flag = 0;
 
+    //if selected journey already in the list wont save again
     for(let i=0;i<previous_journey.length;i++){
         if(perJourney==previous_journey[i]){
             alert('This journey is already in the list');
             flag = 1;
         }
     }
+
+        //if it is not in the list then will append to cookies 
         if (flag==0){
             try{
                 cookiemonster.get('journeyList');

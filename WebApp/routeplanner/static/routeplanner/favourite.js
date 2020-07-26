@@ -1,5 +1,8 @@
 $(function(){
+    $('#fav_routes').click(function(){
+   
     var tableContent=document.createElement("div");
+    tableContent.setAttribute('id','routesTable');
     // var tableContent = "<table style='width:100%'><tr style='border-bottom:1pt solid black;'><th style='text-align: center; vertical-align: middle;'>favourite routes</th></tr>";
     var routesArr = cookiemonster.get('routesList');
     // document.body.appendChild(tableContent);
@@ -34,12 +37,15 @@ $(function(){
     // tableContent += "</table>";
 
     $("#FavouriteResult").html(tableContent);
-
+})
 
 });
 
 $(function(){
+    $('#fav_journey').click(function(){
+        $('#routesTable').hide();
     var tableContent=document.createElement("div");
+    tableContent.setAttribute('id','journeyTable');
     // var tableContent = "<table style='width:100%'><tr style='border-bottom:1pt solid black;'><th style='text-align: center; vertical-align: middle;'>favourite routes</th></tr>";
     var journeyArr = cookiemonster.get('journeyList');
     // document.body.appendChild(tableContent);
@@ -73,7 +79,9 @@ $(function(){
     }
     // tableContent += "</table>";
 
-    $("#FavouriteResult2").html(tableContent);
+    $("#FavouriteResult").html(tableContent);
 
-
+    })
 });
+
+

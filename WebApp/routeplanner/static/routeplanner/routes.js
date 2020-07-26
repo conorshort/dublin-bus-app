@@ -96,17 +96,18 @@ function routes() {
              $("#routes-list").append(content);
 
 
-            //  $(".star").click(function () {
-            //     $(this).toggleClass("far fa-star fas fa-star");
-            //  });
 
 
-//第一次會catch然後return，第二次如果存在就不save
+            //save the selected route to favourite
              $('.star').click(function(e){
                 e.preventDefault;
+
+                //get the route attribute associate with the selected star and push to a list
                 let starredRoute = $(this).attr("data-route");
                 var routesList = [];
                 routesList.push(starredRoute);
+
+                //if the route is not in the list it will be saved in cookies
                 try{
                     cookiemonster.get('routesList');
                 }catch{
@@ -118,12 +119,15 @@ function routes() {
                 var previous_route = cookiemonster.get('routesList');
                 var flag = 0;
 
+                //if selected route already in the list wont save again
                 for(let i=0;i<previous_route.length;i++){
                     if(starredRoute==previous_route[i]){
                         alert('This route is already in the list');
                         flag = 1;
                     }
                 }
+
+                //if it is not in the list then will append to cookies 
                     if (flag==0){
                         try{
                             cookiemonster.get('routesList');
