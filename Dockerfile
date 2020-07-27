@@ -41,9 +41,9 @@ WORKDIR /app
 
 
 # install dependencies
-RUN pip install --no-cache-dir -r /requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # tell the port number the container should expose
 EXPOSE 8000
 
-CMD ["entrypoint.sh"]
+CMD ["scripts/entrypoint.sh"]
