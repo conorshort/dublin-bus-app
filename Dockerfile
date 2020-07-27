@@ -33,13 +33,15 @@ ENV PYTHONBUFFERED 1
 
 # copy all the files to the container
 COPY ./WebApp /app
+#copy requirements.txt too
+COPY requirements.txt /app/requirements.txt
 
 # set a directory for the app
 WORKDIR /app
 
 
 # install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
 
 # tell the port number the container should expose
 EXPOSE 8000
