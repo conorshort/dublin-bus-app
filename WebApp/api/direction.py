@@ -68,7 +68,7 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
             # FIXME: timezone  & daylight saving problem
             # when convert unix to time string shows one hour late 
             timestr = datetime.fromtimestamp(int(departureUnix))+ timedelta(hours=1)
-            timestr = timestr.strftime('%H:%M')
+            timestr = timestr.strftime("%I:%M%p")
             newData['leg']['arrival_time'] = {'value': int(departureUnix), \
                                         'text': timestr}
             newData['leg']['departure_time'] = {'value': int(departureUnix), \
@@ -153,7 +153,7 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
         # FIXME: timezone  & daylight saving problem
         # when convert unix to time string shows one hour late 
         timestr = datetime.fromtimestamp(newData['leg']['arrival_time']['value'])+ timedelta(hours=1)
-        timestr = timestr.strftime('%H:%M')
+        timestr = timestr.strftime('%I:%M%p')
 
         newData['leg']['arrival_time']['text'] = timestr
         
