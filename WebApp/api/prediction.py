@@ -32,7 +32,6 @@ def create_test_dataframe(lineId, segments, departure_unix):
     # cheak if the departure unix within 48 hour,
     # forecase weather only provide within 48 hour
     departure_unix = (int(departure_unix) // 3600) * 3600
-    print('departure_unix:', departure_unix)
     weather = getWeather(int(departure_unix))
     
     if weather != None:
@@ -101,8 +100,6 @@ def get_models_name():
 
     files = []
     
-
-    print(ROOT_DIR)
     for (dirpath, dirnames, filenames) in os.walk(f'{ROOT_DIR}/WebApp/pickles/pickles'):
 
         files.extend(filenames)

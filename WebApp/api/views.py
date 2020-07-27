@@ -252,8 +252,7 @@ def direction(request):
         requestCount += 1
 
         data = directionUntilFirstTransit(origin, destination, departureUnix)
-        print('data views:', newData)
-
+        
         if data['status'] != 'OK':
             return JsonResponse(data)
 
