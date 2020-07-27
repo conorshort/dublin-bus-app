@@ -9,12 +9,13 @@ import os
 ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
 
 def predict_journey_time(lineId, segments, departure_unix):
-    
+
     segments_df = create_test_dataframe(lineId, segments, departure_unix)
 
     # cheak if df has weather features
     weatherFeatures = ['temp', 'wind_speed', 'rain']
     hasWeatherFeatures =  all(elem in weatherFeatures for elem in segments_df.columns)
+
     if hasWeatherFeatures:
         model = get_route_model(lineId)
     else:
@@ -28,7 +29,7 @@ def predict_journey_time(lineId, segments, departure_unix):
 
 
 def create_test_dataframe(lineId, segments, departure_unix):
-    
+
     # cheak if the departure unix within 48 hour,
     # forecase weather only provide within 48 hour
     departure_unix = (int(departure_unix) // 3600) * 3600
@@ -43,12 +44,8 @@ def create_test_dataframe(lineId, segments, departure_unix):
     # get all features of the route model
     features = model.get_booster().feature_names
 
-
-    # create a dictionary as data for creating tested dataframe 
-    # set dictionary key to features and value to [0]
-    data = {feature: [0] for feature in features}
-    departure_dt = datetime.datetime.fromtimestamp(departure_unix)
     
+    departure_dt = datetime.datetime.fromtimestamp(departure_unix)
     hour = departure_dt.hour
     weekday = departure_dt.weekday
     isPeak = int(isPeaktime(departure_dt) == True)
@@ -56,14 +53,15 @@ def create_test_dataframe(lineId, segments, departure_unix):
     segments_df = pd.DataFrame()
 
     for seg in segments:
-        
-        try:
-            data['arr_hour_' + hour] = [1]
-            data['segment_id_' + seg] = [1]
-            data['weekday' + weekday] = [1]
-            data['isPeaktime'] = [isPeak]
-        except:
-            pass
+
+        # create a dictionary as data for creating tested dataframe 
+        # set dictionary key to features and value to [0]
+        data = {feature: [0] for feature in features}
+
+        data['arr_hour_' + str(hour)] = [1]
+        data['segment_id_' + str(seg)] = [1]
+        data['weekday' + str(weekday)] = [1]
+        data['isPeaktime'] = [isPeak]
         
 
         if weather:
@@ -72,13 +70,11 @@ def create_test_dataframe(lineId, segments, departure_unix):
             if 'rain' in weather:
                 data['rain'] = [weather['rain']['1h']]
         
-
         # create segment dataframe which storing segment data
         seg_df = pd.DataFrame(data=data)
 
         # reorder the columns sequence same as the model
         seg_df = seg_df[features]
-
         # add each segment dataframe to df dataframe
         segments_df = segments_df.append(seg_df, ignore_index=True)
     

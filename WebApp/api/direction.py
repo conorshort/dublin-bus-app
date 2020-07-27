@@ -2,7 +2,7 @@ from dublin_bus.config import GOOGLE_DIRECTION_KEY
 from django.http import JsonResponse
 from .prediction import predict_journey_time, get_models_name
 from .models import SmartDublinBusStop, GTFSTrip
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
 import requests
 
 
@@ -61,13 +61,14 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
         # if direction API response json has given departure_time
         # store 'departure_time' data for keys 'arrival_time' and 'departure_time' in newData
         if 'departure_time' in leg:
-            newData['leg']['arrival_time'] = leg['departure_time']
-            newData['leg']['departure_time'] = leg['departure_time']
+            newData['leg']['arrival_time'] = leg['departure_time'].copy()
+            newData['leg']['departure_time'] = leg['departure_time'].copy()
 
         else:
             # FIXME: timezone  & daylight saving problem
             # when convert unix to time string shows one hour late 
-            timestr = datetime.fromtimestamp(int(departureUnix)).strftime('%H:%M')
+            timestr = datetime.fromtimestamp(int(departureUnix))+ timedelta(hours=1)
+            timestr = timestr.strftime('%H:%M')
             newData['leg']['arrival_time'] = {'value': int(departureUnix), \
                                         'text': timestr}
             newData['leg']['departure_time'] = {'value': int(departureUnix), \
@@ -88,13 +89,13 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
 
                 lineId = steps[i]['transit_details']['line']['short_name']
                 stops = getStopsByStep(steps[i], lineId)
-
+                
                 # if stops num greater than one, 
                 # then segements will be created by stops 
                 # prediction will be made by segments
                 if len(stops) >= 2:
                     segments = getSegmentsByStops(stops)
-                
+                    
                     # predict traveling time for all segmentid
                     journeyTime = predict_journey_time(lineId, segments, int(departureUnix))
                     
@@ -107,13 +108,13 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                 else:
                     duration = int(steps[i]['duration']['value'])
                     
-    
                 totalDuration += duration
                 totalDistance += distance
                 
                 newData['leg']['steps'].append(steps[i])
                 newData['leg']['end_location'] = steps[i]['end_location']
 
+                
                 # if there have more than one transit
                 # break the for loop
                 # set another google direction API requestion
@@ -123,13 +124,11 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
 
             # if the step is not valied
             else:
-
                 duration = int(steps[i]['duration']['value'])
                 distance = int(steps[i]['distance']['value'])
 
                 totalDuration += duration
                 totalDistance += distance
-
                 newData['leg']['steps'].append(steps[i])
 
                 # if the step is the last step
@@ -138,25 +137,26 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                     newData['leg']['end_location'] = steps[i]['end_location']
                     
                 # print('duration:', duration, ', totalDuration:', totalDuration)
-      
-
-        # print('arr value:', newData['leg']['arrival_time']['value'])
+        
+        print('arr:', newData['leg']['arrival_time'])
+        print('dep:', newData['leg']['departure_time'])
         # print('totalDuration value:', totalDuration)
-
-
+        
         newData['leg']['duration']['value'] = totalDuration
         newData['leg']['distance']['value'] = totalDistance
         newData['leg']['duration']['text'] = secondsIntToTimeString(totalDuration)
         newData['leg']['distance']['text'] = meterIntToKMString(totalDistance)
         newData['leg']['arrival_time']['value'] += totalDuration
+        print('aftet arr:', newData['leg']['arrival_time'])
+        print('after dep:', newData['leg']['departure_time'])
         
         # FIXME: timezone  & daylight saving problem
         # when convert unix to time string shows one hour late 
-        timestr = datetime.fromtimestamp(newData['leg']['arrival_time']['value']).strftime('%H:%M')
+        timestr = datetime.fromtimestamp(newData['leg']['arrival_time']['value'])+ timedelta(hours=1)
+        timestr = timestr.strftime('%H:%M')
 
         newData['leg']['arrival_time']['text'] = timestr
-        # print('end arr :', newData['leg']['arrival_time'])
-
+        
         newData['status'] = 'OK'
         return newData
         
@@ -197,13 +197,6 @@ def getStopsByStep(step, lineId):
     headsign = step['transit_details']['headsign']
     origin_time = step['transit_details']['departure_time']['text']
 
-    # print("depStopId:", depStopId)
-    # print("arrStopId:", arrStopId)
-    # print("lineId:", lineId)
-    # print("origin_time:", origin_time)
-    # print("headsign:", headsign)
-
-
     stops = GTFSTrip.objects.get_stops_between \
         (depStopId, arrStopId, lineId, origin_time=origin_time, headsign=headsign)
 
@@ -219,6 +212,7 @@ def getSegmentsByStops(stops):
     if len(stops) >= 2: 
         segments = []
         for index in range(len(stops)-1):
+            
             segments.append(stops[index]['plate_code'] + '-' + stops[index+1]['plate_code'])
         return segments
     return []
