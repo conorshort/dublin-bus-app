@@ -48,13 +48,26 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
         newData = {'leg': 
                     {'distance' : leg['distance'],
                      'duration' : leg['duration'],
-                     'arrival_time': leg['arrival_time'],
-                     'departure_time': leg['departure_time'],
                      'start_location' : leg['start_location'],
                      'start_address' : leg['start_address'],
                      'end_location' : leg['end_location'],
                      'end_address' : leg['end_address'],
-                     'steps' : []}}
+                     'steps' : []},
+                     'arrival_time' : {},
+                     'departure_time' : {}}
+        
+
+
+        print('leg:', leg)
+        if 'arrival_time' in leg:
+            newData['leg']['arrival_time'] = leg['arrival_time']
+            newData['leg']['departure_time'] = leg['departure_time']
+        else:
+            newData['leg']['arrival_time'] = {'value': int(departureUnix), \
+                                        'text': datetime.utcfromtimestamp(int(departureUnix)).strftime('%H:%M')}
+            newData['leg']['departure_time'] = {'value': int(departureUnix), \
+                                        'text': datetime.utcfromtimestamp(int(departureUnix)).strftime('%H:%M')}
+        
 
         # create variable totalDuration and totalDistance to store updated duration and distance
         totalDuration, totalDistance = 0, 0
@@ -62,7 +75,6 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
 
         for i in range(len(steps)):
             if isValidStepForPrediction(steps[i]):
-                
                 lineId = steps[i]['transit_details']['line']['short_name']
                 stops = getStopsByStep(steps[i], lineId)
 
@@ -96,22 +108,17 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                 newData['leg']['distance']['value'] = totalDistance
                 newData['leg']['duration']['text'] = secondsIntToTimeString(totalDuration)
                 newData['leg']['distance']['text'] = meterIntToKMString(totalDistance)
-                newData['leg']['arrival_time']['value'] += totalDuration
-                newData['leg']['arrival_time']['text'] = datetime.utcfromtimestamp(newData['leg']['arrival_time']['value']).strftime('%H:%M')
 
                 if transitCount > 1:
                     break
             
             else:
-                
                 duration = int(steps[i]['duration']['value'])
                 distance = int(steps[i]['distance']['value'])
 
                 totalDuration += duration
                 totalDistance += distance
                 
-                # print('duration:', duration, ', totalDuration:', totalDuration)
-
                # append the step to newData['leg']['steps']
                 newData['leg']['steps'].append(steps[i])
 
@@ -122,10 +129,10 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                     newData['leg']['distance']['value'] = totalDistance
                     newData['leg']['duration']['text'] = secondsIntToTimeString(totalDuration)
                     newData['leg']['distance']['text'] = meterIntToKMString(totalDistance)
-                    newData['leg']['arrival_time']['value'] += totalDuration
-                    newData['leg']['arrival_time']['text'] = datetime.utcfromtimestamp(newData['leg']['arrival_time']['value']).strftime('%H:%M')
-                    
-  
+                
+        newData['leg']['arrival_time']['value'] += totalDuration
+        newData['leg']['arrival_time']['text'] = datetime.utcfromtimestamp(newData['leg']['arrival_time']['value']).strftime('%H:%M')
+      
         newData['status'] = 'OK'
         return newData
         

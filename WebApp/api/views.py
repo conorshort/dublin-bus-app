@@ -252,6 +252,11 @@ def direction(request):
         requestCount += 1
 
         data = directionUntilFirstTransit(origin, destination, departureUnix)
+        print('data views:', newData)
+
+        if data['status'] != 'OK':
+            return JsonResponse(data)
+
 
         if isFirstTimeRequest == True:
             newData['leg']['distance'] = {'value': 0, 'text': ''}
@@ -263,12 +268,10 @@ def direction(request):
             
    
         origin = str(data['leg']['end_location']['lat'])+","+ str(data['leg']['end_location']['lng'])
-        departureUnix = data['leg']['departure_time']['value']
+        departureUnix = data['leg']['arrival_time']['value']
 
 
-        if data['status'] != 'OK':
-            return JsonResponse(data)
-
+        
         # add reponsed steps' data to newData
         newData['leg']['distance']['value'] += int(data['leg']['distance']['value'])
         newData['leg']['duration']['value'] += int(data['leg']['duration']['value'])
@@ -277,6 +280,8 @@ def direction(request):
         newData['leg']['end_location'] = data['leg']['end_location']
         newData['leg']['steps'] += data['leg']['steps']
         newData['leg']['arrival_time'] = data['leg']['arrival_time']
+        newData['leg']['departure_time'] = data['leg']['departure_time']
+
 
         isFirstTimeRequest = False
 

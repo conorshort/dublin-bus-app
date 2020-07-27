@@ -1,3 +1,4 @@
+
 $(document).ready(function () {
     twttr.widgets.load()
 
@@ -7,6 +8,10 @@ $(document).ready(function () {
     //clear all markers and polyline on the map
     stopsLayer.clearLayers();
     journeyLayer.clearLayers();
+    
+    showSearchJourneyDiv(0);
+    initAutoComplete();
+
 
     //init datetime picker
     document.getElementsByClassName("datetimeInput").flatpickr({
@@ -20,9 +25,6 @@ $(document).ready(function () {
             )
         },
     });　
-
-    showSearchJourneyDiv();
-    initAutoComplete();
 });
 
 
@@ -89,7 +91,7 @@ $('form').submit(function(e){
 
     var fromInput = document.forms["journeyForm"]["f_from_stop"]
     var toInput = document.forms["journeyForm"]["f_to_stop"]
-    var dateTime = document.forms["journeyForm"]["datetime"]
+    var dateTime = document.forms["journeyForm"]["datetime"].value;
 
     var originCoord = JSON.parse(fromInput.id.trim());
     var destinationCoord = JSON.parse(toInput.id.trim());
@@ -99,11 +101,13 @@ $('form').submit(function(e){
     var unix = dt.getTime()/1000;
 
     //get direction from api /api/direction
-    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${originCoord.lat},${originCoord.lng}
-                                            &destination=${destinationCoord.lat},${destinationCoord.lng}
+    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${float(originCoord.lat).toFixed(7)}
+                                                            ,${float(originCoord.lng).toFixed(7)}
+                                            &destination=${float(destinationCoord.lat).toFixed(7)},
+                                                            ${float(destinationCoord.lng).toFixed(7)}
                                             &departureUnix=${unix}`
     , function(data) {
-
+        console.log(data);
 
         if (data.status == "OK"){
             try {
@@ -112,29 +116,31 @@ $('form').submit(function(e){
                 var arrive_time =  leg.arrival_time.text;
                 var departure_time =  leg.departure_time.text;
                 var duration = leg.duration.text;
+                console.log('1')
                 var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length
-                
-                displaySearchInfoOnHeader(fromInput.data, toInput.data, dateTime);
+                console.log('count:' + transferCount);
+                displaySearchInfoOnHeader(fromInput.value, toInput.value, dateTime);
                 displayTripSummary(duration, transferCount, departure_time, arrive_time);
-
+                console.log('2')
 
                 //render and append origin waypoint
                 var origin_waypoint = renderTransitStop(departure_time, leg.start_address, leg.start_location);
                 appendElements({"#journey_result_steps" : origin_waypoint});
-
+                console.log('3')
                 displayJourneySteps(leg.steps);
-
+                console.log('4')
                 //render and append origin waypoint
                 var destination_waypoint = renderTransitStop(arrive_time, leg.end_address, leg.end_location);
                 appendElements({"#journey_result_steps" : destination_waypoint});
-
+                console.log('5')
                 //drop origin marker
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address, "");
                 //drop destinaiton marker
                 dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address, "");
-
-                showResultJourneyDiv();
+                console.log('6')
+                showResultJourneyDiv(10);
                 MapUIControl.halfscreen();
+                console.log('7')
             } catch (error) {
                 
                 alert(error);
@@ -151,8 +157,8 @@ $('form').submit(function(e){
 
 
 $('#edit_journey_input').click(function () {
-    showSearchJourneyDiv();
-    clearSearchResult();
+    showSearchJourneyDiv(10);
+    clearSearchResult(10);
 
 });
 
@@ -183,6 +189,7 @@ function displaySearchInfoOnHeader(origin, destination, dateTime){
         "#journey_result_to" : destination,
         "#journey_result_datetime" : dateTime
     };
+
     displayElements(obj);
 }
 
@@ -252,8 +259,14 @@ function renderTransitDetail(step, index){
 
 function displayJourneySteps(steps){
     content = '';
-
+    // steps = JSON.parse(JSON.stringify(steps))
+    console.log('steps:'+ JSON.stringify(steps));
+    console.log('step jsonL'+ JSON.parse(JSON.stringify(steps)));
+    // console.log('len step:'+ steps.length);
+    stepLength = steps.length;
     $.each( steps, function( index, step ) {
+
+        console.log(step)
 
         if (step.travel_mode == "TRANSIT"){
             
@@ -280,7 +293,7 @@ function displayJourneySteps(steps){
         
         drawPolylineOnMap(step.travel_mode, coordinates);
 
-        if (index !== (length - 1)) {
+        if (index !== (stepLength - 1)) {
             //drop destination marker
             dropMarkerOnMap(step.end_location.lat, step.end_location.lng, "", "circle");
         }
@@ -305,8 +318,13 @@ function renderStepCard(step, index){
         <div class="card-header" id="heading${index}"><h5 class="mb-0">
         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">`;
 
-    content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;<b> ${step.transit_details.num_stops}</b>&nbsp;stops </div>`;   
-    content +=  `<div class="transit-num-stops row"> </div>`;
+    content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;`
+    
+    var stops = step.transit_details.stops;
+    if (stop) {
+        content += `<b> ${stops.length}</b> stops</div>`; 
+    }
+      
 
      
     // add journey steps detail in card body
@@ -323,9 +341,6 @@ function renderStepCard(step, index){
         $.each(stops, function( index, value ) {
             content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
         });
-
-        //show number of stops
-        content += "<p>Stops: <b>" + stops.length + "</b></p>";
     } else {
         content += "<p>" + step.html_instructions + "</p>";
     }
@@ -401,14 +416,16 @@ function clearSearchResult(){
 }
 
 
-function showSearchJourneyDiv(){
-    $("#journey_result_div").fadeOut(10);
-    $("#journey_search_div").fadeIn(10);
+function showSearchJourneyDiv(time){
+    $("#journey_search_div").fadeIn(time);
+    $("#journey_result_div").fadeOut(time);
+    
 }
 
-function showResultJourneyDiv(){
-    $("#journey_search_div").fadeOut(10);
-    $("#journey_result_div").fadeIn(10);
+function showResultJourneyDiv(time){
+    $("#journey_result_div").fadeIn(time);
+    $("#journey_search_div").fadeOut(time);
+    
 }
 
 
