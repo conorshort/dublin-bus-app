@@ -165,9 +165,9 @@ $('#star').click(function(e){
     //push all of them into a list then push every new selected journey into a journey list
     var perJourney = [];
     var journeyList=[];
-    perJourney.push(starredOrigin);
-    perJourney.push(starredDestination);
-    perJourney.push(starredLine);
+    perJourney.push('Origin:  '+starredOrigin);
+    perJourney.push('Destination:  '+starredDestination);
+    perJourney.push('Route(s):  '+starredLine);
     journeyList.push(perJourney);
 
     //if the journey is not in the list it will be saved in cookies

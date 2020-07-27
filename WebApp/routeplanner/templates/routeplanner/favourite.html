@@ -10,40 +10,28 @@
     </div>
     <div class="row">
         <div class="col">
-            <!-- <div class="container" id="bottom-navibar"></div>
-            <div class="bottom_nav_item" id="bottom-journey">
-                <div>Journey</div>
-            </div>
-            <div class="bottom_nav_item" id="bottom-stops">
-                <div>Stops</div>
-            </div>
-            <div class="bottom_nav_item" id="bottom-routes">
-                <div>Routes</div>
-            </div> -->
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
             
             <nav class="navbar navbar-default .justify-content-center">
-                <!-- <div class="container-fluid"></div> -->
-                <div >
-                  <!-- <div class="navbar-header"> -->
-                    <!-- <a class="navbar-brand" href="#">WebSiteName</a> -->
-                  <!-- </div> -->
+                <div class="container-fluid"></div>
                   <ul class="nav navbar-nav">
                     <li  id='fav_routes'><a href="#">Routes</a></li>
                     <li id='fav_journey'><a href="#">Journey</a></li>
-                    <li><a href="#">Stops</a></li>
+                    <li id='fav_stop'><a href="#">Stops</a></li>
                   </ul>
                 </div>
 
 
 
-    <div id= "FavouriteResult" style="width: 100px;height: 100px;">
+    <div id= "FavouriteResult" style="width: 100%;height: 100%; margin:2%;">
         
 </div>
-<div id= "FavouriteResult2" style="width: 100px;height: 100px;"></div>
+<div id= "FavouriteResult2" style="width: 100%;height: 100%;"></div>
+</div>
+<div id= "FavouriteResult3" style="width: 100%;height: 100%;"></div>
 </div>
     </div>
     <script src="{% static 'routeplanner/favourite.js' %}" id="script"></script> 
