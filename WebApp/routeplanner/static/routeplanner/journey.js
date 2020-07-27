@@ -101,13 +101,12 @@ $('form').submit(function(e){
     var unix = dt.getTime()/1000;
 
     //get direction from api /api/direction
-    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${float(originCoord.lat).toFixed(7)}
-                                                            ,${float(originCoord.lng).toFixed(7)}
-                                            &destination=${float(destinationCoord.lat).toFixed(7)},
-                                                            ${float(destinationCoord.lng).toFixed(7)}
+    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${parseFloat(originCoord.lat).toFixed(7)}\ 
+                                                            ,${parseFloat(originCoord.lng).toFixed(7)}\
+                                            &destination=${parseFloat(destinationCoord.lat).toFixed(7)},\
+                                                            ${parseFloat(destinationCoord.lng).toFixed(7)}\
                                             &departureUnix=${unix}`
     , function(data) {
-        console.log(data);
 
         if (data.status == "OK"){
             try {
@@ -116,31 +115,28 @@ $('form').submit(function(e){
                 var arrive_time =  leg.arrival_time.text;
                 var departure_time =  leg.departure_time.text;
                 var duration = leg.duration.text;
-                console.log('1')
-                var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length
-                console.log('count:' + transferCount);
+               
+                var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length;
                 displaySearchInfoOnHeader(fromInput.value, toInput.value, dateTime);
                 displayTripSummary(duration, transferCount, departure_time, arrive_time);
-                console.log('2')
 
                 //render and append origin waypoint
                 var origin_waypoint = renderTransitStop(departure_time, leg.start_address, leg.start_location);
                 appendElements({"#journey_result_steps" : origin_waypoint});
-                console.log('3')
                 displayJourneySteps(leg.steps);
-                console.log('4')
+
                 //render and append origin waypoint
                 var destination_waypoint = renderTransitStop(arrive_time, leg.end_address, leg.end_location);
                 appendElements({"#journey_result_steps" : destination_waypoint});
-                console.log('5')
+
                 //drop origin marker
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address, "");
                 //drop destinaiton marker
                 dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address, "");
-                console.log('6')
+
                 showResultJourneyDiv(10);
                 MapUIControl.halfscreen();
-                console.log('7')
+
             } catch (error) {
                 
                 alert(error);
@@ -259,15 +255,10 @@ function renderTransitDetail(step, index){
 
 function displayJourneySteps(steps){
     content = '';
-    // steps = JSON.parse(JSON.stringify(steps))
-    console.log('steps:'+ JSON.stringify(steps));
-    console.log('step jsonL'+ JSON.parse(JSON.stringify(steps)));
-    // console.log('len step:'+ steps.length);
+    
     stepLength = steps.length;
     $.each( steps, function( index, step ) {
-
-        console.log(step)
-
+        
         if (step.travel_mode == "TRANSIT"){
             
             var transit_details = step.transit_details;
