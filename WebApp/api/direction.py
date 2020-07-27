@@ -2,7 +2,7 @@ from dublin_bus.config import GOOGLE_DIRECTION_KEY
 from django.http import JsonResponse
 from .prediction import predict_journey_time, get_models_name
 from .models import SmartDublinBusStop, GTFSTrip
-from datetime import datetime
+from datetime import datetime, timezone
 import requests
 
 
@@ -11,7 +11,8 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
     print('origin:', origin)
     print('destination:', destination)
     print('departureUnix:', departureUnix)
-
+  
+    
     # check is all the parameters given
     # response 400 error if missing any parameter
     if not(origin and destination and departureUnix):
@@ -57,28 +58,38 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                      'departure_time' : {}}
         
 
-
-        print('leg:', leg)
-        if 'arrival_time' in leg:
-            newData['leg']['arrival_time'] = leg['arrival_time']
+        # if direction API response json has given departure_time
+        # store 'departure_time' data for keys 'arrival_time' and 'departure_time' in newData
+        if 'departure_time' in leg:
+            newData['leg']['arrival_time'] = leg['departure_time']
             newData['leg']['departure_time'] = leg['departure_time']
+
         else:
+            # FIXME: timezone  & daylight saving problem
+            # when convert unix to time string shows one hour late 
+            timestr = datetime.fromtimestamp(int(departureUnix)).strftime('%H:%M')
             newData['leg']['arrival_time'] = {'value': int(departureUnix), \
-                                        'text': datetime.utcfromtimestamp(int(departureUnix)).strftime('%H:%M')}
+                                        'text': timestr}
             newData['leg']['departure_time'] = {'value': int(departureUnix), \
-                                        'text': datetime.utcfromtimestamp(int(departureUnix)).strftime('%H:%M')}
+                                        'text': timestr}
         
 
         # create variable totalDuration and totalDistance to store updated duration and distance
         totalDuration, totalDistance = 0, 0
 
 
+        # for loop all the steps 
         for i in range(len(steps)):
+
+            # if the step is transit and the line ML model is existed
+            # ex: if the value of steps[i] is 39, than it is valid,
+            # since the route_39.pkl is existed
             if isValidStepForPrediction(steps[i]):
+
                 lineId = steps[i]['transit_details']['line']['short_name']
                 stops = getStopsByStep(steps[i], lineId)
 
-                # if stops num greater tan one, 
+                # if stops num greater than one, 
                 # then segements will be created by stops 
                 # prediction will be made by segments
                 if len(stops) >= 2:
@@ -89,50 +100,63 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                     
                     # store stops info in data json for response 
                     steps[i]['transit_details']['stops'] = stops
+                    
+                    # set duration to predicted journey time
                     duration = int(journeyTime)
-                    # print('predict duration:', duration)
+
                 else:
                     duration = int(steps[i]['duration']['value'])
-                    # print('original duration:', duration)
                     
-
-                distance = int(steps[i]['distance']['value'])
+    
                 totalDuration += duration
                 totalDistance += distance
-                # print('duration:', duration, ', totalDuration:', totalDuration)
                 
                 newData['leg']['steps'].append(steps[i])
-
                 newData['leg']['end_location'] = steps[i]['end_location']
-                newData['leg']['duration']['value'] = totalDuration
-                newData['leg']['distance']['value'] = totalDistance
-                newData['leg']['duration']['text'] = secondsIntToTimeString(totalDuration)
-                newData['leg']['distance']['text'] = meterIntToKMString(totalDistance)
 
+                # if there have more than one transit
+                # break the for loop
+                # set another google direction API requestion
+                # to get the direction for rest of the journey
                 if transitCount > 1:
                     break
-            
+
+            # if the step is not valied
             else:
+
                 duration = int(steps[i]['duration']['value'])
                 distance = int(steps[i]['distance']['value'])
 
                 totalDuration += duration
                 totalDistance += distance
-                
-               # append the step to newData['leg']['steps']
+
                 newData['leg']['steps'].append(steps[i])
 
                 # if the step is the last step
+                # update the newData end_location to end_location of the step
                 if i == len(steps)-1:
                     newData['leg']['end_location'] = steps[i]['end_location']
-                    newData['leg']['duration']['value'] = totalDuration
-                    newData['leg']['distance']['value'] = totalDistance
-                    newData['leg']['duration']['text'] = secondsIntToTimeString(totalDuration)
-                    newData['leg']['distance']['text'] = meterIntToKMString(totalDistance)
-                
-        newData['leg']['arrival_time']['value'] += totalDuration
-        newData['leg']['arrival_time']['text'] = datetime.utcfromtimestamp(newData['leg']['arrival_time']['value']).strftime('%H:%M')
+                    
+                # print('duration:', duration, ', totalDuration:', totalDuration)
       
+
+        # print('arr value:', newData['leg']['arrival_time']['value'])
+        # print('totalDuration value:', totalDuration)
+
+
+        newData['leg']['duration']['value'] = totalDuration
+        newData['leg']['distance']['value'] = totalDistance
+        newData['leg']['duration']['text'] = secondsIntToTimeString(totalDuration)
+        newData['leg']['distance']['text'] = meterIntToKMString(totalDistance)
+        newData['leg']['arrival_time']['value'] += totalDuration
+        
+        # FIXME: timezone  & daylight saving problem
+        # when convert unix to time string shows one hour late 
+        timestr = datetime.fromtimestamp(newData['leg']['arrival_time']['value']).strftime('%H:%M')
+
+        newData['leg']['arrival_time']['text'] = timestr
+        # print('end arr :', newData['leg']['arrival_time'])
+
         newData['status'] = 'OK'
         return newData
         

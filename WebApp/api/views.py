@@ -229,6 +229,8 @@ def direction(request):
     destination = request.GET.get('destination')
     departureUnix = request.GET.get('departureUnix')
 
+    print('direction departureUnix:', departureUnix)
+
     # check if 3 papameter all given
     # if missing any parameter from request
     # return a http 400 response with message

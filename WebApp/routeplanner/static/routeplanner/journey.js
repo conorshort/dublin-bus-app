@@ -93,19 +93,18 @@ $('form').submit(function(e){
     var toInput = document.forms["journeyForm"]["f_to_stop"]
     var dateTime = document.forms["journeyForm"]["datetime"].value;
 
-    var originCoord = JSON.parse(fromInput.id.trim());
-    var destinationCoord = JSON.parse(toInput.id.trim());
-    // var dateTime = document.querySelector(".datetimeInput").value;
+    var originCoord = JSON.parse(fromInput.id);
+    var destinationCoord = JSON.parse(toInput.id);
 
     var dt = new Date(Date.parse(dateTime));
     var unix = dt.getTime()/1000;
 
-    //get direction from api /api/direction
+    // //get direction from api /api/direction
     $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${parseFloat(originCoord.lat).toFixed(7)}\ 
-                                                            ,${parseFloat(originCoord.lng).toFixed(7)}\
-                                            &destination=${parseFloat(destinationCoord.lat).toFixed(7)},\
-                                                            ${parseFloat(destinationCoord.lng).toFixed(7)}\
-                                            &departureUnix=${unix}`
+    ,${parseFloat(originCoord.lng).toFixed(7)}\
+    &destination=${parseFloat(destinationCoord.lat).toFixed(7)},\
+    ${parseFloat(destinationCoord.lng).toFixed(7)}\
+    &departureUnix=${unix}`
     , function(data) {
 
         if (data.status == "OK"){
