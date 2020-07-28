@@ -46,7 +46,6 @@ class GTFSTripSerializer(serializers.ModelSerializer):
     class Meta: 
         model = GTFSTrip
         fields = ( 'route_id', 
-        'service_id',
         'trip_id',
         'shape_id',
         'trip_headsign',

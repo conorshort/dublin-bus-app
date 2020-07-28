@@ -36,7 +36,7 @@ a:hover, a:active {
   font-size: 30px;
   box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.3); ;
   position: relative;
-  z-index: 99999999;
+  z-index: 1000;
 }
 
 .weather {
@@ -289,9 +289,9 @@ div.weather#description {
 }
 
 
-#timetable-modal {
+/* #timetable-modal {
   top: 10%;
-}
+} */
 
 
 .journey_result_icon {
