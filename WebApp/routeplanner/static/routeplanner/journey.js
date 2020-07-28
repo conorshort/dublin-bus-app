@@ -106,7 +106,7 @@ $('form').submit(function(e){
     ${parseFloat(destinationCoord.lng).toFixed(7)}\
     &departureUnix=${unix}`
     , function(data) {
-
+        console.log(JSON.stringify(data));
         if (data.status == "OK"){
             try {
                 
@@ -122,6 +122,7 @@ $('form').submit(function(e){
                 //render and append origin waypoint
                 var origin_waypoint = renderTransitStop(departure_time, leg.start_address, leg.start_location);
                 appendElements({"#journey_result_steps" : origin_waypoint});
+                console.log('eg.steps:'+leg.steps);
                 displayJourneySteps(leg.steps);
 
                 //render and append origin waypoint
@@ -254,9 +255,11 @@ function renderTransitDetail(step, index){
 
 function displayJourneySteps(steps){
     content = '';
-    
     stepLength = steps.length;
+    console.log('stepLength:'+ stepLength);
+    
     $.each( steps, function( index, step ) {
+        console.log(index);
         
         if (step.travel_mode == "TRANSIT"){
             

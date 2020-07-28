@@ -138,8 +138,8 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                     
                 # print('duration:', duration, ', totalDuration:', totalDuration)
         
-        print('arr:', newData['leg']['arrival_time'])
-        print('dep:', newData['leg']['departure_time'])
+        # print('arr:', newData['leg']['arrival_time'])
+        # print('dep:', newData['leg']['departure_time'])
         # print('totalDuration value:', totalDuration)
         
         newData['leg']['duration']['value'] = totalDuration
@@ -147,8 +147,8 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
         newData['leg']['duration']['text'] = secondsIntToTimeString(totalDuration)
         newData['leg']['distance']['text'] = meterIntToKMString(totalDistance)
         newData['leg']['arrival_time']['value'] += totalDuration
-        print('aftet arr:', newData['leg']['arrival_time'])
-        print('after dep:', newData['leg']['departure_time'])
+        # print('aftet arr:', newData['leg']['arrival_time'])
+        # print('after dep:', newData['leg']['departure_time'])
         
         # FIXME: timezone  & daylight saving problem
         # when convert unix to time string shows one hour late 
