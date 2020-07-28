@@ -47,8 +47,8 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
 
         # create new dictionary to store direction data
         newData = {'leg': 
-                    {'distance' : leg['distance'],
-                     'duration' : leg['duration'],
+                    {'distance' : {'value' : 0, 'text' : ''},
+                     'duration' : {'value' : 0, 'text' : ''},
                      'start_location' : leg['start_location'],
                      'start_address' : leg['start_address'],
                      'end_location' : leg['end_location'],
@@ -76,7 +76,7 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
         
 
         # create variable totalDuration and totalDistance to store updated duration and distance
-        totalDuration, totalDistance = 0, 0
+        totalDistance = 0
 
 
         # for loop all the steps 
@@ -101,14 +101,29 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                     
                     # store stops info in data json for response 
                     steps[i]['transit_details']['stops'] = stops
-                    
+
                     # set duration to predicted journey time
                     duration = int(journeyTime)
+                    
+                    steps[i]['duration']['value'] = duration
+                    steps[i]['duration']['text'] = secondsIntToTimeString(duration)
+
+                    arr_time_unix = newData['leg']['arrival_time']['value'] + duration
+
+                    steps[i]['transit_details']['arrival_time']['value'] = arr_time_unix
+                    
+                    timestr = datetime.fromtimestamp(arr_time_unix)+ timedelta(hours=1)
+                    timestr = timestr.strftime('%I:%M%p')
+                    steps[i]['transit_details']['arrival_time']['text'] = timestr
+
+                    newData['leg']['arrival_time']['value'] = arr_time_unix
 
                 else:
-                    duration = int(steps[i]['duration']['value'])
-                    
-                totalDuration += duration
+                    arr_time_unix = int(steps[i]['transit_details']['arrival_time'])
+                    newData['leg']['arrival_time'] = arr_time_unix
+
+                # update total distance
+                distance = int(steps[i]['distance']['value']) 
                 totalDistance += distance
                 
                 newData['leg']['steps'].append(steps[i])
@@ -125,9 +140,9 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
             # if the step is not valied
             else:
                 duration = int(steps[i]['duration']['value'])
-                distance = int(steps[i]['distance']['value'])
+                newData['leg']['arrival_time']['value'] += duration
 
-                totalDuration += duration
+                distance = int(steps[i]['distance']['value'])
                 totalDistance += distance
                 newData['leg']['steps'].append(steps[i])
 
@@ -136,17 +151,16 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                 if i == len(steps)-1:
                     newData['leg']['end_location'] = steps[i]['end_location']
                     
-                # print('duration:', duration, ', totalDuration:', totalDuration)
+            # print('duration:', duration, ', totalDuration:', totalDuration)
         
-        # print('arr:', newData['leg']['arrival_time'])
+            print('arr:', newData['leg']['arrival_time'])
         # print('dep:', newData['leg']['departure_time'])
         # print('totalDuration value:', totalDuration)
-        
+        totalDuration = newData['leg']['arrival_time']['value'] - newData['leg']['departure_time']['value']
         newData['leg']['duration']['value'] = totalDuration
         newData['leg']['distance']['value'] = totalDistance
         newData['leg']['duration']['text'] = secondsIntToTimeString(totalDuration)
         newData['leg']['distance']['text'] = meterIntToKMString(totalDistance)
-        newData['leg']['arrival_time']['value'] += totalDuration
         # print('aftet arr:', newData['leg']['arrival_time'])
         # print('after dep:', newData['leg']['departure_time'])
         
