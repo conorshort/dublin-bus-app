@@ -46,4 +46,4 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 # tell the port number the container should expose
 EXPOSE 8000
 
-CMD ["python", "./app/manage.py"]
+CMD ["python", "./WebApp/manage.py"]
