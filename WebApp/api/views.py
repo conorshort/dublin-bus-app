@@ -45,7 +45,6 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
                 ORDER BY distance;" % (latitude, longitude, latitude, radius)
 
             queryset = SmartDublinBusStop.objects.raw(sql)
-
             serializer = SmartDublinBusStopSerializer(queryset, many=True)
 
             return Response(serializer.data)
@@ -272,7 +271,3 @@ def direction(request):
 
     newData['status'] = 'OK'
     return JsonResponse(newData, safe=False)
-
-    # except Exception as e:
-    #     print("type error:", str(e))
-    #     return JsonResponse(data, safe=False)
