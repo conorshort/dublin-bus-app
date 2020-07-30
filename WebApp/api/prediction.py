@@ -1,7 +1,6 @@
 import pandas as pd
 from weather import getWeather
 import datetime
-import time
 import pickle
 import os
 

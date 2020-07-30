@@ -1,21 +1,16 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from rest_framework import viewsets
-from rest_framework import status
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from django.http import JsonResponse
 from rest_framework.decorators import action
+from django.http import JsonResponse
+from django.db.models import F
 from api.models import SmartDublinBusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
 from .serializers import SmartDublinBusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
-from datetime import datetime
-from django.db.models import F
-import requests
-from dublin_bus.config import GOOGLE_DIRECTION_KEY
-import pandas as pd
-import copy
-import json
-from geopy.distance import great_circle
 from .direction import directionUntilFirstTransit, secondToTimeString, meterToKMString
+from dublin_bus.config import GOOGLE_DIRECTION_KEY
+from datetime import datetime
+import requests
+from geopy.distance import great_circle
+
 
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):

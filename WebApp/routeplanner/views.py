@@ -1,12 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from pprint import pprint
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from pyleapcard import *
 import re
-from django.http import HttpResponse, JsonResponse
 import requests
-from dublin_bus.config import GOOGLE_DIRECTION_KEY
 from .forms import leapCardForm
 
 
