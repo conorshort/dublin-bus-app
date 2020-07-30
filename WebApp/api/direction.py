@@ -17,6 +17,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
     if not(origin and destination and departureUnix):
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)
+
     url = 'https://maps.googleapis.com/maps/api/directions/json'
 
     # defining a params dict for the parameters to be sent to the API

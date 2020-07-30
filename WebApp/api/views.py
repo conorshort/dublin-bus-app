@@ -12,7 +12,6 @@ import requests
 from geopy.distance import great_circle
 
 
-
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SmartDublinBusStop.objects.all()
     serializer_class = SmartDublinBusStopSerializer
