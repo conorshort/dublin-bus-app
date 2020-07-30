@@ -15,7 +15,7 @@ import pandas as pd
 import copy
 import json
 from geopy.distance import great_circle
-from .direction import directionUntilFirstTransit, secondsIntToTimeString, meterIntToKMString
+from .direction import directionUntilFirstTransit, secondToTimeString, meterToKMString
 
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
@@ -267,8 +267,8 @@ def direction(request):
         # add reponsed steps' data to newData
         newData['leg']['distance']['value'] += int(data['leg']['distance']['value'])
         newData['leg']['duration']['value'] += int(data['leg']['duration']['value'])
-        newData['leg']['distance']['text'] = meterIntToKMString(int(newData['leg']['distance']['value']))
-        newData['leg']['duration']['text'] = secondsIntToTimeString(int(newData['leg']['duration']['value']))
+        newData['leg']['distance']['text'] = meterToKMString(int(newData['leg']['distance']['value']))
+        newData['leg']['duration']['text'] = secondToTimeString(int(newData['leg']['duration']['value']))
         newData['leg']['end_location'] = data['leg']['end_location']
         newData['leg']['steps'] += data['leg']['steps']
         newData['leg']['arrival_time'] = data['leg']['arrival_time']
