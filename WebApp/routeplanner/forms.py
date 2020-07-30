@@ -4,16 +4,16 @@ from django.core.exceptions import ValidationError
 import datetime  # for checking date range.
 # from crispy_forms.helper import FormHelper
 
+
 class leapCardForm(forms.Form):
     # helper = FormHelper()
 
-    username= forms.CharField(widget= forms.TextInput(attrs={'id': 'un'}))
+    username = forms.CharField(widget=forms.TextInput(attrs={'id': 'un'}))
     password = forms.CharField(widget=widgets.PasswordInput(attrs={'id': 'pw'}))
     # remember_me = forms.BooleanField(required=False)
 
 
 # class JourneyPlannerForm(forms.Form):
-   
 #     from_location = forms.CharField()
 #     to_location = forms.CharField()
 #     date = forms.DateField(help_text="Enter a date between now and 1 week.")
@@ -21,8 +21,7 @@ class leapCardForm(forms.Form):
 
 #     def clean_date(self):
 #         data = self.cleaned_data['date']
-        
-#         #Check date is not in past. 
+#         #Check date is not in past.
 #         if data < datetime.date.today():
 #             raise ValidationError('Invalid date - daye in past')
 

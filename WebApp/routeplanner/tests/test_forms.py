@@ -1,6 +1,7 @@
 from django.test import SimpleTestCase
 from routeplanner.forms import leapCardForm
 
+
 class TestForms(SimpleTestCase):
 
     def test_leapCardForm(self):

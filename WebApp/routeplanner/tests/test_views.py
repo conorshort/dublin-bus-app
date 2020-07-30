@@ -3,6 +3,7 @@ from django.urls import reverse
 # from routeplanner.models
 import json
 
+
 class TestVews(TestCase):
 
     def setUp(self):
@@ -40,5 +41,3 @@ class TestVews(TestCase):
             'username': '123',
             'password': '456'
         })
-
-        
