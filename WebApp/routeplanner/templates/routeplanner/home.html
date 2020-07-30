@@ -19,6 +19,10 @@
             <img src="./static/img/leapcard.png" alt="nav_item_leapcard" class="nav_img">
             Leap Card
         </div></a>
+        <div class="nav_item" id="favourite">
+            <img src="./static/img/star.png" alt="nav_item_favourite" class="nav_img">
+            Favourite
+        </div></a>
     </div>
     <div class="col-12 col-md order-md-2" id="map"></div>
     <div id="sidebar" class="col-12 col-md order-md-1"></div>
@@ -46,6 +50,11 @@
             <img src="./static/img/leapcard.png" alt="nav_item_leapcard" class="nav_img">
             <div>Leap Card</div>
         </div>
+
+        <div class="bottom_nav_item" id="bottom-favourite">
+            <img src="./static/img/star.png" alt="favourite" class="nav_img">
+            <div>Favourite</div>
+        </div>
     </div>
 </div>
 
@@ -60,5 +69,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA&libraries=places" async
     defer></script>
 <script src="{% static 'routeplanner/routes.js' %}" id="script"></script>
-<script src="{% static 'routeplanner/home.js' %}"></script>
+<script type="text/javascript" src="{% static 'routeplanner/cookiemonster.js' %}" id="script"></script>
+<script src="{% static 'routeplanner/home.js' %}"></script> 
+<script src="{% static 'routeplanner/favourite.js' %}"></script> 
 {% endblock %}

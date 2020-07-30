@@ -11,7 +11,6 @@ $(document).ready(function () {
     // on click function for nav-items
     $('.nav_item').click(function () {
 
-
         // Get the name of tab on the navbar that was clicked
         var nav_id = $(this).attr('id');
 
@@ -29,7 +28,6 @@ $(document).ready(function () {
         // Get the name of tab on the navbar that was clicked
         MapUIControl.hidemap();
         var nav_id = $(this).attr('id');
-
         // remove "bottom" from the nav-id
         nav_id = nav_id.split("-")[1];
 
@@ -219,7 +217,9 @@ function loadSideBarContent(navId) {
     $("#bottom-" + navId + ", #" + navId).addClass("nav-active");
 }
 
+
 $(document).on("click.mapUI", "#map", MapUIControl.fullscreen)
 $(document).on("click.mapUI", "#mobile-show-content", MapUIControl.halfscreen)
+
 
 
