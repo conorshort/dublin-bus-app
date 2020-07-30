@@ -7,8 +7,8 @@ import bisect
 
 def getWeatherHourly():
 
-    DUBLIN_COORDINATE = {'lat' : 53.3482, 
-                         'lng' : -6.2641}
+    DUBLIN_COORDINATE = {'lat': 53.3482, 
+                         'lng': -6.2641}
     url = f'https://api.openweathermap.org/data/2.5/onecall?lat={DUBLIN_COORDINATE["lat"]}&lon={DUBLIN_COORDINATE["lng"]}&exclude=current,daily,minutely&appid={OPENWEATHER_KEY}'
     weatherObj = requests.get(url).json()
     weatherList = weatherObj['hourly']
@@ -21,8 +21,7 @@ def getWeatherHourly():
 
         # weather_dt_values : store the whole weather list which within 48 hours
         # weather_hourly_data : store the dt of each weather in a list
-        obj = { 'weather_dt_values' : dt_values,
-                'weather_hourly_data' :weatherList }
+        obj = {'weather_dt_values': dt_values, 'weather_hourly_data': weatherList}
 
         file.write(json.dumps(obj)) 
         file.close()
@@ -46,14 +45,8 @@ def getWeather(unixTime):
         weatherIndex = bisect.bisect(weather_dt_values, unixTime)
         if weatherIndex == len(weather_dt_values):
             weatherIndex -= 1
-            
         return weather_hourly_data[weatherIndex]
-    return None
-    
-
+    return None    
 # getWeatherHourly()
 # weather = getWeather(1595016000)
 # print(weather)
-
-
-    

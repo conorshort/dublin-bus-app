@@ -41,7 +41,7 @@ class GTFSCalendar(AbstractGTFS):
 
         # Get the correct agency from the db
         calendar_dict["agency"] = GTFSAgency.objects.get(agency_id=agency_id)
-    
+
         # Make start and end date into date time objects
         calendar_dict["start_date"] = datetime.strptime(
             str(calendar_dict["start_date"]), "%Y%m%d")

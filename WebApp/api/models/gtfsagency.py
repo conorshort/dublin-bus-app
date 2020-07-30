@@ -15,5 +15,5 @@ class GTFSAgency(AbstractGTFS):
     agency_url = models.URLField()
     agency_timezone = models.CharField(max_length=64)
     agency_lang = models.CharField(max_length=2, null=True, blank=True)
-    
+
     _text_file = "agency.txt"

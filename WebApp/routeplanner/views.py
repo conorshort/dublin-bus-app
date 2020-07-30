@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt,csrf_protect
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from pprint import pprint
 from pyleapcard import *
 import re
@@ -10,19 +10,19 @@ from dublin_bus.config import GOOGLE_DIRECTION_KEY
 from .forms import leapCardForm
 
 def home(request):
-    #api key and url for weather data
+    # api key and url for weather data
     API = '83e8d16b48f83517a5d89158fc88656e'
     URL = "http://api.openweathermap.org/data/2.5/weather?q=Dublin,ie&appid=" + API
     try:
-        city_weather = requests.get(url=URL).json() #sends request to API and resturns weather data in Json
+        city_weather = requests.get(url=URL).json()  # sends request to API and resturns weather data in Json
     except:
         print("Error, Weather Data Not Recieved")        
 
-    #weather information as dictionaryt to be included in context
+    # weather information as dictionaryt to be included in context
     context = {"weather": {
-        'temperature' : int(city_weather['main']['temp'] - 273.15),
-        'description' : city_weather['weather'][0]['description'],
-        'icon' : city_weather['weather'][0]['icon']
+        'temperature': int(city_weather['main']['temp'] - 273.15),
+        'description': city_weather['weather'][0]['description'],
+        'icon': city_weather['weather'][0]['icon']
     }}
 
     return render(request, 'routeplanner/home.html', context)
@@ -83,9 +83,9 @@ def routes(request):
     return render(request, 'routeplanner/routes.html')
 
 def leapcard(request):
-    #simply return the leapcard form and pass the data 
+    # simply return the leapcard form and pass the data 
     form = leapCardForm()
-    return render(request, 'routeplanner/leapcard.html',{'form': form})
+    return render(request, 'routeplanner/leapcard.html', {'form': form})
 
 @csrf_exempt
 def leapinfo(request):
@@ -93,28 +93,28 @@ def leapinfo(request):
         # after getting username nad passrod from the form convert it to a string
         userinfo=str(request.body)
 
-        #use regualr expression to get username and password
-        pre_username=re.search(".+?(?=&password=)",userinfo).group(0)
-        username=re.search("(?<=username=).[^']*",pre_username).group(0)
-        password=re.search("(?<=password=).[^']*",userinfo).group(0)
+        # use regualr expression to get username and password
+        pre_username=re.search(".+?(?=&password=)", userinfo).group(0)
+        username=re.search("(?<=username=).[^']*", pre_username).group(0)
+        password=re.search("(?<=password=).[^']*", userinfo).group(0)
 
-        #pass the username and password to leapcard api
+        # pass the username and password to leapcard api
         session = LeapSession()
 
         try:
-            #if the info is valid get the card overciew
+            # if the info is valid get the card overciew
             login_ok = session.try_login(username, password)
             overview = session.get_card_overview()
 
-            #only extract card_label and balance
-            card_info = {"Card ":vars(overview)['card_label'],
-            "Balance ":vars(overview)['balance']}
+            # only extract card_label and balance
+            card_info = {"Card ": vars(overview)['card_label'],
+            "Balance ": vars(overview)['balance']}
 
-            #return them to the frontend
+            # return them to the frontend
             return JsonResponse(card_info, safe=False)
         
         except Exception as e:
-            #return error message if username and password is invalid
+            # return error message if username and password is invalid
             error="Error: Unable to retrieve Leap Card state."
             return JsonResponse(error, safe=False)
                         
@@ -125,7 +125,7 @@ def realtimeInfo(request, stop_id):
 
     
 
-#function to format api geocoordinates request to get lat and long of user-entered address
+# function to format api geocoordinates request to get lat and long of user-entered address
 # def longlatsearch(request, address):
 #     res = tuple(map(str, address.split(' ')))
 #     if len(res)==1:
