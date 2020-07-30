@@ -45,7 +45,7 @@ def create_test_dataframe(lineId, segments, departure_unix):
     departure_dt = datetime.datetime.fromtimestamp(departure_unix)
     hour = departure_dt.hour
     weekday = departure_dt.weekday
-    isPeak = int(isPeaktime(departure_dt))
+    isPeak = int(is_peak_time(departure_dt))
 
     segments_df = pd.DataFrame()
 
@@ -111,11 +111,11 @@ def get_route_model(lineId, hasWeather=False):
     return model
 
 
-def isPeaktime(dt):
+def is_peak_time(dt):
     return (dt.time() >= datetime.time(6, 30) and dt.time() <= datetime.time(9, 30)) \
         or (dt.time() >= datetime.time(15, 30) and dt.time() <= datetime.time(18, 30))
 
-# isPeak = isPeaktime(datetime.datetime.now())
+# isPeak = is_peak_time(datetime.datetime.now())
 # print(isPeak)
 
 

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import requests
 
 
-def directionUntilFirstTransit(origin, destination, departureUnix):
+def direction_to_first_transit(origin, destination, departureUnix):
     print("=============================================")
     print('origin:', origin)
     print('destination:', destination)
@@ -82,16 +82,16 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
             # if the step is transit and the line ML model is existed
             # ex: if the value of steps[i] is 39, than it is valid,
             # since the route_39.pkl is existed
-            if isValidStepForPrediction(steps[i]):
+            if is_valid_for_prediction(steps[i]):
 
                 lineId = steps[i]['transit_details']['line']['short_name']
-                stops = getStopsByStep(steps[i], lineId)
+                stops = get_stops(steps[i], lineId)
 
                 # if stops num greater than one,
                 # then segements will be created by stops
                 # prediction will be made by segments
                 if len(stops) >= 2:
-                    segments = getSegmentsByStops(stops)
+                    segments = get_segments(stops)
 
                     # predict traveling time for all segmentid
                     journeyTime = predict_journey_time(
@@ -106,7 +106,7 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                     duration = int(journeyTime)
 
                     steps[i]['duration']['value'] = duration
-                    steps[i]['duration']['text'] = secondToTimeString(duration)
+                    steps[i]['duration']['text'] = get_time_string(duration)
 
                     arr_unix = newData['leg']['arrival_time']['value'] + duration
 
@@ -158,8 +158,8 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
         totalDuration = newData['leg']['arrival_time']['value'] - newData['leg']['departure_time']['value']
         newData['leg']['duration']['value'] = totalDuration
         newData['leg']['distance']['value'] = totalDistance
-        newData['leg']['duration']['text'] = secondToTimeString(totalDuration)
-        newData['leg']['distance']['text'] = meterToKMString(totalDistance)
+        newData['leg']['duration']['text'] = get_time_string(totalDuration)
+        newData['leg']['distance']['text'] = get_destination_string(totalDistance)
         # print('aftet arr:', newData['leg']['arrival_time'])
         # print('after dep:', newData['leg']['departure_time'])
 
@@ -179,7 +179,7 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
         return message
 
 
-def isValidStepForPrediction(step):
+def is_valid_for_prediction(step):
     if step['travel_mode'] == 'TRANSIT':
         # get all ML models' name
         # only do the journey time prediction if the model of the line is existed
@@ -190,7 +190,7 @@ def isValidStepForPrediction(step):
     return False
 
 
-def getStopsByStep(step, lineId):
+def get_stops(step, lineId):
 
     arrStopCoord = step['transit_details']['arrival_stop']['location']
     depStopCoord = step['transit_details']['departure_stop']['location']
@@ -211,7 +211,7 @@ def getStopsByStep(step, lineId):
     return []
 
 
-def getSegmentsByStops(stops):
+def get_segments(stops):
 
     if len(stops) >= 2:
         segments = []
@@ -222,7 +222,7 @@ def getSegmentsByStops(stops):
     return []
 
 
-def secondToTimeString(seconds):
+def get_time_string(seconds):
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
 
@@ -231,12 +231,12 @@ def secondToTimeString(seconds):
     return str(h) + ' hour ' + str(m) + ' mins'
 
 
-def meterToKMString(meter):
+def get_destination_string(meter):
     km, m = divmod(meter, 1000)
 
     if km == 0:
         return str(m) + ' m'
     return str(km) + ' km ' + str(m) + ' m'
 
-# d = directionUntilFirstTransit((53.2887254, -6.2442945), (53.2943958, -6.1338666), 1594850400)
+# d = direction_to_first_transit((53.2887254, -6.2442945), (53.2943958, -6.1338666), 1594850400)
 # print(d)

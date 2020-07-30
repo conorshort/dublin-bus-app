@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.db.models import F
 from api.models import SmartDublinBusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
 from .serializers import SmartDublinBusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
-from .direction import directionUntilFirstTransit, secondToTimeString, meterToKMString
+from .direction import direction_to_first_transit, get_time_string, get_destination_string
 from dublin_bus.config import GOOGLE_DIRECTION_KEY
 from datetime import datetime
 import requests
@@ -243,7 +243,7 @@ def direction(request):
 
         requestCount += 1
 
-        data = directionUntilFirstTransit(origin, destination, departureUnix)
+        data = direction_to_first_transit(origin, destination, departureUnix)
 
         if data['status'] != 'OK':
             return JsonResponse(data)
@@ -262,8 +262,8 @@ def direction(request):
         # add reponsed steps' data to newData
         newData['leg']['distance']['value'] += int(data['leg']['distance']['value'])
         newData['leg']['duration']['value'] += int(data['leg']['duration']['value'])
-        newData['leg']['distance']['text'] = meterToKMString(int(newData['leg']['distance']['value']))
-        newData['leg']['duration']['text'] = secondToTimeString(int(newData['leg']['duration']['value']))
+        newData['leg']['distance']['text'] = get_destination_string(int(newData['leg']['distance']['value']))
+        newData['leg']['duration']['text'] = get_time_string(int(newData['leg']['duration']['value']))
         newData['leg']['end_location'] = data['leg']['end_location']
         newData['leg']['steps'] += data['leg']['steps']
         newData['leg']['arrival_time'] = data['leg']['arrival_time']
