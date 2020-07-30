@@ -29,7 +29,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
     r = requests.get(url=url, params=PARAMS)
     data = r.json()
 
-    #check the status of the google direction response
+    # check the status of the google direction response
     if data['status'] != 'OK':
         return JsonResponse(data)
 
@@ -143,7 +143,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
         newData['leg']['distance']['value'] = totalDistance
         newData['leg']['duration']['text'] = get_time_string(totalDuration)
         newData['leg']['distance']['text'] = get_destination_string(totalDistance)
-        
+
         # FIXME: timezone  & daylight saving problem
         # when convert unix to time string shows one hour late
         timestr = datetime.fromtimestamp(newData['leg']['arrival_time']['value']) + timedelta(hours=1)
@@ -183,7 +183,7 @@ def get_stops(step, lineId):
         originTime = step['transit_details']['departure_time']['text']
 
         stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, origin_time=originTime, headsign=headsign)
-    
+
     except Exception as e:
         print('function get_stops error:', e)
         return []
@@ -191,7 +191,6 @@ def get_stops(step, lineId):
     if len(stops) > 0:
         return stops[0]
     return []
-     
 
 
 def get_segments(stops):
