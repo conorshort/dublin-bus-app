@@ -157,10 +157,17 @@ div.weather#description {
 .form-table {
   width: 100%;
   margin: 10px 0px;
-}
+} 
+
+.form-table td { 
+  height: 50px;
+  margin: 8px 0px;
+
+} 
 
 .form-input {
   width: 100%;
+  height: 80%;
 }
 
 #formadd {
