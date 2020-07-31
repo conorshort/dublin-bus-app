@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-
 <head>
 
     <!-- Required meta tags -->
@@ -14,9 +13,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
         integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
         crossorigin="" />
+
     <!-- datetime picker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
     <link rel="stylesheet" type="text/css" href="{% static 'routeplanner/main.css' %}">
 
     {% if title %}
@@ -46,7 +45,6 @@
                         </div>
                         <div class="col-7 weather" id="description">
                             {{ weather.description }}
-
                         </div> -->
                     </div>
                 </div>
@@ -62,6 +60,7 @@
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
     <!-- Twitter Javascript for Widget JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
@@ -88,7 +87,6 @@
     <!-- Add Firebase products that you want to use -->
     <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-firestore.js"></script>
-
     
     <script>
     // congif firebase
@@ -118,7 +116,7 @@
     <!-- Modal (pop-up box) for timetables -->
     <div class="modal fade" id="timetable-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
-        <div class="modal-dialog " role="document">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="timetable-title"></h5>
@@ -144,7 +142,5 @@
             </div>
         </div>
     </div>
-
 </body>
-
 </html>

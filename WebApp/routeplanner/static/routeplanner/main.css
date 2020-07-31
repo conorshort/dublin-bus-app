@@ -152,9 +152,25 @@ div.weather#description {
   height: 10px;
 }
 
+/* form */
+
+.form-table {
+  width: 100%;
+  margin: 10px 0px;
+}
+
+.form-input {
+  width: 100%;
+}
+
+#formadd {
+  padding: 10px 20px;
+}
+
+
 /* ==== Navigation bar ==== */
 
-#side-navibar {
+#side_navibar {
   background-color: #797878;
   width: 90px;
   height: calc(100vh - 80px);
@@ -393,9 +409,7 @@ div.weather#description {
       overflow-y: hidden;
     }
 
-    #side-navibar {
-      display: none;
-    }
+
 
     #bottom-navibar {
       position: fixed;
