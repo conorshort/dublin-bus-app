@@ -12,6 +12,9 @@ currentCentre = [53.346967, -6.259923];
 MapUIControl.halfscreen();
 $(document).ready(function() {
 
+    //hide back btn
+    $("#back-btn").hide();
+
     //clear all the markers in the layer
     stopsLayer.clearLayers();
     showStops();
@@ -105,7 +108,7 @@ function renderListItem(stop, stop_dist) {
     // Getting routes to display as buttons for style purposes
     route_buttons = '';
     for (var i = 0; i < route_list.length; i++) {
-        route_buttons += '<button type="button" class="btn btn-info" id="stop-button">' + route_list[i] + "</button>";
+        route_buttons += '<button type="button" class="btn btn-outline-secondary" id="stop-button">' + route_list[i] + "</button>";
     }
 
     const content = `
@@ -135,6 +138,9 @@ function renderRealtimeListItem(bus) {
 $(document).on("click.stops", "#back-to-stops",function () {
     $("#stopsListGroup").empty();
     showStops();
+
+    //hide back btn
+    $("#back-btn").hide();
 });
 
 
@@ -143,20 +149,29 @@ function markStopsOnMap(stop) {
     var route_list = stop.routes;
     route_list = route_list.slice(2,-2);
     route_list = route_list.split("', '");
-    route_list = route_list.join(", ");
+    // route_list = route_list.join(", ");
+
+    route_buttons = ''
+    for (var i = 0; i < route_list.length; i++) {
+        route_buttons += `<button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;">` + route_list[i] + "</button>";
+    }
+
     var marker = 
     L.marker([stop.latitude, stop.longitude])
-    .bindPopup(`<b> ${stop.localname}</b><br> ${route_list}`);
+    .bindPopup(`<b> ${stop.localname}</b><br> ${route_buttons}`);
     stopsLayer.addLayer(marker);
 }
 
 
 //Click function for bus stop list-item
 $('.list-group-flush').on('click', '.stop', function(e) {
-        // Get the name of tab on the navbar that was clicked
-        var id = $(this).attr('id').replace("station-", "");;
-        showArrivingBusesOnSideBar(id);
-        $("#stopsListGroup").empty();
+    // Get the name of tab on the navbar that was clicked
+    var id = $(this).attr('id').replace("station-", "");;
+    showArrivingBusesOnSideBar(id);
+    $("#stopsListGroup").empty();
+
+    //show back btn
+    $("#back-btn").show();
 });
 
 
