@@ -2,7 +2,6 @@
 {% load static %}
 
 <div id="content">
-
     <div class="col">
         <div class="row sidebar_header">
             <div class="col">
@@ -15,7 +14,8 @@
                     <form id='stops-area' method="post">
                         <div class="row ml-1">
                             <h6 class="btn btn-outline-secondary btn-sm" id="back-to-stops" >
-                                < Back </h6>
+                                < Back 
+                            </h6>
                         </div>
                         <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area">
                         {% csrf_token %}

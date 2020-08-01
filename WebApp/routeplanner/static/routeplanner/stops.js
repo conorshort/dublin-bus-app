@@ -105,16 +105,18 @@ function renderListItem(stop, stop_dist) {
     // Getting routes to display as buttons for style purposes
     route_buttons = '';
     for (var i = 0; i < route_list.length; i++) {
-        route_buttons += '<button type="button" class="btn btn-info mr-1" id="stop-button">' + route_list[i] + "</button>";
-      }
+        route_buttons += '<button type="button" class="btn btn-info" id="stop-button">' + route_list[i] + "</button>";
+    }
+
     const content = `
     <li class="list-group-item stop" id="station-${stop.stopid}">
-        <ul>
-            <li><b>${ stop.fullname }</b></li>
-            <li> ${ route_buttons }</li>
-            <li>${ stop_dist } Metres <li>
+        <ul class="row">
+            <li class="col-8"><b>${ stop.fullname } ${stop.stopid}</b></li>
+            <li class="col-4">${ stop_dist } Metres</li>
+            <li class="col"> ${ route_buttons }</li>
         </ul>
     </li>`;
+
     return content;
 }
 

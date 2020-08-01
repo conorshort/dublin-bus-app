@@ -152,6 +152,11 @@ div.weather#description {
   height: 10px;
 }
 
+#stop-button {
+  margin: 2px;
+  padding: 2px 8px;
+}
+
 /* form */
 
 .form-table {
