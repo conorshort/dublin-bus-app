@@ -126,14 +126,14 @@ function renderListItem(stop, stop_dist) {
 }
 
 function renderRealtimeListItem(bus) {
- 
+
     const content = `
-    <li class="list-group-item" id="stop-info">
-        <ul class="row">
-            <li class="col-9"><b>${ bus.route }</b>  ${ bus.destination } </li>
-            <li class="col-3">${ bus.duetime } mins </li>
-        </ul>
-    </li>`;
+        <li class="list-group-item stop-realtime" id="route-${bus.route}" style="padding: 3px 2px">
+            <ul class="row">
+                <li class="col-8"><b>${ bus.route }</b> ${ bus.destination }</li>
+                <li class="col-4">${ bus.duetime } mins </li>
+            </ul>
+        </li> `; 
     return content;
 }
 

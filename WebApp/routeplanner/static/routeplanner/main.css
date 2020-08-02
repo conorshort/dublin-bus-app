@@ -476,11 +476,20 @@ div.weather#description {
   background: #555;
 }
 /* Styling for even number list-item */
-.list-group-item:nth-child(2n) { 
-  background-color: #fafafa;
-  border: 0px;
-  padding: 0px 10px;
+.list-group-item:nth-child(odd) { 
+  background-color: #f5f5f5;
 }
+
+.list-group-item:nth-child(even) { 
+  background-color: white;
+}
+
+.list-group-item {
+  width: 100%;
+  border: 0px;
+}
+
+
 
 /* Dont show any bullets front of list-item */
 li {
