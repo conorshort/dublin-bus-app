@@ -1,4 +1,22 @@
-$(document).ready(function() {
+currentBounds = undefined;
+currentCentre = [53.346967, -6.259923];
+MapUIControl.halfscreen();
+
+//event will be called when map bounds change
+map.on('moveend', function(e) {
+    var mapCentra = map.getCenter();
+    //update centreLocation to centre of the map
+    centreLocation = [mapCentra["lat"], mapCentra["lng"]];
+
+    //clear all the markers in the layer
+    stopsLayer.clearLayers();
+
+    //clear all the elements in list group
+    showStops(centreLocation[0], centreLocation[1]);
+ });
+
+
+ $(document).ready(function() {
 
     $("#stop-realtime-div").fadeOut(10);
     $("#stops-div").fadeIn(10);
@@ -17,24 +35,6 @@ $(document).on("click.stops", '.nav_item, .bottom_nav_item', function () {
     stopsLayer.clearLayers();
     map.off('moveend');
 });
-
-
-currentBounds = undefined;
-currentCentre = [53.346967, -6.259923];
-MapUIControl.halfscreen();
-
-//event will be called when map bounds change
-map.on('moveend', function(e) {
-    var mapCentra = map.getCenter();
-    //update centreLocation to centre of the map
-    centreLocation = [mapCentra["lat"], mapCentra["lng"]];
-
-    //clear all the markers in the layer
-    stopsLayer.clearLayers();
-
-    //clear all the elements in list group
-    showStops(centreLocation[0], centreLocation[1]);
- });
 
 
  // Shows Stops and distances 
@@ -128,7 +128,7 @@ function renderListItem(stop, stop_dist) {
 function renderRealtimeListItem(bus) {
  
     const content = `
-    <li class="list-group-item" id = "stop-info">
+    <li class="list-group-item" id="stop-info">
         <ul class="row">
             <li class="col-9"><b>${ bus.route }</b>  ${ bus.destination } </li>
             <li class="col-3">${ bus.duetime } mins </li>

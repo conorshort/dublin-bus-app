@@ -287,6 +287,14 @@ div.weather#description {
   border-style: none;
 }
 
+/* ==== search bar ====  */
+#stops_area {
+  border: 0px; 
+  border-bottom: 1px solid #ccc;
+  margin: 2px 0px;
+}
+
+
 /* ==== Other elements ==== */
 
 #stopsListGroup {
@@ -471,6 +479,7 @@ div.weather#description {
 .list-group-item:nth-child(2n) { 
   background-color: #fafafa;
   border: 0px;
+  padding: 0px 10px;
 }
 
 /* Dont show any bullets front of list-item */

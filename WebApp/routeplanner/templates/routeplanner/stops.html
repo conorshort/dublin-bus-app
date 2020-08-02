@@ -8,13 +8,15 @@
                 Stops
             </div>
         </div>
-        <div class="row sidecar_content">
+        <div class="row sidebar_content">
             <div class="col" id="stops-div">
                 <form id='stops-area' method="post" class="row p-0">
-                    <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area" class="col-sm-9">
+                    <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area" class="col-sm-9" style="border: 0px; 
+                        border-bottom: 1px solid #ccc;">
                     {% csrf_token %}
                     <input type="submit" class="col-sm-3 btn btn-primary float-right"></input>
                 </form>
+                
                 <div class="list-group-flush p-0 vh-100 row" id="stopsListGroup"></div>
             </div>
 
@@ -24,7 +26,8 @@
                         < Back 
                     </h6>
                 </div>
-                <ul class="list-group-flush p-0 vh-100" id="stopRealtimeListGroup"></ul>
+                
+                <div class="list-group-flush p-0 vh-100" id="stopRealtimeListGroup"></div>
             </div>
         </div>
     </div>
