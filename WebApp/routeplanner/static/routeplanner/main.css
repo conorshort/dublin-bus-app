@@ -70,8 +70,13 @@ div.weather#description {
   font-size: 15px;
 }
 
-.gray_box {
+.gray-box {
   background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.light-yellow-box {
+  background-color: rgba(255, 235, 179, 0.705);
   padding: 10px;
 }
 
@@ -477,11 +482,11 @@ div.weather#description {
 }
 /* Styling for even number list-item */
 .list-group-item:nth-child(odd) { 
-  background-color: #f5f5f5;
+  background-color: white;
 }
 
 .list-group-item:nth-child(even) { 
-  background-color: white;
+  background-color: #f5f5f5;
 }
 
 .list-group-item {

@@ -16,13 +16,17 @@ map.on('moveend', function(e) {
  });
 
 
- $(document).ready(function() {
+$(document).ready(function() {
 
     $("#stop-realtime-div").fadeOut(10);
     $("#stops-div").fadeIn(10);
 
     //clear all the markers in the layer
     stopsLayer.clearLayers();
+
+    var mapCentra = map.getCenter();
+    //update centreLocation to centre of the map
+    centreLocation = [mapCentra["lat"], mapCentra["lng"]];
 
     showStops(centreLocation[0] ,centreLocation[1]);
     initAutoComplete();
