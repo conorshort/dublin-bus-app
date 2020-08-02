@@ -5,7 +5,8 @@ $(document).ready(function() {
 
     //clear all the markers in the layer
     stopsLayer.clearLayers();
-    showStops();
+
+    showStops(centreLocation[0] ,centreLocation[1]);
     initAutoComplete();
 });
 
@@ -20,8 +21,7 @@ $(document).on("click.stops", '.nav_item, .bottom_nav_item', function () {
 
 currentBounds = undefined;
 currentCentre = [53.346967, -6.259923];
-// MapUIControl.halfscreen();
-
+MapUIControl.halfscreen();
 
 //event will be called when map bounds change
 map.on('moveend', function(e) {
@@ -31,24 +31,26 @@ map.on('moveend', function(e) {
 
     //clear all the markers in the layer
     stopsLayer.clearLayers();
-    showStops();
+
+    //clear all the elements in list group
+    showStops(centreLocation[0], centreLocation[1]);
  });
 
 
  // Shows Stops and distances 
-function showStops(){
+function showStops(lat, lng){
 
-    $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=1`, function(data) {
+    $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${lat}&longitude=${lng}&radius=1`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
             // Get distance from centre location to every stop in kilometers
-            dist_kms = distance(centreLocation[0],centreLocation[1],stop.latitude, stop.longitude, 'K');
+            dist_kms = distance(lat, lng,stop.latitude, stop.longitude, 'K');
             dist_ms = Math.round(dist_kms*1000);
-
             content += renderListItem(stop,dist_ms);
-            markStopsOnMap(stop)
+            markStopsOnMap(stop);
         });
-        $( "#stopsListGroup" ).append(content);
+
+        $("#stopsListGroup").html(content);
     });
 }
 
@@ -60,9 +62,10 @@ function moveMapToEnteredAddress(address){
     // console.log("MAde it to movemap")
     $.getJSON(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA`, function(data){
         console.log(data);
-        var latlng = data.results[0].geometry.location
+        var latlng = data.results[0].geometry.location;
         //map.panTo(new L.LatLng(latlng.lat, latlng.lng))
-        map.flyTo([latlng.lat, latlng.lng], 15)
+        showStops(latlng.lat, latlng.lng); 
+        map.flyTo([latlng.lat, latlng.lng], 15);
     });
 }
 
@@ -91,7 +94,7 @@ function showArrivingBusesOnSideBar(stopid){
             $.each(results, function (i, bus) {
                 content += renderRealtimeListItem(bus);
             });
-            $( "#stopRealtimeListGroup" ).append(content);
+            $("#stopRealtimeListGroup").html(content);
         }  
     });
 }
@@ -126,17 +129,15 @@ function renderRealtimeListItem(bus) {
  
     const content = `
     <li class="list-group-item" id = "stop-info">
-        <ul>
-            <li><b>${ bus.route }</b> ${ bus.destination } </li>
-            <li>${ bus.duetime } mins </li>
+        <ul class="row">
+            <li class="col-9"><b>${ bus.route }</b>  ${ bus.destination } </li>
+            <li class="col-3">${ bus.duetime } mins </li>
         </ul>
     </li>`;
     return content;
 }
 
 $(document).on("click.stops", "#back-to-stops",function () {
-
-    showStops();
 
     $("#stop-realtime-div").fadeOut(10);
     $("#stops-div").fadeIn(10);
@@ -232,5 +233,4 @@ function initAutoComplete(){
     }
 
     initAutocomplete(stops_area);
-    
 }

@@ -9,15 +9,13 @@
             </div>
         </div>
         <div class="row sidecar_content">
-            
-            <div class="col p-0" id="stops-div">
-                <form id='stops-area' method="post" class="row">
-                    <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area">
+            <div class="col" id="stops-div">
+                <form id='stops-area' method="post" class="row p-0">
+                    <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area" class="col-sm-9">
                     {% csrf_token %}
-                    <input type="submit" class="btn btn-primary float-right"></input>
+                    <input type="submit" class="col-sm-3 btn btn-primary float-right"></input>
                 </form>
-                <ul class="list-group-flush p-0 vh-100 row" id="stopsListGroup">
-                </ul>
+                <div class="list-group-flush p-0 vh-100 row" id="stopsListGroup"></div>
             </div>
 
             <div class="col p-0" id="stop-realtime-div">
