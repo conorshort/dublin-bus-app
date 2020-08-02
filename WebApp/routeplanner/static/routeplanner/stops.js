@@ -1,25 +1,26 @@
-//TO DO: Bring User to Routes info page if they click a specific route
-
-
-// Stop stops from showing on other tabs
-$(document).on("click.stops", '.nav_item, .bottom_nav_item', function () {
-    stopsLayer.clearLayers();
-    map.off('moveend');
-});
-
-currentBounds = undefined;
-currentCentre = [53.346967, -6.259923];
-MapUIControl.halfscreen();
 $(document).ready(function() {
 
-    //hide back btn
-    $("#back-btn").hide();
+    $("#stop-realtime-div").fadeOut(10);
+    $("#stops-div").fadeIn(10);
 
     //clear all the markers in the layer
     stopsLayer.clearLayers();
     showStops();
     initAutoComplete();
 });
+
+
+//TO DO: Bring User to Routes info page if they click a specific route
+// Stop stops from showing on other tabs
+$(document).on("click.stops", '.nav_item, .bottom_nav_item', function () {
+    stopsLayer.clearLayers();
+    map.off('moveend');
+});
+
+
+currentBounds = undefined;
+currentCentre = [53.346967, -6.259923];
+// MapUIControl.halfscreen();
 
 
 //event will be called when map bounds change
@@ -30,8 +31,6 @@ map.on('moveend', function(e) {
 
     //clear all the markers in the layer
     stopsLayer.clearLayers();
-    //clear all the elements in list group
-    $("#stopsListGroup").empty();
     showStops();
  });
 
@@ -59,7 +58,7 @@ function showStops(){
 function moveMapToEnteredAddress(address){
     // console.log(address)
     // console.log("MAde it to movemap")
-        $.getJSON(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA`, function(data){
+    $.getJSON(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA`, function(data){
         console.log(data);
         var latlng = data.results[0].geometry.location
         //map.panTo(new L.LatLng(latlng.lat, latlng.lng))
@@ -92,7 +91,7 @@ function showArrivingBusesOnSideBar(stopid){
             $.each(results, function (i, bus) {
                 content += renderRealtimeListItem(bus);
             });
-            $( "#stopsListGroup" ).append(content);
+            $( "#stopRealtimeListGroup" ).append(content);
         }  
     });
 }
@@ -136,11 +135,11 @@ function renderRealtimeListItem(bus) {
 }
 
 $(document).on("click.stops", "#back-to-stops",function () {
-    $("#stopsListGroup").empty();
+
     showStops();
 
-    //hide back btn
-    $("#back-btn").hide();
+    $("#stop-realtime-div").fadeOut(10);
+    $("#stops-div").fadeIn(10);
 });
 
 
@@ -149,7 +148,6 @@ function markStopsOnMap(stop) {
     var route_list = stop.routes;
     route_list = route_list.slice(2,-2);
     route_list = route_list.split("', '");
-    // route_list = route_list.join(", ");
 
     route_buttons = ''
     for (var i = 0; i < route_list.length; i++) {
@@ -168,10 +166,9 @@ $('.list-group-flush').on('click', '.stop', function(e) {
     // Get the name of tab on the navbar that was clicked
     var id = $(this).attr('id').replace("station-", "");;
     showArrivingBusesOnSideBar(id);
-    $("#stopsListGroup").empty();
 
-    //show back btn
-    $("#back-btn").show();
+    $("#stop-realtime-div").fadeIn(10);
+    $("#stops-div").fadeOut(10);
 });
 
 
@@ -205,10 +202,7 @@ function initAutoComplete(){
         componentRestrictions: {country: "IE"}
     };
 
-    var form_input = document.getElementById('stops_area');
-
     function initAutocomplete(input){
-
         //use Google Place Autocomplete for input box
         //source: https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete
         var autocomplete = new google.maps.places.Autocomplete(input, options);
@@ -217,34 +211,23 @@ function initAutoComplete(){
         autocomplete.setFields(
             ['address_components', 'geometry', 'icon', 'name']);
 
-        var infowindow = new google.maps.InfoWindow();
-        var infowindowContent = document.getElementById('infowindow-content-area');
-        infowindow.setContent(infowindowContent);
-    
-
         autocomplete.addListener('place_changed', function() {
-        infowindow.close();
+            var place = autocomplete.getPlace();
+            if (!place.geometry) {
+                // User entered the name of a Place that was not suggested and
+                // pressed the Enter key, or the Place Details request failed.
+                window.alert("No details available for input: '" + place.name + "'");
+                return;
+            } 
 
-        var place = autocomplete.getPlace();
-        if (!place.geometry) {
-            // User entered the name of a Place that was not suggested and
-            // pressed the Enter key, or the Place Details request failed.
-            window.alert("No details available for input: '" + place.name + "'");
-            return;
-        } 
-
-        var address = '';
-        if (place.address_components) {
-            address = [
-            (place.address_components[0] && place.address_components[0].short_name || ''),
-            (place.address_components[1] && place.address_components[1].short_name || ''),
-            (place.address_components[2] && place.address_components[2].short_name || '')
-            ].join(' ');
-        }
-
-        infowindowContent.children['place-icon'].src = place.icon;
-        infowindowContent.children['place-name'].textContent = place.name;
-        infowindowContent.children['place-address'].textContent = address;
+            var address = '';
+            if (place.address_components) {
+                address = [
+                (place.address_components[0] && place.address_components[0].short_name || ''),
+                (place.address_components[1] && place.address_components[1].short_name || ''),
+                (place.address_components[2] && place.address_components[2].short_name || '')
+                ].join(' ');
+            }
         });
     }
 
