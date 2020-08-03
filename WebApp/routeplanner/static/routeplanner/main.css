@@ -59,16 +59,13 @@ div.weather#description {
 
 /* ==== Sidebar ==== */
 .sidebar_header {
-  height: 70px; 
-  line-height: 30px;
   font-size: 30px;
   background-color: #ffbf00;
+  margin: auto;
+  width: 100%;
+  padding: 10px;
 }
 
-.sidebar_header_link {
-  color: blue;
-  font-size: 15px;
-}
 
 .gray-box {
   background-color: rgba(0, 0, 0, 0.1);
@@ -124,7 +121,7 @@ div.weather#description {
 
 }
 
-#content {
+.content {
   background-color: white;
   box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -183,10 +180,6 @@ div.weather#description {
 .form-input {
   width: 100%;
   height: 80%;
-}
-
-#formadd {
-  padding: 10px 20px;
 }
 
 
@@ -295,6 +288,7 @@ div.weather#description {
 .btn-primary {
   background-color: deepskyblue;
   border-style: none;
+
 }
 
 /* ==== search bar ====  */
@@ -425,7 +419,7 @@ div.weather#description {
       padding-bottom: 60px;
     }
 
-    #content {
+    .content {
       width: 100vw;
       height: auto;
       /* overflow-x: visible; */

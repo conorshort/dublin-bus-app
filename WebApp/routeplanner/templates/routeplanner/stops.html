@@ -1,31 +1,26 @@
 
 {% load static %}
-
-<div id="content">
-    <div class="col">
-        <div class="row sidebar_header">
-            <div class="col">
-                Stops
-            </div>
+<div class="content p-0 col">
+    <div class="row sidebar_header">
+        Stops
+    </div>
+    <div class="row sidebar_content">
+        <div class="col" id="stops-div">
+            <form id='stops-area' method="post" class="row px-4 light-yellow-box">
+                <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area" class="col-9 form-control">
+                {% csrf_token %}
+                <button type="submit" class="col-3 btn btn-primary">Search</button>
+            </form>
+            <ul class="list-group list-group-flush p-0" id="stopsListGroup">
+            </ul> 
         </div>
-        <div class="row sidebar_content">
-            <div class="col p-0" id="stops-div">
-                <form id='stops-area' method="post" class="row light-yellow-box">
-                    <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area" class="col-9 form-control">
-                    {% csrf_token %}
-                    <button type="submit" class="col-3 btn btn-primary">Search</button>
-                </form>
-                <ul class="list-group list-group-flush p-0" id="stopsListGroup">
-                </ul> 
-            </div>
 
-            <div class="col p-0" id="stop-realtime-div">
-                <div class="p-1 light-yellow-box">
-                    <h6 class="btn mx-20 my-0 btn-outline-dark btn-sm" id="back-to-stops">
-                        < Back </h6>
-                </div>
-                <div class="list-group-flush p-0 vh-100" id="stopRealtimeListGroup"></div>
+        <div class="col" id="stop-realtime-div">
+            <div class="p-1 light-yellow-box">
+                <h6 class="btn mx-20 my-0 btn-outline-dark btn-sm" id="back-to-stops">
+                    < Back </h6>
             </div>
+            <div class="list-group-flush p-0 vh-100" id="stopRealtimeListGroup"></div>
         </div>
     </div>
     <script src="{% static 'routeplanner/stops.js' %}" id="script"></script> 
