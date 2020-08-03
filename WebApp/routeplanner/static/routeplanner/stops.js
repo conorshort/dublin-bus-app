@@ -69,7 +69,7 @@ function moveMapToEnteredAddress(address){
         var latlng = data.results[0].geometry.location;
         //map.panTo(new L.LatLng(latlng.lat, latlng.lng))
         showStops(latlng.lat, latlng.lng); 
-        map.flyTo([latlng.lat, latlng.lng], 15);
+        map.flyTo([latlng.lat, latlng.lng], MAP_ZOOM_NUM);
     });
 }
 

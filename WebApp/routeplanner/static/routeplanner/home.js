@@ -1,6 +1,8 @@
-const RESP_WINDOW_SIZE = 768
+const RESP_WINDOW_SIZE = 768;
+const MAP_ZOOM_NUM = 12;
 let currentBounds;
 let currentCentre;
+
 
 // Code in this block will be run one the page is loaded in the browser
 $(document).ready(function () {
@@ -62,7 +64,7 @@ $(document).ready(function () {
 var centreLocation = [53.3482, -6.2641]
 L.control.attribution(false);
 // Initialize and add the map
-var map = L.map('map', { attributionControl: false }).setView(centreLocation, 14);
+var map = L.map('map', { attributionControl: false }).setView(centreLocation, MAP_ZOOM_NUM);
 //init layer for storeing all stop markers
 var stopsLayer = L.layerGroup().addTo(map);
 //init layer for storeing journey 
@@ -105,7 +107,7 @@ function initMap() {
         // .openPopup();
         centreLocation = e.latlng;
         currentCentre = centreLocation;
-        // map.setView(e.latlng, 14);
+        // map.setView(e.latlng, MAP_ZOOM_NUM);
     };
 
 
@@ -113,7 +115,7 @@ function initMap() {
 
     // on click function for my location btn
     $('#my_location_btn').click(function () {
-        map.setView(centreLocation, 14);
+        map.setView(centreLocation, MAP_ZOOM_NUM);
     });
 }
 
@@ -148,7 +150,7 @@ var MapUIControl = (function () {
                         } else if (currentCentre){
                             console.log("flyint to centre");
                             console.log(currentCentre);
-                            map.flyTo(currentCentre, 12, { 'duration': 0.5 });
+                            map.flyTo(currentCentre, MAP_ZOOM_NUM, { 'duration': 0.5 });
                         }
                     });
             }
@@ -167,7 +169,7 @@ var MapUIControl = (function () {
                         if (currentBounds) {
                             map.flyToBounds(currentBounds, { 'duration': 0.5 });
                         } else if (currentCentre) {
-                            map.flyTo(currentCentre, 12, { 'duration': 0.5 })
+                            map.flyTo(currentCentre, MAP_ZOOM_NUM, { 'duration': 0.5 })
                         }
                     });
             }

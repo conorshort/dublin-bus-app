@@ -1,5 +1,5 @@
-$(document).ready(function () {
-   
+$(document).ready(function () {    
+
     showSearchJourneyDiv(0);
 
     twttr.widgets.load()
