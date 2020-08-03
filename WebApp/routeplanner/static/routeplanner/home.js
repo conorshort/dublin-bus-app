@@ -65,11 +65,11 @@ var centreLocation = [53.3482, -6.2641]
 L.control.attribution(false);
 // Initialize and add the map
 var map = L.map('map', { attributionControl: false }).setView(centreLocation, MAP_ZOOM_NUM);
-//init layer for storeing all stop markers
-var stopsLayer = L.layerGroup().addTo(map);
-//init layer for storeing journey 
-var journeyLayer = L.layerGroup().addTo(map);
 
+//init layers for storeing all stop, journey, userlocation markers
+var stopsLayer = L.layerGroup().addTo(map);
+var journeyLayer = L.layerGroup().addTo(map);
+var userLocationLayer = L.layerGroup().addTo(map);
 
 
 function clearElementsInLayers() {
@@ -100,10 +100,14 @@ function initMap() {
             iconUrl: './static/img/user_marker.png',
             iconSize: [45, 45], // size of the icon
             });
-
-        L.marker(e.latlng, {icon: customIcon})
+            
+        var marker = L.marker(e.latlng, {icon: customIcon})
         .addTo(map)
-        .bindPopup("Centre")
+        .bindPopup("Centre");
+
+        userLocationLayer.clearLayers();
+        userLocationLayer.addLayer(marker);
+
         // .openPopup();
         centreLocation = e.latlng;
         currentCentre = centreLocation;
