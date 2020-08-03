@@ -11,12 +11,12 @@
         <div class="row sidebar_content">
             <div class="col p-0" id="stops-div">
                 <form id='stops-area' method="post" class="row light-yellow-box">
-                    <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area" class="col-md-9">
+                    <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area" class="col-9 form-control">
                     {% csrf_token %}
-                    <button type="submit" class="col-md-3 btn btn-primary">Search</button>
+                    <button type="submit" class="col-3 btn btn-primary">Search</button>
                 </form>
                 <ul class="list-group list-group-flush p-0" id="stopsListGroup">
-                </ul>
+                </ul> 
             </div>
 
             <div class="col p-0" id="stop-realtime-div">

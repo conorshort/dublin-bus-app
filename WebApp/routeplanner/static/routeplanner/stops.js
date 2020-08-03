@@ -41,7 +41,7 @@ $(document).on("click.stops", '.nav_item, .bottom_nav_item', function () {
 });
 
 
- // Shows Stops and distances 
+// Shows Stops and distances 
 function showStops(lat, lng){
 
     $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${lat}&longitude=${lng}&radius=1`, function(data) {
@@ -132,9 +132,10 @@ function renderListItem(stop, stop_dist) {
 function renderRealtimeListItem(bus) {
 
     const content = `
-        <li class="list-group-item stop-realtime" id="route-${bus.route}" style="padding: 3px 2px">
+        <li class="list-group-item stop-realtime" id="route-${bus.route}">
             <ul class="row">
-                <li class="col-8"><b>${ bus.route }</b> ${ bus.destination }</li>
+                <li class="col-2"><b>${ bus.route }</b></li>
+                <li class="col-6">${ bus.destination }</li>
                 <li class="col-4">${ bus.duetime } mins </li>
             </ul>
         </li> `; 
