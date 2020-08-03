@@ -39,6 +39,8 @@ a:hover, a:active {
   z-index: 99999999;
 }
 
+/* ==== weather ==== */
+
 .weather {
   height: 80px;
   line-height: 80px;
@@ -66,6 +68,30 @@ div.weather#description {
   padding: 10px;
 }
 
+.sidebar {
+  height:calc(100vh - 80px);
+  overflow:scroll;
+}
+
+.content {
+  background-color: white;
+  box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1000;
+  width: 100%;
+  margin: 0px;
+  height: calc(100vh - 80px);
+  overflow-y:auto;
+  overflow-x: hidden;
+}
+
+#sidebar {
+
+  width: 430px;
+  -ms-flex: 0 0 430px;
+  flex: 0 0 430px;
+  padding:0px;
+}
 
 .gray-box {
   background-color: rgba(0, 0, 0, 0.1);
@@ -89,6 +115,35 @@ div.weather#description {
   margin-bottom: 10px;
 }
 
+/* ==== map ==== */
+
+#map {
+  max-height: 100vh;
+  overflow-y: hidden;
+  height: 900px;
+}
+
+#map {
+  height: calc(100vh - 80px);
+  overflow-y: hidden;
+}
+
+#my_location_btn {
+  position: absolute;
+  bottom: 50px;
+  width: 80px;
+  height: 80px;
+  right: 20px;
+  padding: 10px;
+  z-index: 400000;
+  border-radius: 50%;
+  box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
+
+}
+
+
+/* ==== journey ==== */
+
 #journey_search_div {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -98,74 +153,70 @@ div.weather#description {
   border-top: 1px solid rgb(185, 185, 185);
   border-bottom: 1px solid rgb(185, 185, 185);
   padding: 10px 25px;
-
 }
-
-#map {
-  max-height: 100vh;
-  overflow-y: hidden;
-  height: 900px;
-}
-
-#leap-info {
-  color: #ffbf00;
-}
-
-#navibar {
-  background-color: #606060;
-}
-
-.sidebar {
-  height:calc(100vh - 80px);
-  overflow:scroll;
-
-}
-
-.content {
-  background-color: white;
-  box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
-  position: relative;
-  z-index: 1000;
-  width: 100%;
-  margin: 0px;
-  height: calc(100vh - 80px);
-  overflow-y:auto;
-  overflow-x: hidden;
-}
-
-#sidebar {
-
-  width: 430px;
-  -ms-flex: 0 0 430px;
-  flex: 0 0 430px;
-  padding:0px;
-}
-
 
 #journey_result_content {
   padding: 15px;
 }
 
-
-.verticalLine {
-  border-left: thick solid #ff0000;
-  left: 50%;
+.journey_result_icon {
+  width: 20px;
 }
 
-.circle {
-  background: lightblue;
-  border-radius: 50%;
-  width: 10px;
-  height: 10px;
+/* ==== leapcard ==== */
+#leap-info {
+  color: #ffbf00;
 }
+
+/* ==== stop ==== */
 
 #stop-button {
   margin: 2px;
   padding: 2px 8px;
 }
 
-/* form */
+/* ==== route ==== */
 
+#route-stops-title{
+  padding: 10px 0px 10px 40px;
+  display: inline-block;
+
+}
+
+#back-to-routes{
+  margin-top: 5px;
+  margin-left: 30px;
+}
+.direction-buttons{
+  margin-top: 12px;
+  margin-left: 30px;
+  margin-bottom: 8px;
+}
+.btn-outline-warning {
+  color: black !important;
+}
+
+#route-stop-div {
+  display: none;
+}
+
+.stops-list {
+  height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.stop-item {
+  padding: 5px 5px;
+}
+
+#timetable-modal {
+  top: 10%;
+}
+
+
+
+/* ==== form ==== */
 .form-table {
   width: 100%;
   margin: 10px 0px;
@@ -213,7 +264,6 @@ div.weather#description {
   min-height: 100px;
 }
 
-
 .bottom_nav_item  {
   overflow:hidden;
   text-align: center;
@@ -236,27 +286,6 @@ div.weather#description {
   height:60%;
   max-height: 27px;
   margin-top: 5px;
-}
-
-
-
-/* ==== Map ==== */
-#map {
-  height: calc(100vh - 80px);
-  overflow-y: hidden;
-}
-
-#my_location_btn {
-  position: absolute;
-  bottom: 50px;
-  width: 80px;
-  height: 80px;
-  right: 20px;
-  padding: 10px;
-  z-index: 400000;
-  border-radius: 50%;
-  box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
-
 }
 
 
@@ -306,63 +335,6 @@ div.weather#description {
   overflow:auto;
 }
 
-.route-active {
-  background-color: #ffe391;
-  pointer-events: auto;
-}
-.route-loading {
-  background-color: #b9b9b9;
-  pointer-events: none;
-}
-
-.route-loading-span {
-  padding-left: 40px ;
-  padding-top: 4px;
-}
-
-#route-stops-title{
-  padding: 10px 0px 10px 40px;
-  display: inline-block;
-
-}
-
-#back-to-routes{
-  margin-top: 5px;
-  margin-left: 30px;
-}
-.direction-buttons{
-  margin-top: 12px;
-  margin-left: 30px;
-  margin-bottom: 8px;
-}
-.btn-outline-warning {
-  color: black !important;
-}
-
-
-#route-stop-div {
-  display: none;
-}
-
-.stops-list {
-  height: 500px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.stop-item {
-  padding: 5px 5px;
-}
-
-
-#timetable-modal {
-  top: 10%;
-}
-
-
-.journey_result_icon {
-  width: 20px;
-}
 
 /* #timetable-loader {
   display: none;
@@ -395,13 +367,6 @@ div.weather#description {
     width: 120px;
     height: 120px;
 }
-
-
-
-
-
-
-
 
 
 

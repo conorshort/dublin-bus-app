@@ -1,20 +1,5 @@
 $(document).ready(function () {
-    console.log('ready');
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(location) {
-        
-            var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
-            console.log(latlng);
-        });
-    } else {
-        console.log('nooo');
-    };
-      
-
-
-    
-
+   
     showSearchJourneyDiv(0);
 
     twttr.widgets.load()
