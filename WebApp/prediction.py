@@ -48,6 +48,7 @@ def create_test_dataframe(lineId, segments, departure_unix):
 
     departure_dt = datetime.datetime.fromtimestamp(departure_unix)
     print(departure_dt)
+    print("Line", lineId, )
     hour = departure_dt.hour
     weekday = departure_dt.weekday()
     isPeak = int(isPeaktime(departure_dt) == True)
@@ -89,8 +90,17 @@ def create_test_dataframe(lineId, segments, departure_unix):
 def predict_journey_time_by_df(model, test_dataframe, return_list=False):
     
     prediction = model.predict(test_dataframe)
-    print(prediction)
+
     if return_list:
+
+        segment_cols = [
+                col for col in test_dataframe if col.startswith('segment')]
+
+        idxs = test_dataframe.loc[(test_dataframe[segment_cols] == 0).all(axis=1)].index
+
+        for idx in idxs:
+            prediction[idx] = -1
+        print(prediction)
         return prediction
     else:
         journeyTime = sum(prediction)

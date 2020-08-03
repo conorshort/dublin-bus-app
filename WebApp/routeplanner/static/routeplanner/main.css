@@ -293,6 +293,19 @@ div.weather#description {
   top: 10%;
 } */
 
+#trip-timetable {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-top: 0px;
+}
+
+#trip-timetable thead tr th {
+  position: sticky;
+  top: 0;
+  border-width: 0px;
+
+}
+
 
 .journey_result_icon {
   width: 20px;

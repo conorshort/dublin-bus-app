@@ -197,26 +197,27 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
                         plate_code=F("stop__plate_code"),
                         line_id=F("trip__route__route_name")).order_by("stop_sequence")
             route = GTFSTrip.objects.filter(trip_id=trip_id).values("route__route_name","calendar__display_days" ).first()
+
             segments = []
             for index in range(len(trip)-1):
-                segments.append(trip[index]['plate_code'] +
-                                '-' + trip[index+1]['plate_code'])
+                segments.append(str(trip[index]['plate_code']) +
+                                '-' + str(trip[index+1]['plate_code']))
             day_name = route["calendar__display_days"][:3]
-            route_name = route["route__route_name"][:3]
+            route_name = route["route__route_name"]
             departure_time = trip[0]["departure_time"]
 
 
-            day = {"Mon": 3,
-                "Tue":4,
-                "Wed": 5,
-                "Thu": 6,
-                "Fri": 7,
-                "Sat": 8,
-                "Sun": 9}[day_name]
+            day = {"Mon": 10,
+                "Tue": 11,
+                "Wed": 12,
+                "Thu": 13,
+                "Fri": 14,
+                "Sat": 15,
+                "Sun": 16}[day_name]
 
             seconds =  datetime(2020, 8, day, 0, 0).timestamp()
             unix_time = (seconds + departure_time)
-
+            print("passing route name", route_name)
             journey_time = predict_journey_time(
                 route_name, segments, int(unix_time), return_list=True)
             trip = list(trip)
@@ -227,7 +228,15 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
                 else:
                     trip[i]["predicted_time"] = total_journey_time
 
-                total_journey_time += int(journey_time[i - 1])
+                    # if no prediction made for that segment use the scheduled times 
+                    if journey_time[i - 1] == -1:
+                        total_journey_time += trip[i]["departure_time"] - \
+                            trip[i -1]["departure_time"]
+                            
+                    # otherwise use the predicted times
+                    else:
+                        total_journey_time += int(journey_time[i - 1])
+
             return Response(trip)
 
 

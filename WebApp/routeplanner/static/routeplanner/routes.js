@@ -209,6 +209,8 @@ function routes() {
 
     function displayTimetable(e) {
         // Get the stop id and stop name from the clicked element
+        $("#trip-timetable-table").hide();
+        $("#trip-loader").hide();
         let stopId = $(this).attr('data-stop-id');
         let shapeId = $(this).attr('data-shape-id');
         console.log(this);
@@ -302,7 +304,8 @@ function routes() {
             // Make a list of all the times
             timesArr = []
             timetables[days].forEach(time => {
-                timesArr.push([time.time, time.trip_id])
+                timesArr.push([time.time, time.trip_id]);
+                console.log(timesArr);
             });
             // Sort the times
             timesArr.sort((a, b) => a[0] - b[0]);
@@ -326,9 +329,15 @@ function routes() {
 
         // Initialise the tooltips
         $('[data-toggle="tooltip"]').tooltip()
-
-        $(document).on("click.routes", ".timetable-item", function (e) {
+        $(".timetable-item").off("click.routes")
+        $(".timetable-item").on("click.routes", function (e) {
+            $("#trip-loader").show();
+            $("#trip-timetable-table").hide();
             let tripId = $(e.target).attr("data-trip-id");
+            let thisStop = $("#timetable-title").html();
+            let thisTime = $(e.target).html();
+            let thisPredTime;
+
             console.log("getting json");
             $.getJSON("/api/stoptime/timetable",
                 { trip_id: tripId }, (tripTimetable) => {
@@ -338,16 +347,41 @@ function routes() {
                     console.log(tripTimetable)
                     // Convert the time from seconds after midnight to a human readable format
                     tripTimetable = tripTimetable.map(elem => {
-                        elem.departure_time = new Date((elem.departure_time % 86400) * 1000).toISOString().substr(11, 5);
-                        elem.predicted_time = new Date((elem.predicted_time % 86400) * 1000).toISOString().substr(11, 5)
-                        return elem
+
+                        elem.departure_time_readable = new Date((elem.departure_time % 86400) * 1000).toISOString().substr(11, 5);
+                        elem.predicted_time_readable = new Date((elem.predicted_time % 86400) * 1000).toISOString().substr(11, 5);
+                        if (elem.departure_time_readable == thisTime && elem.stop_name == thisStop) {
+                            thisPredTime = elem.predicted_time;
+                        }
+                        return elem;
                     });
-                    let content = "";
+
+                    console.log(tripTimetable)
+
+                    let content = '';
+
+
+
                     tripTimetable.forEach(element => {
-                        content += renderTripTimetableItem(element.stop_name, element.departure_time, element.predicted_time) 
+                        console.log(thisPredTime); console.log(element.predicted_time);
+                        let jourTime = element.predicted_time - thisPredTime
+                        jourTime = Math.floor(jourTime / 60) + " mins";
+                        let highlight = false;
+                        if (element.departure_time_readable == thisTime && element.stop_name == thisStop) { 
+                            highlight = true;
+                        }
+                        content += renderTripTimetableItem(element.stop_name,
+                                                            element.departure_time_readable,
+                                                            element.predicted_time_readable,
+                                                            jourTime,
+                                                            highlight);
                     });
                     $("#actual-times").html("");
                     $("#actual-times").append(content);
+                }).then(() => {
+                    $("#trip-timetable-table").show();
+                    $("#trip-loader").hide();
+
                 });
         });
     }
@@ -534,17 +568,18 @@ function routes() {
             </li>`;
         return content;
     }
-    function renderTripTimetableItem(stop, actTime, predTime) {
+    function renderTripTimetableItem(stop, actTime, predTime, jourTime, highlight) {
+        let clsStr = "";
+        if (highlight) {
+            clsStr = 'class="table-warning"'
+        }
         const content = `
-            <li class="list-group-item trip-item">
-                <ul>
-                    <li class="row">
-                        <b class="col-6">${stop}</b>
-                        <span class="col-3">${actTime}</span>
-                        <span class="col-3">${predTime}</span>
-                    </li>
-                </ul>
-            </li>`;
+            <tr ${clsStr}>
+                <td><b>${stop}</b></td>
+                <td style="text-align: center;">${actTime}</span></td>
+                <td style="text-align: center;">${predTime}</span></td>
+                <td>${jourTime}</span></td>
+            </tr>`;
         return content;
     }
 
