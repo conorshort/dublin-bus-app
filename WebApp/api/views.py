@@ -1,21 +1,15 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from rest_framework import viewsets
-from rest_framework import status
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from django.http import JsonResponse
 from rest_framework.decorators import action
+from django.http import JsonResponse
+from django.db.models import F
 from api.models import SmartDublinBusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
 from .serializers import SmartDublinBusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
-from datetime import datetime
-from django.db.models import F
-import requests
+from .direction import direction_to_first_transit, get_time_string, get_destination_string
 from dublin_bus.config import GOOGLE_DIRECTION_KEY
-import pandas as pd
-import copy 
-import json
+from datetime import datetime
+import requests
 from geopy.distance import great_circle
-from .direction import directionUntilFirstTransit, secondsIntToTimeString, meterIntToKMString
 
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
@@ -51,7 +45,6 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
                 ORDER BY distance;" % (latitude, longitude, latitude, radius)
 
             queryset = SmartDublinBusStop.objects.raw(sql)
-            
             serializer = SmartDublinBusStopSerializer(queryset, many=True)
 
             return Response(serializer.data)
@@ -215,16 +208,14 @@ class GTFSTripViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-
-
 def realtimeInfo(request, stop_id):
     r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
-    return JsonResponse(r.json() , safe=False)
+    return JsonResponse(r.json(), safe=False)
 
 
 def direction(request):
 
-    # get given parameters 
+    # get given parameters
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
     departureUnix = request.GET.get('departureUnix')
@@ -239,64 +230,44 @@ def direction(request):
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)
 
-
     destination_coord = (destination.split(",")[0], destination.split(",")[1])
-    
-    newData = {'leg': {'steps' : []}}
 
-    
+    newData = {'leg': {'steps': []}}
+
     isFirstTimeRequest = True
     requestCount = 0
 
-    while (requestCount <= 6) and ((isFirstTimeRequest) or  \
-            ((great_circle((origin.split(",")[0], origin.split(",")[1]), destination_coord).meters) >= 50)):
-         
+    while (requestCount <= 6) and ((isFirstTimeRequest) or ((great_circle((origin.split(",")[0], origin.split(",")[1]), destination_coord).meters) >= 50)):
+
         requestCount += 1
 
-        data = directionUntilFirstTransit(origin, destination, departureUnix)
-        
+        data = direction_to_first_transit(origin, destination, departureUnix)
+
         if data['status'] != 'OK':
             return JsonResponse(data)
 
-
-        if isFirstTimeRequest == True:
+        if isFirstTimeRequest is True:
             newData['leg']['distance'] = {'value': 0, 'text': ''}
             newData['leg']['duration'] = {'value': 0, 'text': ''}
             newData['leg']['start_location'] = data['leg']['start_location']
             newData['leg']['start_address'] = data['leg']['start_address']
             newData['leg']['end_address'] = data['leg']['end_address']
             newData['leg']['departure_time'] = data['leg']['departure_time']
-            
-   
-        origin = str(data['leg']['end_location']['lat'])+","+ str(data['leg']['end_location']['lng'])
+
+        origin = str(data['leg']['end_location']['lat'])+"," + str(data['leg']['end_location']['lng'])
         departureUnix = data['leg']['arrival_time']['value']
 
-
-        
         # add reponsed steps' data to newData
         newData['leg']['distance']['value'] += int(data['leg']['distance']['value'])
         newData['leg']['duration']['value'] += int(data['leg']['duration']['value'])
-        newData['leg']['distance']['text'] = meterIntToKMString(int(newData['leg']['distance']['value']))
-        newData['leg']['duration']['text'] = secondsIntToTimeString(int(newData['leg']['duration']['value']))
+        newData['leg']['distance']['text'] = get_destination_string(int(newData['leg']['distance']['value']))
+        newData['leg']['duration']['text'] = get_time_string(int(newData['leg']['duration']['value']))
         newData['leg']['end_location'] = data['leg']['end_location']
         newData['leg']['steps'] += data['leg']['steps']
         newData['leg']['arrival_time'] = data['leg']['arrival_time']
         newData['leg']['departure_time'] = data['leg']['departure_time']
 
-
         isFirstTimeRequest = False
 
     newData['status'] = 'OK'
     return JsonResponse(newData, safe=False)
-
-    # except Exception as e:
-    #     print("type error:", str(e))
-    #     return JsonResponse(data, safe=False)
-   
-        
-        
-    
-    
-    
-
- 

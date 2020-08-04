@@ -2,6 +2,7 @@ from django.test import SimpleTestCase
 from django.urls import reverse, resolve
 from routeplanner.views import home, stops, routes, leapcard
 
+
 class TestUrls(SimpleTestCase):
 
     def test_routeplanner_url_is_resolved(self):
