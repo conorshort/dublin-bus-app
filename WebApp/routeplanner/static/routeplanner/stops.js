@@ -47,6 +47,8 @@ function showStops(lat, lng){
     $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${lat}&longitude=${lng}&radius=1`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
+            content += renderListItem(stop);
+            // content += document.getElementById('routes-list').innerHTML = "<a href='#'><i class='far fa-star star'></a>"
             // Get distance from centre location to every stop in kilometers
             dist_kms = distance(lat, lng,stop.latitude, stop.longitude, 'K');
             dist_ms = Math.round(dist_kms*1000);
@@ -103,6 +105,61 @@ function showArrivingBusesOnSideBar(stopid){
     });
 }
 
+$(document).on("click", ".star2", function() {
+
+    //get the stop attribute associate with the selected star and push to a list
+    let starredStop = $(this).attr("data-stop");
+    alert(starredStop);
+    var stopsList = [];
+    stopsList.push(starredStop);
+
+    //if the stop is not in the list it will be saved in cookies
+    try{
+        cookiemonster.get('stopsList');
+    }catch{
+        cookiemonster.set('stopsList', stopsList, 3650);
+        alert('Save Sucessfully');
+        return ;
+    }
+
+    var previous_stops = cookiemonster.get('stopsList');
+    var flag = 0;
+
+    //if selected stop already in the list wont save again
+    for(let i=0;i<previous_stops.length;i++){
+        if(starredStop==previous_stops[i]){
+            alert('This stop is already in the list');
+            flag = 1;
+        }
+    }
+
+    //if it is not in the list then will append to cookies 
+        if (flag==0){
+            try{
+                cookiemonster.get('stopsList');
+                cookiemonster.append('stopsList', stopsList, 3650);
+                
+            } catch{
+                cookiemonster.set('stopsList', stopsList, 3650);
+            }
+            alert('Save Sucessfully');
+        }
+
+
+
+
+    // $(this).toggleClass("fa fa-star fa fa-star");
+    // alert(stops);
+
+    // try{
+    //     cookiemonster.get('stops');
+    //     cookiemonster.append('stops', stops, 3650);
+        
+    // } catch(err){
+    //     cookiemonster.set('stops', stops, 3650);
+    // }
+    // alert('Save Sucessfully');
+});
 
 // create and return list-group-item for stop
 // stop_dist added as item
@@ -118,6 +175,7 @@ function renderListItem(stop, stop_dist) {
     }
 
     const content = `
+    <span class="col-1"><a href="#"><i class="far fa-star star2 " data-stop="${stop.stopid}"></i></a></span>
     <li class="list-group-item stop" id="station-${stop.stopid}">
         <ul class="row">
             <li class="col-8"><b>${ stop.fullname } ${stop.stopid}</b></li>
@@ -128,6 +186,8 @@ function renderListItem(stop, stop_dist) {
 
     return content;
 }
+
+
 
 function renderRealtimeListItem(bus) {
 
@@ -176,6 +236,7 @@ $('.list-group-flush').on('click', '.stop', function(e) {
     $("#stop-realtime-div").fadeIn(10);
     $("#stops-div").fadeOut(10);
 });
+
 
 
 // Function to calculate the distance between two points

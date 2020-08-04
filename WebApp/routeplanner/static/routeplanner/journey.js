@@ -129,13 +129,14 @@ $('form').submit(function(e){
     , function(data) {
         console.log(JSON.stringify(data));
         if (data.status == "OK"){
-            try {
+            if(true) {
                 
                 var leg = data.leg;
                 var arrive_time =  leg.arrival_time.text;
                 var departure_time =  leg.departure_time.text;
                 var duration = leg.duration.text;
-               
+                console.log("Trnasit FIND +++")
+                console.log(JSON.stringify(data).match(/TRANSIT/g) || [])
                 var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length;
                 displaySearchInfoOnHeader(fromInput.value, toInput.value, dateTime);
                 displayTripSummary(duration, transferCount, departure_time, arrive_time);
@@ -158,8 +159,8 @@ $('form').submit(function(e){
                 showResultJourneyDiv(10);
                 MapUIControl.halfscreen();
 
-            } catch (error) {
-                
+            // } catch (error) {
+            } else {  
                 alert(error);
             }
         } else {
@@ -170,6 +171,60 @@ $('form').submit(function(e){
         $("#journey-loader").hide();
     });
 });
+
+
+//save the selected journey to favourite
+$('#star').click(function(e){
+    e.preventDefault;
+    //get the selected origin, destination and line info 
+    let starredOrigin = document.forms["journeyForm"]["f_from_stop"].value;
+    let starredDestination=document.forms["journeyForm"]["f_to_stop"].value;
+    let starredLine = document.getElementById("lineName").textContent;
+
+    //push all of them into a list then push every new selected journey into a journey list
+    var perJourney = [];
+    var journeyList=[];
+    perJourney.push('Origin:  '+starredOrigin);
+    perJourney.push('Destination:  '+starredDestination);
+    perJourney.push('Route(s):  '+starredLine);
+    journeyList.push(perJourney);
+
+    //if the journey is not in the list it will be saved in cookies
+    try{
+        cookiemonster.get('journeyList');
+    }catch{
+        cookiemonster.set('journeyList', journeyList, 3650);
+        alert('Save Sucessfully');
+        return ;
+    }
+
+    var previous_journey = cookiemonster.get('journeyList');
+    var flag = 0;
+
+    //if selected journey already in the list wont save again
+    for(let i=0;i<previous_journey.length;i++){
+        if(perJourney==previous_journey[i]){
+            alert('This journey is already in the list');
+            flag = 1;
+        }
+    }
+
+        //if it is not in the list then will append to cookies 
+        if (flag==0){
+            try{
+                cookiemonster.get('journeyList');
+                cookiemonster.append('journeyList', journeyList, 3650);
+                
+            } catch{
+                cookiemonster.set('journeyList', journeyList, 3650);
+            }
+            alert('Save Sucessfully');
+        }
+
+    });
+
+
+
 
 
 
@@ -335,7 +390,7 @@ function renderStepCard(step, index){
     content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;`
     
     var stops = step.transit_details.stops;
-    if (stop) {
+    if (stops) {
         content += `<b> ${stops.length}</b> stops</div>`; 
     }
       

@@ -85,22 +85,73 @@ function routes() {
             });
 
 
-
             // Add the routes to the list
+            // Add the stars to the list
             let content = '';
             routes.forEach(route => {
                 content += renderRouteListItem(route[0], route[1]);
             });
 
             // Display the routes
-            $("#routes-list").append(content);
+             $("#routes-list").append(content);
+
+
+
+
+            //save the selected route to favourite
+             $('.star').click(function(e){
+                e.preventDefault;
+
+                //get the route attribute associate with the selected star and push to a list
+                let starredRoute = $(this).attr("data-route");
+                var routesList = [];
+                routesList.push(starredRoute);
+
+                //if the route is not in the list it will be saved in cookies
+                try{
+                    cookiemonster.get('routesList');
+                }catch{
+                    cookiemonster.set('routesList', routesList, 3650);
+                    alert('Save Sucessfully');
+                    return ;
+                }
+
+                var previous_route = cookiemonster.get('routesList');
+                var flag = 0;
+
+                //if selected route already in the list wont save again
+                for(let i=0;i<previous_route.length;i++){
+                    if(starredRoute==previous_route[i]){
+                        alert('This route is already in the list');
+                        flag = 1;
+                    }
+                }
+
+                //if it is not in the list then will append to cookies 
+                    if (flag==0){
+                        try{
+                            cookiemonster.get('routesList');
+                            cookiemonster.append('routesList', routesList, 3650);
+                            
+                        } catch{
+                            cookiemonster.set('routesList', routesList, 3650);
+                        }
+                        alert('Save Sucessfully');
+                    }
+
+                });
+
+
+
+
+
 
             // Add an on click to each route
             $(document).on("click.routes", ".route-item", function () {
 
                 MapUIControl.halfscreen()
 
-
+    
                 $("#inbound-radio").prop('checked', true)
                     .parent().addClass("active");
                 $("#outbound-radio").prop('checked', false)
@@ -114,6 +165,11 @@ function routes() {
 
                 // Get the route name from the ID
                 routeName = routeElemId.split("-")[1];
+
+                // log route click event to firebase 
+                analytics.logEvent('select_content', { content_type: 'route_item', item_id: routeName});
+
+
                 $("#route-stops-title").html(routeName)
                 $("#route-stop-div").fadeIn(400);
 
@@ -129,6 +185,9 @@ function routes() {
             });
         });
     });
+
+
+
 
 
 
@@ -161,6 +220,10 @@ function routes() {
             // stored in a data-shape-id attribute
             let shapeId = $(this).attr('data-shape-id');
             let index = $(this).attr('data-index');
+
+
+            
+
             // Get a list of stops using the shape id
             $.getJSON("api/routes/stops/", { shape: shapeId }, function (stops) {
                 // Sort the stops in the order they appear on the route.
@@ -489,13 +552,17 @@ function routes() {
     // ========= RENDER FUNCTIONS =========
     // These are all functions for rendering various elements dynamically
 
-
     // create and return list-group-item for route
     function renderRouteListItem(route, operator) {
         const content = `
+        
             <li class="list-group-item route-item" id="route-${route}">
                 <ul>
-                    <li class="row"><b class="col-6">${route}</b><span class="col-6">${operator}</span></li>
+                    <li class="row">
+                    <span class="col-1"><a href="#"><i class='far fa-star star' data-route="${route}"></i></a></span>
+                        <b class="col-6">${route}</b>
+                        <span class="col-5">${operator}</span>
+                    </li>
                 </ul>
             </li>`;
         return content;
@@ -583,8 +650,17 @@ function routes() {
 
 
 
-
-
+    // https://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
+    function getTextColour(color) {
+        if (color.length == 7) {
+            color = color.substring(1);
+        }
+        var R = parseInt(color.substring(0, 2), 16);
+        var G = parseInt(color.substring(2, 4), 16);
+        var B = parseInt(color.substring(4, 6), 16);
+        percievedBrightness = Math.sqrt(R * R * .241 + G * G * .691 + B * B * .068);
+        return percievedBrightness < 130 ? '#FFFFFF' : '#000000';
+    }
 
 
 

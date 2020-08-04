@@ -109,8 +109,9 @@ def direction_to_first_transit(origin, destination, departureUnix):
                     newData['leg']['arrival_time']['value'] = arr_unix
 
                 else:
-                    arr_unix = int(step['transit_details']['arrival_time'])
-                    newData['leg']['arrival_time'] = arr_unix
+                    arr_time_unix = int(
+                        steps[i]['transit_details']['arrival_time']['value'])
+                    newData['leg']['arrival_time']['value'] = arr_time_unix
 
                 distance = int(step['distance']['value'])
                 totalDistance += distance
