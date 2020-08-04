@@ -63,24 +63,29 @@ def leapinfo(request):
             login_ok = session.try_login(username, password)
             overview = session.get_card_overview()
 
-            # only extract card_label and balance
-            card_info = {"Card ": vars(overview)['card_label'],
-                         "Balance ": vars(overview)['balance']}
-
-            # return them to the frontend
-            return JsonResponse(card_info, safe=False)
+            #only extract card_label and balance
+            # card_info = {"Card ":vars(overview)['card_label'],
+            # "Balance ":vars(overview)['balance']}
+            resp="Card label: ",vars(overview)['card_label'],", "," balance: ",vars(overview)['balance']
+            #return them to the frontend
+            return HttpResponse(resp, content_type='application/json')
 
         except Exception as e:
-            # return error message if username and password is invalid
-            error = "Error: Unable to retrieve Leap Card state."
-            return JsonResponse(error, safe=False)
-
+            #return error message if username and password is invalid
+            error="Error: Unable to retrieve Leap Card state"
+            return HttpResponse(error, content_type='application/json')
+            # return JsonResponse(error)
+                        
 
 def realtimeInfo(request, stop_id):
     r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
     return JsonResponse(r.text, safe=False)
 
-# function to format api geocoordinates request to get lat and long of user-entered address
+
+def favourite(request):
+    return render(request, 'routeplanner/favourite.html')
+
+#function to format api geocoordinates request to get lat and long of user-entered address
 # def longlatsearch(request, address):
 #     res = tuple(map(str, address.split(' ')))
 #     if len(res)==1:

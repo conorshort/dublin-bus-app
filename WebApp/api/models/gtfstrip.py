@@ -41,7 +41,7 @@ class GTFSTripManager(GTFSManager):
 
         # Get shape_ids for the given route
         # If a headsign is provided add it to the filter
-
+        print("getting stops")
         if headsign and origin_time:
             # First try to get with all parameters given
             shape_id_queryset = None
@@ -53,6 +53,7 @@ class GTFSTripManager(GTFSManager):
                 gtfsstoptime__departure_time__lte=(origin_time + 60),
                 gtfsstoptime__stop_headsign=headsign,
                 gtfsstoptime__stop_id=origin_id)
+
 
             if origin_time and not trips:
                 # Then try without headsign, sometimes google's headsign doesn't match the gtfs data
@@ -67,6 +68,7 @@ class GTFSTripManager(GTFSManager):
 
             # If there's still nothing try checking for buses after midnight
             if origin_time and not trips:
+                print("none found, trying after midnight")
                 origin_time += 86400
                 shape_id_queryset = None
                 trips = GTFSTrip.objects.filter(
@@ -78,6 +80,7 @@ class GTFSTripManager(GTFSManager):
                     gtfsstoptime__stop_id=origin_id)
 
         if not trips:
+            print("none found, going by route name")
             trips = None
             shape_id_queryset = GTFSTrip.objects.filter(
                 route__route_name=route_name,
@@ -120,6 +123,7 @@ class GTFSTripManager(GTFSManager):
 
                 # Get all stops for this shape
                 stops = self.stops_on_route(shape)
+                
                 # print(stops)
                 # Get the stops sequence number for origin and desitination stops
                 origin_seq = stops.filter(
@@ -131,18 +135,28 @@ class GTFSTripManager(GTFSManager):
                 these_stops = stops.filter(stop_sequence__gte=origin_seq,
                                            stop_sequence__lte=dest_seq)
 
-                # Get the list of plate codes and stop sequences
-                these_stops_list = list(these_stops.values("stop_sequence",  stop_name=F("stop__stop_name"), plate_code=F("stop__plate_code"),))
+                print(origin_seq)
+                print(dest_seq)
+                if origin_seq and dest_seq:
+                    # The stops we want will have a sequence number between the origin and destination stops
+                    these_stops = stops.filter(stop_sequence__gte=origin_seq,
+                                            stop_sequence__lte=dest_seq)
 
-                # append the stops to both lists
-                if these_stops and these_stops_list not in stops_as_lists:
-                    stop_query_set.append(these_stops)
-                    stops_as_lists.append(these_stops_list)
+                    # Get the list of plate codes and stop sequences
+                    return list(these_stops.values("stop_sequence",  stop_name=F("stop__stop_name"), plate_code=F("stop__plate_code"),))
+
+                    # # append the stops to both lists
+                    # if these_stops and these_stops_list not in stops_as_lists:
+                    #     stop_query_set.append(these_stops)
+                    #     stops_as_lists.append(these_stops_list)
 
         # Return stop objects or a list as needed
         if get_objects:
+            print("ret")
             return stop_query_set
         else:
+            print("returning")
+            print(stops_as_lists)
             return stops_as_lists
 
     def stops_on_route(self, shape_id):
