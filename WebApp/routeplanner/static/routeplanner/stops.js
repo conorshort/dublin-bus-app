@@ -39,6 +39,8 @@ function showStops(){
     $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${centreLocation[0]}&longitude=${centreLocation[1]}&radius=1`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
+            content += renderListItem(stop);
+            // content += document.getElementById('routes-list').innerHTML = "<a href='#'><i class='far fa-star star'></a>"
             // Get distance from centre location to every stop in kilometers
             dist_kms = distance(centreLocation[0],centreLocation[1],stop.latitude, stop.longitude, 'K');
             dist_ms = Math.round(dist_kms*1000);
@@ -94,6 +96,61 @@ function showArrivingBusesOnSideBar(stopid){
     });
 }
 
+$(document).on("click", ".star2", function() {
+
+    //get the stop attribute associate with the selected star and push to a list
+    let starredStop = $(this).attr("data-stop");
+    alert(starredStop);
+    var stopsList = [];
+    stopsList.push(starredStop);
+
+    //if the stop is not in the list it will be saved in cookies
+    try{
+        cookiemonster.get('stopsList');
+    }catch{
+        cookiemonster.set('stopsList', stopsList, 3650);
+        alert('Save Sucessfully');
+        return ;
+    }
+
+    var previous_stops = cookiemonster.get('stopsList');
+    var flag = 0;
+
+    //if selected stop already in the list wont save again
+    for(let i=0;i<previous_stops.length;i++){
+        if(starredStop==previous_stops[i]){
+            alert('This stop is already in the list');
+            flag = 1;
+        }
+    }
+
+    //if it is not in the list then will append to cookies 
+        if (flag==0){
+            try{
+                cookiemonster.get('stopsList');
+                cookiemonster.append('stopsList', stopsList, 3650);
+                
+            } catch{
+                cookiemonster.set('stopsList', stopsList, 3650);
+            }
+            alert('Save Sucessfully');
+        }
+
+
+
+
+    // $(this).toggleClass("fa fa-star fa fa-star");
+    // alert(stops);
+
+    // try{
+    //     cookiemonster.get('stops');
+    //     cookiemonster.append('stops', stops, 3650);
+        
+    // } catch(err){
+    //     cookiemonster.set('stops', stops, 3650);
+    // }
+    // alert('Save Sucessfully');
+});
 
 // create and return list-group-item for stop
 // stop_dist added as item
@@ -108,7 +165,9 @@ function renderListItem(stop, stop_dist) {
         route_buttons += '<button type="button" class="btn btn-info mr-1" id="stop-button">' + route_list[i] + "</button>";
       }
     const content = `
+    <span class="col-1"><a href="#"><i class="far fa-star star2 " data-stop="${stop.stopid}"></i></a></span>
     <li class="list-group-item stop" id="station-${stop.stopid}">
+    
         <ul>
             <li><b>${ stop.fullname }</b></li>
             <li> ${ route_buttons }</li>
@@ -117,6 +176,8 @@ function renderListItem(stop, stop_dist) {
     </li>`;
     return content;
 }
+
+
 
 function renderRealtimeListItem(bus) {
  
@@ -152,10 +213,15 @@ function markStopsOnMap(stop) {
 //Click function for bus stop list-item
 $('.list-group-flush').on('click', '.stop', function(e) {
         // Get the name of tab on the navbar that was clicked
-        var id = $(this).attr('id').replace("station-", "");;
+        var id = $(this).attr('id').replace("station-", "");
+
+        // log nav btn click event to firebase 
+        analytics.logEvent('select_content', { content_type: 'stop_item', item_id: id});
+
         showArrivingBusesOnSideBar(id);
         $("#stopsListGroup").empty();
 });
+
 
 
 // Function to calculate the distance between two points
