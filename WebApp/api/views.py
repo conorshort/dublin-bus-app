@@ -13,8 +13,9 @@ import requests
 from dublin_bus.config import GOOGLE_DIRECTION_KEY
 import pandas as pd
 import copy 
-
-from prediction import predict_journey_time, get_models_name
+import json
+from geopy.distance import great_circle
+from .direction import directionUntilFirstTransit, secondsIntToTimeString, meterIntToKMString
 
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
@@ -228,113 +229,69 @@ def direction(request):
     destination = request.GET.get('destination')
     departureUnix = request.GET.get('departureUnix')
 
+    print('direction departureUnix:', departureUnix)
+
     # check if 3 papameter all given
-    # if yes, get journey plan for google direction API,
-    # and predict the journey time for dublin bus transit
     # if missing any parameter from request
     # return a http 400 response with message
     if not(origin and destination and departureUnix):
 
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)
+
+
+    destination_coord = (destination.split(",")[0], destination.split(",")[1])
+    
+    newData = {'leg': {'steps' : []}}
+
+    
+    isFirstTimeRequest = True
+    requestCount = 0
+
+    while (requestCount <= 6) and ((isFirstTimeRequest) or  \
+            ((great_circle((origin.split(",")[0], origin.split(",")[1]), destination_coord).meters) >= 50)):
+         
+        requestCount += 1
+
+        data = directionUntilFirstTransit(origin, destination, departureUnix)
         
-    
-    url = 'https://maps.googleapis.com/maps/api/directions/json'
+        if data['status'] != 'OK':
+            return JsonResponse(data)
 
-    # defining a params dict for the parameters to be sent to the API 
-    PARAMS = {'origin' : origin,
-            'destination' : destination,
-            'key' : GOOGLE_DIRECTION_KEY,
-            'transit_mode' : 'bus',
-            'mode' : 'transit'} 
+
+        if isFirstTimeRequest == True:
+            newData['leg']['distance'] = {'value': 0, 'text': ''}
+            newData['leg']['duration'] = {'value': 0, 'text': ''}
+            newData['leg']['start_location'] = data['leg']['start_location']
+            newData['leg']['start_address'] = data['leg']['start_address']
+            newData['leg']['end_address'] = data['leg']['end_address']
+            newData['leg']['departure_time'] = data['leg']['departure_time']
             
-    # sending get request and saving the response as response object 
-    r = requests.get(url = url, params = PARAMS) 
-    
-    # extracting data in json format 
-    data = r.json() 
-    if data['status'] != 'OK':
-        return JsonResponse(data)
+   
+        origin = str(data['leg']['end_location']['lat'])+","+ str(data['leg']['end_location']['lng'])
+        departureUnix = data['leg']['arrival_time']['value']
 
 
-
-    # check if the specific route model exist
-    # if yes: predict the jourent time
-    # if not: response google direction API data 
-
-    lines = [modelName.replace('.pkl', '') for modelName in get_models_name()]
-
-    try:
-        # copy another data for editing
-        newData = copy.deepcopy(data) 
-        steps = newData['routes'][0]['legs'][0]['steps']
-
-        totalDuration = 0
-
-        # forloop steps from google direction API response
-        for i in range(len(steps)):
+        
+        # add reponsed steps' data to newData
+        newData['leg']['distance']['value'] += int(data['leg']['distance']['value'])
+        newData['leg']['duration']['value'] += int(data['leg']['duration']['value'])
+        newData['leg']['distance']['text'] = meterIntToKMString(int(newData['leg']['distance']['value']))
+        newData['leg']['duration']['text'] = secondsIntToTimeString(int(newData['leg']['duration']['value']))
+        newData['leg']['end_location'] = data['leg']['end_location']
+        newData['leg']['steps'] += data['leg']['steps']
+        newData['leg']['arrival_time'] = data['leg']['arrival_time']
+        newData['leg']['departure_time'] = data['leg']['departure_time']
 
 
-            # check if the step travel_mode is TRANSIT
-            if steps[i]['travel_mode'] != 'TRANSIT':
-                duration = int(steps[i]['duration']['text'].split()[0])
-                totalDuration += duration
-                continue
-            
-            # check if the line model exist 
-            lineId = steps[i]['transit_details']['line']['short_name'].upper()
-            if ('route_'+lineId) not in lines:
-                continue
-            arrStopCoordination = steps[i]['transit_details']['arrival_stop']['location']
-            depStopCoordination = steps[i]['transit_details']['departure_stop']['location']
+        isFirstTimeRequest = False
 
-            # get stop id by stop coordinate
-            arrStopId = SmartDublinBusStop.objects.get_nearest_id \
-                (arrStopCoordination['lat'], arrStopCoordination['lng'])
-            
-            depStopId = SmartDublinBusStop.objects.get_nearest_id \
-                (depStopCoordination['lat'], depStopCoordination['lng'])
+    newData['status'] = 'OK'
+    return JsonResponse(newData, safe=False)
 
-            # get stops between origin and destination stops
-            headsign = steps[i]['transit_details']['headsign']
-            origin_time = steps[i]['transit_details']['departure_time']['text']
-            
-            stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, origin_time=origin_time, headsign=headsign)[0]
-
-            # print('depStopId', depStopId)
-            # print('arrStopId', arrStopId)
-            # print('lineId', lineId)
-            print('stops', stops)
-
-
-
-            # store stops info in data json for response 
-            newData['routes'][0]['legs'][0]['steps'][i]['transit_details']['stops'] = stops
-
-
-            # get all the segmentid by stopsid
-            segments = []
-            for index in range(len(stops)-1):
-                segments.append(stops[index]['plate_code'] + '-' + stops[index+1]['plate_code'])
-            
-            
-            # predict traveling time for all segmentid
-            lineId = steps[i]['transit_details']['line']['short_name']
-            journeyTime = predict_journey_time(lineId, segments, int(departureUnix))
-
-            totalDuration += int(journeyTime) // 60
-
-            # update duration value in newData to our journey prediction
-            newData['routes'][0]['legs'][0]['steps'][i]['duration']['text'] = str(int(journeyTime) // 60) + ' mins'
-
-        newData['routes'][0]['legs'][0]['duration']['text'] = str(totalDuration) + ' mins'
-        print("=====google prediction journey time:", data['routes'][0]['legs'][0]['duration']['text'], "========")
-
-        return JsonResponse(newData, safe=False)
-
-    except Exception as e:
-        print("type error:", str(e))
-        return JsonResponse(data, safe=False)
+    # except Exception as e:
+    #     print("type error:", str(e))
+    #     return JsonResponse(data, safe=False)
    
         
         
@@ -342,5 +299,4 @@ def direction(request):
     
     
 
-
-    
+ 

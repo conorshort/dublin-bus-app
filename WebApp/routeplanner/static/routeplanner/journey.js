@@ -1,3 +1,4 @@
+
 $(document).ready(function () {
     twttr.widgets.load()
 
@@ -7,6 +8,10 @@ $(document).ready(function () {
     //clear all markers and polyline on the map
     stopsLayer.clearLayers();
     journeyLayer.clearLayers();
+    
+    showSearchJourneyDiv(0);
+    initAutoComplete();
+
 
     //init datetime picker
     document.getElementsByClassName("datetimeInput").flatpickr({
@@ -20,9 +25,6 @@ $(document).ready(function () {
             )
         },
     });　
-
-    showSearchJourneyDiv();
-    initAutoComplete();
 });
 
 
@@ -33,8 +35,8 @@ function initAutoComplete(){
         componentRestrictions: {country: "IE"}
     };
 
-    var form_input = document.getElementById('form_input');
-    var to_input = document.getElementById('to_input');
+    var from_input = document.forms["journeyForm"]["f_from_stop"];
+    var to_input = document.forms["journeyForm"]["f_to_stop"];
 
     function initAutocomplete(input){
 
@@ -57,6 +59,10 @@ function initAutoComplete(){
                 return;
             } 
 
+            //TODO: not the good way to store coordinate, fund a way to replace this
+            //save place coordinate to element id
+            input.id = `{"lat":${place.geometry.location.lat()}, "lng":${place.geometry.location.lng()}}`;
+
             var address = '';
             if (place.address_components) {
                 address = [
@@ -68,7 +74,7 @@ function initAutoComplete(){
         });
     }
 
-    initAutocomplete(form_input);
+    initAutocomplete(from_input);
     initAutocomplete(to_input);
     
 }
@@ -83,63 +89,54 @@ $('form').submit(function(e){
     // Stop form refreshing page on submit
     e.preventDefault();
 
-    var origin = document.forms["journeyForm"]["f_from_stop"].value;
-    var destination = document.forms["journeyForm"]["f_to_stop"].value;
-    var dateTime =document.querySelector(".datetimeInput").value;
+    var fromInput = document.forms["journeyForm"]["f_from_stop"]
+    var toInput = document.forms["journeyForm"]["f_to_stop"]
+    var dateTime = document.forms["journeyForm"]["datetime"].value;
+
+    var originCoord = JSON.parse(fromInput.id);
+    var destinationCoord = JSON.parse(toInput.id);
 
     var dt = new Date(Date.parse(dateTime));
-    //set departure time mins to 0,
-    //if departure time given is 
-    dt.setMinutes(0);
     var unix = dt.getTime()/1000;
 
-    //get direction from api /api/direction
-    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${origin}&destination=${destination}&departureUnix=${unix}`
+    // //get direction from api /api/direction
+    $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${parseFloat(originCoord.lat).toFixed(7)}\ 
+    ,${parseFloat(originCoord.lng).toFixed(7)}\
+    &destination=${parseFloat(destinationCoord.lat).toFixed(7)},\
+    ${parseFloat(destinationCoord.lng).toFixed(7)}\
+    &departureUnix=${unix}`
     , function(data) {
-        console.log(data)
+        console.log(JSON.stringify(data));
         if (data.status == "OK"){
             try {
                 
-                var route = data.routes[0];
-                var leg = route.legs[0];
+                var leg = data.leg;
                 var arrive_time =  leg.arrival_time.text;
                 var departure_time =  leg.departure_time.text;
-                var renderSteps = renderResultJourneySteps(leg.steps);
                 var duration = leg.duration.text;
-                var transferCount = ((renderSteps.match(/bus_icon/g) || []).length).toString() ;
-                
-                // render duration and count of transfer 
-                var detail = renderContent({"Total duration:" : "<b>" + duration + "</b>" 
-                                                                + "&nbsp;&nbsp;&nbsp;&nbsp;" 
-                                                                + "<b>" + transferCount + "</b>" 
-                                                                + "  transfers"});
-                                        
-                // dictionary to store all the elements which are going to display on frontend
-                // key: the element id or class name
-                // value: content to append to the element 
-                var obj = {
-                    "#journey_result_from" : origin,
-                    "#journey_result_to" : destination,
-                    "#journey_result_datetime" : dateTime,
-                    "#journey_result_travel_time" : departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time,
-                    "#journey_result_steps" : renderSteps,
-                    "#journey_result_detail" : detail
-                };
-                displayElements(obj);
+               
+                var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length;
+                displaySearchInfoOnHeader(fromInput.value, toInput.value, dateTime);
+                displayTripSummary(duration, transferCount, departure_time, arrive_time);
 
-                //get encoding journey polyline
-                var encodingPolyline = route.overview_polyline.points;
-                //decode polyline to latlngs array
-                var coordinates = decode(encodingPolyline);
-                
-                drawPolylineOnMap(coordinates);
-                //drop destination marker
-                dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address);
+                //render and append origin waypoint
+                var origin_waypoint = renderTransitStop(departure_time, leg.start_address, leg.start_location);
+                appendElements({"#journey_result_steps" : origin_waypoint});
+                console.log('eg.steps:'+leg.steps);
+                displayJourneySteps(leg.steps);
+
+                //render and append origin waypoint
+                var destination_waypoint = renderTransitStop(arrive_time, leg.end_address, leg.end_location);
+                appendElements({"#journey_result_steps" : destination_waypoint});
+
                 //drop origin marker
-                dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address);
+                dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address, "");
+                //drop destinaiton marker
+                dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address, "");
 
-                showResultJourneyDiv();
+                showResultJourneyDiv(10);
                 MapUIControl.halfscreen();
+
             } catch (error) {
                 
                 alert(error);
@@ -151,8 +148,8 @@ $('form').submit(function(e){
         //hide loader
         $("#journey-loader").hide();
     });
-
 });
+
 
 //save the selected journey to favourite
 $('#star').click(function(e){
@@ -210,10 +207,12 @@ $('#star').click(function(e){
 
 
 $('#edit_journey_input').click(function () {
-    showSearchJourneyDiv();
-    clearSearchResult();
+    showSearchJourneyDiv(10);
+    clearSearchResult(10);
 
 });
+
+
 
 //append value to key element
 function displayElements(obj){
@@ -222,69 +221,181 @@ function displayElements(obj){
     });
 }
 
-
-// render result journey steps
-function renderResultJourneySteps(steps) {
-    //  TODO: handling when no bus journey, steps will become 0
-
-    content = '';
-    $.each( steps, function( index, step ) {
-
-        // Using the card component, show the steps of journey on card header
-        // show detail of each step in card body 
-        // resource: https://getbootstrap.com/docs/4.0/components/collapse/
-        content += `
-            <div class="card"> 
-            <div class="card-header" id="heading${index}"><h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">`;
-    
-        // if the travel_mode is TRANSIT, add bus icon and bus route number to content
-        if (step.travel_mode == "TRANSIT"){
-            var line = step.transit_details.line;
-            content +=  `<img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon"> &nbsp;`;
-            content += "<span id='lineName'>"+line.short_name+"</span>";
-
-        // if the travel_mode is WALKING, add walk icon to content
-        } else if (step.travel_mode == "WALKING") {
-            content +=  `<img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon"> Walking`;
-        }
-
-        // add duration for the step to content
-        content += " (" + step.duration.text + ") ";
-
-        // add journey steps detail in card body
-        content += `
-            </button></h5></div>
-            <div id="collapse${index}" class="collapse" aria-labelledby="heading${index}" data-parent="#journey_result_steps">
-            <div class="card-body">`;
-        content += "<p>Distance: <b>" + step.distance.text + "</b></p>";
-        // if the travel_mode is TRANSIT, add bus icon and bus route number to content
-        if (step.travel_mode == "TRANSIT"){
-            
-            //show number of stops
-            content += "<p> <b>" + step.transit_details.num_stops + " Stops</b></p>";
-
-            var stops = step.transit_details.stops;
-            
-            if (stops) {
-                
-                $.each(stops, function( index, value ) {
-                    content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
-                   
-                });
-            }
-
-            
-        // if the travel_mode is WALKING, add walk icon to content
-        } else if (step.travel_mode == "WALKING") {
-            content += "<p>" + step.html_instructions + "</p>";
-        }
-        content += '</div></div></div>';
-      
+//append value to key element
+function appendElements(obj){
+    $.each( obj, function( key, value ) {
+        $(key).append(value);
     });
-    return content
 }
 
+
+
+function displaySearchInfoOnHeader(origin, destination, dateTime){
+    // dictionary to store all the elements which are going to display on frontend
+    // key: the element id or class name
+    // value: content to append to the element 
+    var obj = {
+        "#journey_result_from" : origin,
+        "#journey_result_to" : destination,
+        "#journey_result_datetime" : dateTime
+    };
+
+    displayElements(obj);
+}
+
+function displayTripSummary(duration, transferCount, departure_time, arrive_time){
+    // dictionary to store all the elements which are going to display on frontend
+    // key: the element id or class name
+    // value: content to append to the element 
+    // render duration and count of transfer 
+    var duration_tranfer_count = renderContent({"Total duration:" : "<b>" + duration + "</b>" 
+                                + "&nbsp;&nbsp;&nbsp;&nbsp;" 
+                                + "<b>" + transferCount + "</b>" 
+                                + "  transfers"});
+
+    var obj = {
+        "#journey_result_detail" : duration_tranfer_count,
+        "#section-trip-summary" : departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time,
+                    
+    };
+    displayElements(obj);
+
+}
+
+
+
+
+function renderTransitStop(timeline, name, coordinates){
+    content = '<div class="transit-stop row" style="margin:0px; padding:0px;"> ';
+    content += `<div class="transit-timeline col-3" style="text-align:right; ">${timeline}</div>`
+    content += '<div class="col-1" style="margin:0px; padding:0px;"><div style="background: red; border-radius: 50%; width: 24px; height: 24px; margin-left: -3px;"></div></div>';
+    content += `<div class="transit-stop-name col-8" style="margin:0px; padding:0px;"><b>${name}</b></div>`;
+    content += '</div>'
+
+    return content;
+}
+
+
+
+
+function renderTransitDetail(step, index){
+
+    content = '<div class="transit-stop row"> ';
+    
+    if (step.travel_mode == "TRANSIT"){
+        content += `<div class="transit-timeline col-3" style="text-align:right;"><img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon"></div>`
+        content += '<div class="col-1"><div style="border-left: 4px solid red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+
+    } else {
+        content += `<div class="transit-timeline col-3" style="text-align:right";><img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon"></div>`
+        content += '<div class="col-1"><div style="border-left: 4px dotted red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+    }
+
+    content +=  '<div class="transit-detail col-8" style="padding-top: 20px; padding-bottom: 20px;">';
+    content +=  `<div class="transit-mode row"> ${step.travel_mode}</div>`;
+    content +=  `<div class="transit-duration row">${step.duration.text}&nbsp;&nbsp;&nbsp;&nbsp;${step.distance.text}</div>`;
+
+    if (step.travel_mode == "TRANSIT"){
+        content += renderStepCard(step, index);
+        // content +=  `<div class="transit-num-stops row">${step.transit_details.num_stops}</div>`;
+    }
+
+    content += '</div></div>'
+
+    return content;
+}
+
+
+
+function displayJourneySteps(steps){
+    content = '';
+    stepLength = steps.length;
+    console.log('stepLength:'+ stepLength);
+    
+    $.each( steps, function( index, step ) {
+        console.log(index);
+        
+        if (step.travel_mode == "TRANSIT"){
+            
+            var transit_details = step.transit_details;
+            content += renderTransitStop(transit_details.departure_time.text, 
+                transit_details.departure_stop.name,
+                transit_details.departure_stop.location);
+
+            content += renderTransitDetail(step, index);
+
+            content += renderTransitStop(transit_details.arrival_time.text, 
+                transit_details.arrival_stop.name,
+                transit_details.arrival_stop.location);
+
+
+        } else if (step.travel_mode == "WALKING") {
+            content += renderTransitDetail(step, index);
+        }
+
+        //get encoding journey polyline
+        var encodingPolyline = step.polyline.points;
+        //decode polyline to latlngs array
+        var coordinates = decode(encodingPolyline);
+        
+        drawPolylineOnMap(step.travel_mode, coordinates);
+
+        if (index !== (stepLength - 1)) {
+            //drop destination marker
+            dropMarkerOnMap(step.end_location.lat, step.end_location.lng, "", "circle");
+        }
+        
+    });
+
+    appendElements({"#journey_result_steps" : content});
+}
+
+
+
+function renderStepCard(step, index){
+
+    content = "";
+
+    
+    // Using the card component, show the steps of journey on card header
+    // show detail of each step in card body 
+    // resource: https://getbootstrap.com/docs/4.0/components/collapse/
+    content += `
+        <div class="card" style="margin: 10px 0px;"> 
+        <div class="card-header" id="heading${index}"><h5 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">`;
+
+    content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;`
+    
+    var stops = step.transit_details.stops;
+    if (stop) {
+        content += `<b> ${stops.length}</b> stops</div>`; 
+    }
+      
+
+     
+    // add journey steps detail in card body
+    content += `
+        </button></h5></div>
+        <div id="collapse${index}" class="collapse" aria-labelledby="heading${index}" data-parent="#journey_result_steps">
+        <div class="card-body">`;
+
+
+    // if the travel_mode is TRANSIT, add bus icon and bus route number to content
+    var stops = step.transit_details.stops;
+
+   if (stops) {
+        $.each(stops, function( index, value ) {
+            content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
+        });
+    } else {
+        content += "<p>" + step.html_instructions + "</p>";
+    }
+    content += '</div></div></div>';
+    
+    return content;
+
+}
 
 
 
@@ -301,15 +412,34 @@ function renderContent(obj){
 }
 
 
-function dropMarkerOnMap(lat, lon, location){
- 
-    var marker = L.marker([lat, lon]) .bindPopup(`<b> ${location}</b>`);
+function dropMarkerOnMap(lat, lon, location="", markerShape="default"){
+
+    if (markerShape == "circle"){
+        var marker = new L.CircleMarker([lat, lon], {
+            radius: 10,
+            color: '#FF0000'
+          });
+    } else {
+        var marker = L.marker([lat, lon]);
+
+    }
+    if (location != ""){
+        marker.bindPopup(`<b> ${location}</b>`)
+    }
+
     journeyLayer.addLayer(marker);
 }
 
 
-function drawPolylineOnMap(points){
-    var polyline = L.polyline(points, {color: 'red'});
+function drawPolylineOnMap(travel_mode, points){
+
+    if (travel_mode == "TRANSIT"){
+        var polyline = L.polyline(points, {color: 'red'});
+    } else {
+        var polyline = L.polyline(points, {color: 'red',  dashArray: '6, 6', dashOffset: '1'});
+    }
+
+    
     journeyLayer.addLayer(polyline);
     // zoom the map to the polyline
     currentBounds = polyline.getBounds()
@@ -322,7 +452,7 @@ function clearSearchResult(){
         "#journey_result_from" : "",
         "#journey_result_to" : "",
         "#journey_result_datetime" : "",
-        "#journey_result_travel_time" : "",
+        "#section-trip-summary" : "",
         "#journey_result_steps" : "",
         "#journey_result_detail" : ""
     };
@@ -333,14 +463,16 @@ function clearSearchResult(){
 }
 
 
-function showSearchJourneyDiv(){
-    $("#journey_result_div").fadeOut(10);
-    $("#journey_search_div").fadeIn(10);
+function showSearchJourneyDiv(time){
+    $("#journey_search_div").fadeIn(time);
+    $("#journey_result_div").fadeOut(time);
+    
 }
 
-function showResultJourneyDiv(){
-    $("#journey_search_div").fadeOut(10);
-    $("#journey_result_div").fadeIn(10);
+function showResultJourneyDiv(time){
+    $("#journey_result_div").fadeIn(time);
+    $("#journey_search_div").fadeOut(time);
+    
 }
 
 

@@ -140,6 +140,18 @@ div.weather#description {
 }
 
 
+.verticalLine {
+  border-left: thick solid #ff0000;
+  left: 50%;
+}
+
+.circle {
+  background: lightblue;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+}
+
 /* ==== Navigation bar ==== */
 
 #side-navibar {
@@ -202,6 +214,20 @@ div.weather#description {
   height: calc(100vh - 80px);
   overflow-y: hidden;
 }
+
+#my_location_btn {
+  position: absolute;
+  bottom: 50px;
+  width: 80px;
+  height: 80px;
+  right: 20px;
+  padding: 10px;
+  z-index: 400000;
+  border-radius: 50%;
+  box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
+
+}
+
 
 #mobile-show-content { 
   border-radius: 10px 10px 0px 0px;
