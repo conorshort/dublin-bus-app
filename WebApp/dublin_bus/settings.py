@@ -16,6 +16,24 @@ import os
 from .config import db_config
 
 
+# import sentry_sdk
+# from sentry_sdk.integrations.django import DjangoIntegration
+# from sentry_sdk.integrations.logging import LoggingIntegration
+# sentry_sdk.init(
+#     dsn="https://examplePublicKey@o0.ingest.sentry.io/0",
+#     integrations=[DjangoIntegration()],
+
+#     # If you wish to associate users to errors (assuming you are using
+#     # django.contrib.auth) you may enable sending PII data.
+#     send_default_pii=True
+# )
+# sentry_sdk.init(
+#     dsn="https://examplePublicKey@o0.ingest.sentry.io/0",
+#     integrations=[sentry_logging]
+# )
+
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -45,7 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # 'crispy_forms',
+    'django_db_logger',
 
     'rest_framework',
     'api',
@@ -150,16 +168,15 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'file': {
+        'db_log': {
             'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': 'WebApp/logs/debug.log',
+            'class': 'django_db_logger.db_log_handler.DatabaseLogHandler',
             'formatter': 'normal'
         },
     },
     'formatters': {
         'normal': {
-            'format': '%(asctime)s,%(msecs)d %(name)s %(levelname)s [%(filename)s:%(lineno)s - %(funcName)10s()] %(message)s'
+            'format': '%(asctime)s,%(msecs)d %(name)s, %(levelname)s, [%(filename)s:%(lineno)s - %(funcName)10s()], %(message)s'
         },
         'simple': {
             'format': '[%(levelname)s] %(message)s'
@@ -167,10 +184,10 @@ LOGGING = {
     },
 
     'loggers': {
-        '': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
+        'db': {
+            'handlers': ['db_log'],
+            'level': 'ERROR'
+            # 'propagate': True,
         },
     },
 }

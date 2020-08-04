@@ -12,8 +12,8 @@ from dublin_bus.config import GOOGLE_DIRECTION_KEY
 
 from .forms import leapCardForm
 
-
 def home(request):
+
     #api key and url for weather data
     API = '83e8d16b48f83517a5d89158fc88656e'
     URL = "http://api.openweathermap.org/data/2.5/weather?q=Dublin,ie&appid=" + API

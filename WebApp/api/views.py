@@ -21,8 +21,8 @@ import logging
  
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
 
+db_logger = logging.getLogger('db')
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SmartDublinBusStop.objects.all()
@@ -32,6 +32,7 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
     # usage example: /api/stops/nearby?longitude=-6.263695&latitude=53.3522411111&radius=0.1
     @action(detail=False)
     def nearby(self, request):
+        db_logger.error(f'here is an error')
 
         longitude = self.request.query_params.get('longitude')
         latitude = self.request.query_params.get('latitude')
@@ -67,8 +68,7 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
             parameters = {'longitude': longitude,
                         'latitude': latitude,
                         'radius': radius}
-            logger.error(f'Missing parameters. Given parameters {parameters}')
-
+            db_logger.error(f'Missing parameters. Given parameters {parameters}')
             content = {'message': 'Longitude and latitude fields are required'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
