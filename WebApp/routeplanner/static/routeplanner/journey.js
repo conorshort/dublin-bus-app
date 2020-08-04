@@ -108,13 +108,14 @@ $('form').submit(function(e){
     , function(data) {
         console.log(JSON.stringify(data));
         if (data.status == "OK"){
-            try {
+            if(true) {
                 
                 var leg = data.leg;
                 var arrive_time =  leg.arrival_time.text;
                 var departure_time =  leg.departure_time.text;
                 var duration = leg.duration.text;
-               
+                console.log("Trnasit FIND +++")
+                console.log(JSON.stringify(data).match(/TRANSIT/g) || [])
                 var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length;
                 displaySearchInfoOnHeader(fromInput.value, toInput.value, dateTime);
                 displayTripSummary(duration, transferCount, departure_time, arrive_time);
@@ -137,8 +138,8 @@ $('form').submit(function(e){
                 showResultJourneyDiv(10);
                 MapUIControl.halfscreen();
 
-            } catch (error) {
-                
+            // } catch (error) {
+            } else {  
                 alert(error);
             }
         } else {
@@ -368,7 +369,7 @@ function renderStepCard(step, index){
     content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;`
     
     var stops = step.transit_details.stops;
-    if (stop) {
+    if (stops) {
         content += `<b> ${stops.length}</b> stops</div>`; 
     }
       

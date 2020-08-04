@@ -40,7 +40,7 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
     # count how many steps which travel model is TRANSIT
     transitCount = r.text.count("TRANSIT")  
     
-    try:
+    if True:
 
         leg = data['routes'][0]['legs'][0]
         steps = leg['steps']
@@ -119,8 +119,10 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
                     newData['leg']['arrival_time']['value'] = arr_time_unix
 
                 else:
-                    arr_time_unix = int(steps[i]['transit_details']['arrival_time'])
-                    newData['leg']['arrival_time'] = arr_time_unix
+                    print(steps[i]['transit_details']['arrival_time'])
+                    arr_time_unix = int(
+                        steps[i]['transit_details']['arrival_time']['value'])
+                    newData['leg']['arrival_time']['value'] = arr_time_unix
 
                 # update total distance
                 distance = int(steps[i]['distance']['value']) 
@@ -174,7 +176,8 @@ def directionUntilFirstTransit(origin, destination, departureUnix):
         newData['status'] = 'OK'
         return newData
         
-    except Exception as e:
+    # except Exception as e:
+    else:
         print("type error:", str(e))
         message = {'status' : 'Not OK'}
         return message
@@ -225,6 +228,8 @@ def getSegmentsByStops(stops):
 
     if len(stops) >= 2: 
         segments = []
+        print("Stops")
+        print(stops)
         for index in range(len(stops)-1):
             
             segments.append(stops[index]['plate_code'] + '-' + stops[index+1]['plate_code'])
