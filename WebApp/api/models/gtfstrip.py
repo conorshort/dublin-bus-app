@@ -56,7 +56,8 @@ class GTFSTripManager(GTFSManager):
 
 
             if origin_time and not trips:
-
+                print("none found, trying without headsign")
+                # Then try without headsign, sometimes google's headsign doesn't match the gtfs data 
                 shape_id_queryset = None
                 trips = GTFSTrip.objects.filter(
                     route__route_name=route_name,
@@ -113,7 +114,6 @@ class GTFSTripManager(GTFSManager):
                 if these_stops and these_stops_list not in stops_as_lists:
                     stop_query_set.append(these_stops)
                     stops_as_lists.append(these_stops_list)
-
             
         if not stops_as_lists:
 
@@ -124,7 +124,6 @@ class GTFSTripManager(GTFSManager):
                 calendar__start_date__lte=today,
                 calendar__end_date__gte=today).values("shape_id").distinct().values_list('shape_id', flat=True)
             print(shape_id_queryset)
-
 
             # Get the list of stops for each shape_id
             for shape in shape_id_queryset:

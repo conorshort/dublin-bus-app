@@ -1,5 +1,22 @@
-
 $(document).ready(function () {
+    console.log('ready');
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(location) {
+        
+            var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
+            console.log(latlng);
+        });
+    } else {
+        console.log('nooo');
+    };
+      
+
+
+    
+
+    showSearchJourneyDiv(0);
+
     twttr.widgets.load()
 
     //hide loader
@@ -9,9 +26,10 @@ $(document).ready(function () {
     stopsLayer.clearLayers();
     journeyLayer.clearLayers();
     
-    showSearchJourneyDiv(0);
+    
     initAutoComplete();
 
+    console.log('hiii');
 
     //init datetime picker
     document.getElementsByClassName("datetimeInput").flatpickr({
@@ -26,6 +44,9 @@ $(document).ready(function () {
         },
     });　
 });
+
+
+
 
 
 function initAutoComplete(){

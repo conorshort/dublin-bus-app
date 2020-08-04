@@ -77,7 +77,6 @@ def leapinfo(request):
             # return JsonResponse(error)
                         
 
-
 def realtimeInfo(request, stop_id):
     r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
     return JsonResponse(r.text, safe=False)
@@ -87,7 +86,6 @@ def favourite(request):
     return render(request, 'routeplanner/favourite.html')
 
 #function to format api geocoordinates request to get lat and long of user-entered address
-
 # def longlatsearch(request, address):
 #     res = tuple(map(str, address.split(' ')))
 #     if len(res)==1:

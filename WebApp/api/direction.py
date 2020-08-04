@@ -33,11 +33,9 @@ def direction_to_first_transit(origin, destination, departureUnix):
     if data['status'] != 'OK':
         return JsonResponse(data)
 
-
     try:
         # count how many steps which travel model is TRANSIT
         transitCount = r.text.count("TRANSIT")
-
 
         leg = data['routes'][0]['legs'][0]
         steps = leg['steps']
@@ -111,10 +109,9 @@ def direction_to_first_transit(origin, destination, departureUnix):
                     newData['leg']['arrival_time']['value'] = arr_unix
 
                 else:
-
-                    arr_unix = int(step['transit_details']['arrival_time'])
-                    newData['leg']['arrival_time'] = arr_unix
-
+                    arr_time_unix = int(
+                        steps[i]['transit_details']['arrival_time']['value'])
+                    newData['leg']['arrival_time']['value'] = arr_time_unix
 
                 distance = int(step['distance']['value'])
                 totalDistance += distance
@@ -159,7 +156,6 @@ def direction_to_first_transit(origin, destination, departureUnix):
     except Exception as e:
         print("direction_to_first_transit error:", str(e))
         message = {'status': 'ZERO_RESULT'}
-
         return message
 
 
@@ -202,10 +198,8 @@ def get_segments(stops):
 
     if len(stops) >= 2:
         segments = []
-
         for index, stop in enumerate(stops, start=1):
             segments.append(stops[index-1]['plate_code'] + '-' + stop['plate_code'])
-
         return segments
     return []
 
@@ -224,6 +218,4 @@ def get_destination_string(meter):
 
     if km == 0:
         return str(m) + ' m'
-
     return str(km) + ' km ' + str(m) + ' m'
-
