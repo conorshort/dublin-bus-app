@@ -152,7 +152,11 @@ function markStopsOnMap(stop) {
 //Click function for bus stop list-item
 $('.list-group-flush').on('click', '.stop', function(e) {
         // Get the name of tab on the navbar that was clicked
-        var id = $(this).attr('id').replace("station-", "");;
+        var id = $(this).attr('id').replace("station-", "");
+
+        // log nav btn click event to firebase 
+        analytics.logEvent('select_content', { content_type: 'stop_item', item_id: id});
+
         showArrivingBusesOnSideBar(id);
         $("#stopsListGroup").empty();
 });
