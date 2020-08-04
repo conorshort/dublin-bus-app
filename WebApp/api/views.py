@@ -16,6 +16,13 @@ import copy
 
 from prediction import predict_journey_time, get_models_name
 
+# import the logging library
+import logging
+ 
+
+# Get an instance of a logger
+
+db_logger = logging.getLogger('db')
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SmartDublinBusStop.objects.all()
@@ -50,13 +57,17 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
                 ORDER BY distance;" % (latitude, longitude, latitude, radius)
 
             queryset = SmartDublinBusStop.objects.raw(sql)
-            
             serializer = SmartDublinBusStopSerializer(queryset, many=True)
 
             return Response(serializer.data)
 
         # If missing longitude and latitude value, return error message
         else:
+            # Log an error message
+            parameters = {'longitude': longitude,
+                        'latitude': latitude,
+                        'radius': radius}
+            db_logger.error(f'Missing parameters. Given parameters {parameters}')
             content = {'message': 'Longitude and latitude fields are required'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
@@ -68,7 +79,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False)
     def routename(self, response):
         ''' Return a list of distinct route names found in the db '''
-        route_queryset = GTFSTrip.objects.get_all_routes()
+        route_queryset = GTFSRoute.objects.values('route_name').distinct()
         return Response(route_queryset)
 
     @action(detail=False)
@@ -77,7 +88,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
         route_name = request.GET.get('name')
         inbound = request.GET.get("inbound")
 
-        today = datetime.today()
+        today = datetime.datetime.today()
 
         # Get distint shape ids and destinations for the given route name and direction
         # that are currently in service
@@ -95,11 +106,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
         shape_id = request.GET.get('shape')
 
         stops = GTFSTrip.objects.stops_on_route(shape_id).values(
-                    stop_name=F("stop__stop_name"),
-                    seq=F("stop_sequence"),
-                    id=F("stop_id"),
-                    lat=F("stop__stop_lat"),
-                    lon=F("stop__stop_lon"))
+            stop_name=F("stop__stop_name"), seq=F("stop_sequence"), id=F("stop_id"))
 
         return Response(stops)
 
@@ -113,7 +120,7 @@ class GTFSShapeViewSet(viewsets.ReadOnlyModelViewSet):
         routename = request.GET.get("routename")
         inbound = request.GET.get("inbound")
 
-        today = datetime.today()
+        today = datetime.datetime.today()
 
         shape_queryset = GTFSTrip.objects.filter(
             route__route_name=routename,
@@ -228,12 +235,20 @@ def direction(request):
     destination = request.GET.get('destination')
     departureUnix = request.GET.get('departureUnix')
 
+    parameters = {'origin': origin,
+                    'destination': destination,
+                    'departureUnix': departureUnix}
+                    
+
     # check if 3 papameter all given
     # if yes, get journey plan for google direction API,
     # and predict the journey time for dublin bus transit
     # if missing any parameter from request
     # return a http 400 response with message
     if not(origin and destination and departureUnix):
+
+        # Log an error message
+        db_logger.error(f'Missing parameters. Given parameters {parameters}')
 
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)
@@ -254,6 +269,10 @@ def direction(request):
     # extracting data in json format 
     data = r.json() 
     if data['status'] != 'OK':
+
+        # Log an error message
+        db_logger.error(f'Google direction API status not OK. Given parameters {parameters}')
+
         return JsonResponse(data)
 
 
@@ -267,13 +286,13 @@ def direction(request):
     try:
         # copy another data for editing
         newData = copy.deepcopy(data) 
+
         steps = newData['routes'][0]['legs'][0]['steps']
 
         totalDuration = 0
 
         # forloop steps from google direction API response
         for i in range(len(steps)):
-
 
             # check if the step travel_mode is TRANSIT
             if steps[i]['travel_mode'] != 'TRANSIT':
@@ -282,9 +301,10 @@ def direction(request):
                 continue
             
             # check if the line model exist 
-            lineId = steps[i]['transit_details']['line']['short_name'].upper()
+            lineId = steps[i]['transit_details']['line']['short_name']
             if ('route_'+lineId) not in lines:
                 continue
+
             arrStopCoordination = steps[i]['transit_details']['arrival_stop']['location']
             depStopCoordination = steps[i]['transit_details']['departure_stop']['location']
 
@@ -297,15 +317,25 @@ def direction(request):
 
             # get stops between origin and destination stops
             headsign = steps[i]['transit_details']['headsign']
-            origin_time = steps[i]['transit_details']['departure_time']['text']
-            
-            stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, origin_time=origin_time, headsign=headsign)[0]
+            stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)[0]
 
-            # print('depStopId', depStopId)
-            # print('arrStopId', arrStopId)
-            # print('lineId', lineId)
-            print('stops', stops)
 
+            # log error if return stops is empty
+            if len(stops) <= 0:
+                
+                params = {'depStopId': depStopId,
+                            'arrStopId': arrStopId,
+                            'lineId': lineId,
+                            'headsign': headsign}
+
+                # Log an error message
+                db_logger.error(f'return data Stops list is empty. Given parameters {params}')
+
+
+            # print('depStopId:', depStopId)
+            # print('arrStopId:', arrStopId)
+            # print('lineId:', lineId)
+            # print('stops:', stops)
 
 
             # store stops info in data json for response 
@@ -333,7 +363,11 @@ def direction(request):
         return JsonResponse(newData, safe=False)
 
     except Exception as e:
-        print("type error:", str(e))
+        print("type error: " + str(e))
+        
+        # Log an error message
+        db_logger.error(f'{str(e)}. Given parameters {parameters}')
+
         return JsonResponse(data, safe=False)
    
         
