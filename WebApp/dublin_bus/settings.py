@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost',
                  "127.0.0.1",
-                 "192.168.0.13"]
+                 "192.168.1.19"]
 
 
 # Application definition
@@ -88,8 +88,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': db_config["schema_name"],
-        'USER': db_config["read_only_username"],
-        'PASSWORD': db_config["read_only_pw"],
+        'USER': db_config["admin_username"],
+        'PASSWORD': db_config["admin_pw"],
         'HOST': db_config["host"],
         'PORT': '3306',
     }

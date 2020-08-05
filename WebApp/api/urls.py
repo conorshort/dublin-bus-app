@@ -15,5 +15,5 @@ router.register('trips', GTFSTripViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('realtimeInfo/<str:stop_id>', realtimeInfo, name="realtimeInfo"),
-    path('direction', direction, name="direction")
+    path('direction', direction, name="direction"),
 ]

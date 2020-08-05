@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-
 <head>
 
     <!-- Required meta tags -->
@@ -14,8 +13,11 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
         integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
         crossorigin="" />
+
     <!-- datetime picker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" type="text/css" href="{% static 'routeplanner/main.css' %}">
 
@@ -41,13 +43,12 @@
                         <div class="col-2 weather">
                             <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" id="weather_img">
                         </div>
-                        <div class="col-3 weather" id="temp">
+                        <!-- <div class="col-3 weather" id="temp">
                             {{ weather.temperature }}°C
                         </div>
                         <div class="col-7 weather" id="description">
                             {{ weather.description }}
-
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -61,11 +62,14 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> <!-- Twitter Javascript for Widget JavaScript -->
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+    <!-- Twitter Javascript for Widget JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
@@ -74,7 +78,37 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <!-- Font Awesome html Icons -->
-    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin="anonymous"></script>
+    
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
+
+    <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-analytics.js"></script>
+
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-firestore.js"></script>
+    
+    <script>
+    // congif firebase
+    var firebaseConfig = {
+        apiKey: "AIzaSyBccB26eAhyKwgAKTV6A39VL-YuGPaSjM0",
+        authDomain: "dublinbus-dfbfc.firebaseapp.com",
+        databaseURL: "https://dublinbus-dfbfc.firebaseio.com",
+        projectId: "dublinbus-dfbfc",
+        storageBucket: "dublinbus-dfbfc.appspot.com",
+        messagingSenderId: "587026003778",
+        appId: "1:587026003778:web:d00bc8c285c4e7fd847adb",
+        measurementId: "G-VP5HD590NV"
+    };
+    
+    //  Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+
+    </script>
+
 
     {% block js %}
 
@@ -84,7 +118,7 @@
     <!-- Modal (pop-up box) for timetables -->
     <div class="modal fade" id="timetable-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
-        <div class="modal-dialog " role="document">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="timetable-title"></h5>
@@ -110,7 +144,5 @@
             </div>
         </div>
     </div>
-
 </body>
-
 </html>

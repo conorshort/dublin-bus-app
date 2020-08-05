@@ -1,41 +1,28 @@
 
 {% load static %}
-
-<div id="content">
-
-    <div class="col">
-        <div class="row sidebar_header">
-            <div class="col">
-                Stops
-            </div>
-        </div>
-        <div class="row">
-            <div class="col p-0">
-                <div class="active-cyan-4 mb-4 ml-4 mr-4">
-                    <form id='stops-area' method="post">
-                        <div class="row ml-1">
-                            <h6 class="btn btn-outline-secondary btn-sm" id="back-to-stops" >
-                                < Back </h6>
-                        </div>
-                        <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area">
-                        {% csrf_token %}
-                        <input type="submit" class="btn btn-primary float-right"></input>
-                    </form>
-                    <div id="infowindow-content-area">
-                        <!-- <img src="" width="16" height="16" id="place-icon">
-                        <span id="place-name"  class="title"></span><br>
-                        <span id="place-address"></span> -->
-                    </div>
-                </div>           
-                <ul class="list-group-flush p-0 vh-100" id="stopsListGroup">
-
-                </ul>
-            </div>
-        </div>
-
-        
+<div class="content p-0 col">
+    <div class="row sidebar_header">
+        Stops
     </div>
+    <div class="row sidebar_content">
+        <div class="col" id="stops-div">
+            <form id='stops-area' method="post" class="row px-4 light-yellow-box">
+                <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area" class="col-9 form-control">
+                {% csrf_token %}
+                <button type="submit" class="col-3 btn btn-primary">Search</button>
+            </form>
+            <ul class="list-group list-group-flush p-0" id="stopsListGroup">
+            </ul> 
+        </div>
 
+        <div class="col" id="stop-realtime-div">
+            <div class="p-1 light-yellow-box">
+                <h6 class="btn mx-20 my-0 btn-outline-dark btn-sm" id="back-to-stops">
+                    < Back </h6>
+            </div>
+            <div class="list-group-flush p-0 vh-100" id="stopRealtimeListGroup"></div>
+        </div>
+    </div>
     <script src="{% static 'routeplanner/stops.js' %}" id="script"></script> 
 </div>
 

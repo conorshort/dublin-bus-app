@@ -73,11 +73,11 @@ class AbstractGTFS(models.Model):
     # If we want to add another agancy we can just add a new folder containing
     # the text files and add the ageny below
     _agencies = [{"name": "Dublin Bus",
-                 "id": "978",
-                 "path": "api/files/dublin_bus_gtfs/"},
-                {"name": "Go Ahead",
-                 "id": "3",
-                 "path": "api/files/go_ahead_gtfs/"}, ]
+                  "id": "978",
+                  "path": "api/files/dublin_bus_gtfs/"},
+                 {"name": "Go Ahead",
+                  "id": "3",
+                  "path": "api/files/go_ahead_gtfs/"}, ]
 
     @classmethod
     def from_dict(cls, gtfs_dict, agency_dict):
@@ -86,12 +86,12 @@ class AbstractGTFS(models.Model):
         throught that first '''
 
         # Create an instance of the class
-        gtfs_instance= cls()
+        gtfs_instance = cls()
 
         # Alter the dictionary with _proc_func if found
-        proc_func= getattr(gtfs_instance, "_dict_proc_func", None)
+        proc_func = getattr(gtfs_instance, "_dict_proc_func", None)
         if proc_func:
-            gtfs_dict= proc_func(gtfs_dict, agency_dict)
+            gtfs_dict = proc_func(gtfs_dict, agency_dict)
 
         # Loop through the dict and set the instance values
         for key, val in gtfs_dict.items():
