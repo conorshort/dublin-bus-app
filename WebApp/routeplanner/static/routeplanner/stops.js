@@ -48,7 +48,7 @@ function showStops(lat, lng){
     $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${lat}&longitude=${lng}&radius=1`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
-            content += renderListItem(stop);
+
             // content += document.getElementById('routes-list').innerHTML = "<a href='#'><i class='far fa-star star'></a>"
             // Get distance from centre location to every stop in kilometers
             dist_kms = distance(lat, lng,stop.latitude, stop.longitude, 'K');
