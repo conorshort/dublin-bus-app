@@ -95,6 +95,8 @@ def direction_to_first_transit(origin, destination, departureUnix):
                         segments,
                         int(departureUnix))
 
+                    print('journeyTime:', journeyTime)
+
                     # set duration to predicted journey time
                     duration = int(journeyTime)
 
