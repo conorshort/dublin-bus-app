@@ -16,7 +16,6 @@ map.on('moveend', function(e) {
 
 
 $(document).ready(function() {
-
     $("#stop-realtime-div").fadeOut(10);
     $("#stops-div").fadeIn(10);
 
@@ -42,6 +41,7 @@ $(document).on("click.stops", '.nav_item, .bottom_nav_item', function () {
 
 // Shows Stops and distances 
 function showStops(lat, lng){
+    $("#stop-loader").show();
     $.getJSON(`/api/stops/nearby?latitude=${lat}&longitude=${lng}&radius=1`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
@@ -53,7 +53,7 @@ function showStops(lat, lng){
             console.log(stop);
             markStopsOnMap(stop);
         });
-
+        $("#stop-loader").hide();
         $("#stopsListGroup").html(content);
     });
 }
@@ -86,7 +86,7 @@ $('form').submit(function(e){
 
 
 function showArrivingBusesOnSideBar(stopid){
-
+    $("#stop-loader").show();
     //get realtime data
     $.getJSON(`/realtimeInfo/${stopid}`, function(data) {
 
@@ -98,6 +98,7 @@ function showArrivingBusesOnSideBar(stopid){
             $.each(results, function (i, bus) {
                 content += renderRealtimeListItem(bus);
             });
+            $("#stop-loader").hide();
             $("#stopRealtimeListGroup").html(content);
         }  
     });

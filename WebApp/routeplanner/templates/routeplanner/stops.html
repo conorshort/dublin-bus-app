@@ -11,6 +11,9 @@
                 {% csrf_token %}
                 <button type="submit" class="col-3 btn btn-primary">Search</button>
             </form>
+            <div class="spinner-grow text-secondary" style="margin:auto;" id="stop-loader" role="status">
+                <span class="sr-only"></span>
+            </div>
             <ul class="list-group list-group-flush p-0" id="stopsListGroup">
             </ul> 
         </div>
