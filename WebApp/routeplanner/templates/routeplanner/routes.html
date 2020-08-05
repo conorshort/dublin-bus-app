@@ -1,22 +1,19 @@
 {% load static %}
 
 <div class="content p-0 col">
-    
+
     <div class="row py-2 sidebar_header">
         Routes
     </div>
     <div class="row sidebar_content">
-        <div class="col" id="routes-div">
-            <div class="row px-4 active-cyan-4 light-yellow-box">
-                <input class="form-control" id="route-filter" type="search" placeholder="Find a route"
-                    aria-label="Search">
-            </div>
-        </div>
-        
-        <div id="routes-div">
+
+
+
+        <div id="routes-div" class="container">
+
             <div class="row" id="fav-routes-div">
-                <div class="col p-0" >
-                    <h5 class="route-heading">Your Favourites</h5>
+                <div class="col">
+                    <h5 class="route-heading gray-box" style="padding-bottom: 15px;">Your Favourites</h5>
                     <ul class="list-group list-group-flush" id="fav-routes-list">
                     </ul>
                 </div>
@@ -24,9 +21,10 @@
 
 
             <div class="row">
-                <div class="col p-0" id="all-routes-div">
-                    <h5 class="route-heading">All Routes</h5>
-                    <div class="active-cyan-4 mb-4">
+
+                <div class="col" id="all-routes-div">
+                    <h5 class="route-heading gray-box">All Routes</h5>
+                    <div class="row px-4 active-cyan-4 gray-box">
                         <input class="form-control" id="route-filter" type="search" placeholder="Find a route"
                             aria-label="Search">
                     </div>
@@ -49,13 +47,12 @@
                     <div class="btn-group btn-group-toggle direction-buttons" data-toggle="buttons">
                         <label class="btn btn-outline-warning active ">
 
-                            <input type="radio" name="options" id="inbound-radio" data-inbound="1"
-                                autocomplete="off" checked>
+                            <input type="radio" name="options" id="inbound-radio" data-inbound="1" autocomplete="off"
+                                checked>
                             Inbound
                         </label>
                         <label class="btn btn-outline-warning">
-                            <input type="radio" name="options" id="outbound-radio" data-inbound="0"
-                                autocomplete="off">
+                            <input type="radio" name="options" id="outbound-radio" data-inbound="0" autocomplete="off">
                             Outbound
                         </label>
                     </div>

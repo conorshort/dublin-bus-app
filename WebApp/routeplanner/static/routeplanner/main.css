@@ -365,7 +365,9 @@ div.weather#description {
 }
 
 .route-heading {
-  margin: 20px 0px 10px 15px;
+  margin: 0px;
+  padding-left: 25px;
+  padding-bottom: 0px;
 }
 
 #route-filter {
