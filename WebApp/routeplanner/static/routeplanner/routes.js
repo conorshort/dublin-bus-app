@@ -550,7 +550,7 @@ function routes() {
             <li class="list-group-item route-item" id="route-${route}">
                 <ul>
                     <li class="row">
-                    <span class="col-1"><a href="#"><i class='far fa-star star' data-route="${route}"></i></a></span>
+                    <span class="col-1"><a href="#"><i class="far fa-star star"></i></a></span>
                         <b class="col-6">${route}</b>
                         <span class="col-5">${operator}</span>
                     </li>

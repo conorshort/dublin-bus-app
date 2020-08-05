@@ -163,6 +163,17 @@ div.weather#description {
   width: 20px;
 }
 
+#journey-favorite-dropdown {
+  width: 100%;
+  border-radius: 0px;
+  margin: 0px 5px;
+}
+
+#dropdownMenuButton {
+  margin: 0px;
+  background-color: green;
+}
+
 /* ==== leapcard ==== */
 #leap-info {
   color: #ffbf00;

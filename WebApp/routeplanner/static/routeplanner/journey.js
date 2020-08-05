@@ -10,11 +10,6 @@ $(document).ready(function () {
     //clear all markers and polyline on the map
     stopsLayer.clearLayers();
     journeyLayer.clearLayers();
-    
-    
-    initAutoComplete();
-
-    console.log('hiii');
 
     //init datetime picker
     document.getElementsByClassName("datetimeInput").flatpickr({
@@ -27,11 +22,11 @@ $(document).ready(function () {
                 instance.formatDate(new Date(), "Y-m-d H:i")
             )
         },
-    });　
+    });
+
+    initAutoComplete();
+    initFavoriteDropdown();　
 });
-
-
-
 
 
 function initAutoComplete(){
@@ -53,7 +48,6 @@ function initAutoComplete(){
         // Set the data fields to return when the user selects a place.
         autocomplete.setFields(
             ['address_components', 'geometry', 'icon', 'name']);
-
 
         autocomplete.addListener('place_changed', function() {
 
@@ -79,11 +73,21 @@ function initAutoComplete(){
             }
         });
     }
-
     initAutocomplete(from_input);
-    initAutocomplete(to_input);
-    
+    initAutocomplete(to_input);  
 }
+
+
+function initFavoriteDropdown(){
+    var previous_journey = cookiemonster.get('journeyList');
+    if (previous_journey){
+        previous_journey.forEach(function(element){
+            console.log(element["origin"]);
+            $("#journey-favorite-dropdown").append(`<option> origin: ${element.origin} destination: ${element.destination}</option>`);
+        });
+    }
+}
+
 
 
 // submit button click event 
@@ -112,7 +116,6 @@ $('form').submit(function(e){
     ${parseFloat(destinationCoord.lng).toFixed(7)}\
     &departureUnix=${unix}`
     , function(data) {
-        console.log(JSON.stringify(data));
         if (data.status == "OK"){
             try {
                 
@@ -128,7 +131,6 @@ $('form').submit(function(e){
                 //render and append origin waypoint
                 var origin_waypoint = renderTransitStop(departure_time, leg.start_address, leg.start_location);
                 appendElements({"#journey_result_steps" : origin_waypoint});
-                console.log('eg.steps:'+leg.steps);
                 displayJourneySteps(leg.steps);
 
                 //render and append origin waypoint
@@ -159,18 +161,15 @@ $('form').submit(function(e){
 
 //save the selected journey to favourite
 $('#star').click(function(e){
-    e.preventDefault;
+    
     //get the selected origin, destination and line info 
     let starredOrigin = document.forms["journeyForm"]["f_from_stop"].value;
     let starredDestination=document.forms["journeyForm"]["f_to_stop"].value;
-    let starredLine = document.getElementById("lineName").textContent;
 
     //push all of them into a list then push every new selected journey into a journey list
-    var perJourney = [];
+    var perJourney = {"origin" : starredOrigin, "destination" : starredDestination};
+
     var journeyList=[];
-    perJourney.push('Origin:  '+starredOrigin);
-    perJourney.push('Destination:  '+starredDestination);
-    perJourney.push('Route(s):  '+starredLine);
     journeyList.push(perJourney);
 
     //if the journey is not in the list it will be saved in cookies
@@ -183,32 +182,20 @@ $('#star').click(function(e){
     }
 
     var previous_journey = cookiemonster.get('journeyList');
-    var flag = 0;
 
-    //if selected journey already in the list wont save again
-    for(let i=0;i<previous_journey.length;i++){
-        if(perJourney==previous_journey[i]){
-            alert('This journey is already in the list');
-            flag = 1;
+    if (previous_journey.includes(perJourney)){
+        alert('This journey is already in the list');
+    } else {
+        try{
+            cookiemonster.get('journeyList');
+            cookiemonster.append('journeyList', journeyList, 3650);
+            
+        } catch{
+            cookiemonster.set('journeyList', journeyList, 3650);
         }
+        alert('Save Sucessfully');
     }
-
-        //if it is not in the list then will append to cookies 
-        if (flag==0){
-            try{
-                cookiemonster.get('journeyList');
-                cookiemonster.append('journeyList', journeyList, 3650);
-                
-            } catch{
-                cookiemonster.set('journeyList', journeyList, 3650);
-            }
-            alert('Save Sucessfully');
-        }
-
-    });
-
-
-
+});
 
 
 
@@ -316,10 +303,8 @@ function renderTransitDetail(step, index){
 function displayJourneySteps(steps){
     content = '';
     stepLength = steps.length;
-    console.log('stepLength:'+ stepLength);
-    
+
     $.each( steps, function( index, step ) {
-        console.log(index);
         
         if (step.travel_mode == "TRANSIT"){
             
@@ -444,7 +429,6 @@ function drawPolylineOnMap(travel_mode, points){
     } else {
         var polyline = L.polyline(points, {color: 'red',  dashArray: '6, 6', dashOffset: '1'});
     }
-
     
     journeyLayer.addLayer(polyline);
     // zoom the map to the polyline
@@ -488,7 +472,6 @@ function showResultJourneyDiv(time){
 function decode(encoded){
 
     // array that holds the points
-
     var points=[ ]
     var index = 0, len = encoded.length;
     var lat = 0, lng = 0;

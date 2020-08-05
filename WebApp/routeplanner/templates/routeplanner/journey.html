@@ -6,6 +6,11 @@
     </div>
     <div class="row px-3 sidebar_content">
         <div id="journey_search_div" class="col">
+
+            <select name="cars" id="journey-favorite-dropdown" class="p-0 mb-3 row">
+                <option value="default">Select Favorite Journey</option>
+            </select>
+
             <form name="journeyForm" id="journeyForm" method="POST" onkeydown="return event.key != 'Enter';">
 
                 <!-- origin input row -->
@@ -46,6 +51,7 @@
         <div id="journey_result_div" class="col px-2">
             <div class="row gray-box" id="journey_result_header">
                 <div class="col">
+                    <div class="row"><i class="far fa-star star" id="star"></i></div>
                     <div class="row">
                         <div class="col-4"> <b>From:</b> </div>
                         <div class="col-8" id="journey_result_from"></div>
