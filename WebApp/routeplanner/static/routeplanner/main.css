@@ -392,6 +392,9 @@ div.weather#description {
       padding-bottom: 60px;
     }
 
+    #side_navibar {
+      display:none;
+    }
     .content {
       width: 100vw;
       height: auto;

@@ -24,8 +24,13 @@
             Favourite
         </div></a>
     </div>
-    <div id="sidebar"></div>
-    <div class="col" id="map"><input type="image" src="./static/img/my_location.png" id="my_location_btn"></div>
+
+    <div class="col-12 col-md order-md-2" id="map"><input type="image" src="./static/img/my_location.png"
+            id="my_location_btn"></div>
+    <div id="sidebar" class="col-12 col-md order-md-1"></div>
+    <div class="col-12 order-md-3" id="mobile-show-content">
+        <img src="./static/img/up-arrow-yellow.png" class="mx-auto d-block" id="show-content-arrow" alt="up-arrow">
+    </div>
 </div>
 
 <div class="container" id="bottom-navibar">
@@ -66,6 +71,6 @@
     defer></script>
 <script type="text/javascript" src="{% static 'routeplanner/cookiemonster.js' %}" id="script"></script>
 <script src="{% static 'routeplanner/routes.js' %}" id="script"></script>
-<script src="{% static 'routeplanner/home.js' %}"></script> 
-<script src="{% static 'routeplanner/favourite.js' %}"></script> 
+<script src="{% static 'routeplanner/home.js' %}"></script>
+<script src="{% static 'routeplanner/favourite.js' %}"></script>
 {% endblock %}
