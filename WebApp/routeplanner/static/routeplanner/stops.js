@@ -55,6 +55,13 @@ function showStops(lat, lng){
         });
         $("#stop-loader").hide();
         $("#stopsListGroup").html(content);
+
+        let visible = $(content).length;
+        if (visible == 0){
+            $("#no-stops-warning").show();
+        } else {
+            $("#no-stops-warning").hide();
+        }
     });
 }
 
@@ -177,7 +184,7 @@ function renderListItem(stop, stop_dist) {
     <span class="col-1"><a href="#"><i class="far fa-star star2 " data-stop="${stop.stopid}"></i></a></span>
     <li class="list-group-item stop" id="station-${stop.stopid}">
         <ul class="row">
-            <li class="col-8"><b>${ stop.fullname } ${stop.stopid}</b></li>
+            <li class="col-8"><b>${ stop.fullname },</b> Stop ${stop.stopid}</li>
             <li class="col-4">${ stop_dist } Metres</li>
             <li class="col"> ${ route_buttons }</li>
         </ul>
