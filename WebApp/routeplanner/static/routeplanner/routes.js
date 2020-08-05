@@ -157,7 +157,7 @@ function routes() {
 
                 MapUIControl.halfscreen()
 
-
+    
                 $("#inbound-radio").prop('checked', true)
                     .parent().addClass("active");
                 $("#outbound-radio").prop('checked', false)
@@ -171,6 +171,11 @@ function routes() {
 
                 // Get the route name from the ID
                 routeName = routeElemId.split("-")[1];
+
+                // log route click event to firebase 
+                analytics.logEvent('select_content', { content_type: 'route_item', item_id: routeName});
+
+
                 $("#route-stops-title").html(routeName)
                 $("#route-stop-div").fadeIn(400);
 
@@ -221,6 +226,10 @@ function routes() {
             // stored in a data-shape-id attribute
             let shapeId = $(this).attr('data-shape-id');
             let index = $(this).attr('data-index');
+
+
+            
+
             // Get a list of stops using the shape id
             $.getJSON("api/routes/stops/", { shape: shapeId }, function (stops) {
                 // Sort the stops in the order they appear on the route.

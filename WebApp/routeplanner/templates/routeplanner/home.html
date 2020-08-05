@@ -1,8 +1,8 @@
 {% extends "routeplanner/base.html" %}
 {% load static %}
 {% block main %}
-<div class="row">
-    <div id="side-navibar">
+<div class="row side_bar">
+    <div id="side_navibar">
         <div class="nav_item" id="journey">
             <img src="./static/img/journey.png" alt="nav_item_journey" class="nav_img">
             Journey
@@ -24,13 +24,9 @@
             Favourite
         </div></a>
     </div>
-    <div class="col-12 col-md order-md-2" id="map"></div>
-    <div id="sidebar" class="col-12 col-md order-md-1"></div>
-    <div class="col-12 order-md-3" id="mobile-show-content">
-        <img src="./static/img/up-arrow-yellow.png" class="mx-auto d-block" id="show-content-arrow" alt="up-arrow">
-    </div>
+    <div id="sidebar"></div>
+    <div class="col" id="map"><input type="image" src="./static/img/my_location.png" id="my_location_btn"></div>
 </div>
-
 
 <div class="container" id="bottom-navibar">
     <div class="row" id="resp-sidebar-menu">

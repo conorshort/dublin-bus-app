@@ -1,12 +1,13 @@
 from django.test import SimpleTestCase
 from routeplanner.forms import leapCardForm
 
+
 class TestForms(SimpleTestCase):
 
     def test_leapCardForm(self):
         form = leapCardForm(data={
-            'username':'123',
-            'password':'321'
+            'username': '123',
+            'password': '321'
         })
 
         self.assertTrue(form.is_valid())

@@ -1,10 +1,15 @@
 {% load static %}
 
-<div id="content">
-    <div class="col">
-        <div class="row sidebar_header">
-            <div class="col">
-                Routes
+<div class="content p-0 col">
+    
+    <div class="row py-2 sidebar_header">
+        Routes
+    </div>
+    <div class="row sidebar_content">
+        <div class="col" id="routes-div">
+            <div class="row px-4 active-cyan-4 light-yellow-box">
+                <input class="form-control" id="route-filter" type="search" placeholder="Find a route"
+                    aria-label="Search">
             </div>
         </div>
         
@@ -34,8 +39,8 @@
 
 
         <div class="col p-0" id="route-stop-div">
-            <div class="row">
-                <h6 class="btn btn-outline-secondary btn-sm" id="back-to-routes">
+            <div class="row p-1 light-yellow-box">
+                <h6 class="btn mx-10 my-0 btn-outline-dark btn-sm" id="back-to-routes">
                     < Back </h6>
             </div>
             <div class="row">
@@ -43,12 +48,14 @@
                 <div class="col-10">
                     <div class="btn-group btn-group-toggle direction-buttons" data-toggle="buttons">
                         <label class="btn btn-outline-warning active ">
-                            <input type="radio" name="options" id="inbound-radio" data-inbound="1" autocomplete="off"
-                                checked>
+
+                            <input type="radio" name="options" id="inbound-radio" data-inbound="1"
+                                autocomplete="off" checked>
                             Inbound
                         </label>
                         <label class="btn btn-outline-warning">
-                            <input type="radio" name="options" id="outbound-radio" data-inbound="0" autocomplete="off">
+                            <input type="radio" name="options" id="outbound-radio" data-inbound="0"
+                                autocomplete="off">
                             Outbound
                         </label>
                     </div>
@@ -58,9 +65,4 @@
             </div>
         </div>
     </div>
-</div>
-
-<script src="{% static 'routeplanner/favourite.js' %}"></script>
-
-
 </div>
