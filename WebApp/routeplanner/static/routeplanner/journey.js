@@ -29,6 +29,29 @@ $(document).ready(function () {
 });
 
 
+
+
+function initFavoriteDropdown(){
+
+    $("#favorite-journey-list-group").empty();
+
+    var previous_journey = cookiemonster.get('journeyList');
+    if (previous_journey){
+        previous_journey.forEach(function(element){
+            var favorite_journey = JSON.parse(element);
+            // id=${element}
+            $("#favorite-journey-list-group").append(
+                `<li class="list-group-item favorite-journey-list-item"> \
+                <div class="row"> \
+                <div class="col-1" id="solid-star"><i class="fas fa-star starSolid"></i></div> \
+                <div class="col-11" id="star-content">
+                <b>origin:</b> ${favorite_journey.origin} </br> \
+                <b>destination:</b> ${favorite_journey.destination}</div></div></li>`);
+        });
+    }
+}
+
+
 function initAutoComplete(){
 
     //add restriction for autocomplete places API
@@ -76,31 +99,6 @@ function initAutoComplete(){
     initAutocomplete(from_input);
     initAutocomplete(to_input);  
 }
-
-
-function initFavoriteDropdown(){
-    var previous_journey = cookiemonster.get('journeyList');
-    console.log('previous_journey:'+previous_journey);
-    if (previous_journey){
-        previous_journey.forEach(function(element){
-            var favorite_journey = JSON.parse(element);
-            $("#favorite-journey-list-group").append(
-                `<li class="list-group-item favorite-journey-list-item" id=${element}> \
-                <div class="row"> \
-                <div class="col-1"><i class="far fa-star star" id="star"></i></div> \
-                <div class="col-11">
-                <b>origin:</b> ${favorite_journey.origin} </br> \
-                <b>destination:</b> ${favorite_journey.destination}</div></div></li>`);
-        });
-    }
-}
-
-
-$('.favorite-journey-list-item').click(function(e){
-    console.log('favorite-journey-list-item');
-    console.log(this.id);
-
-});
 
 
 
@@ -174,7 +172,7 @@ $('form').submit(function(e){
 
 
 //save the selected journey to favourite
-$('#star').click(function(e){
+$('#hollow-star').click(function(e){
     
     //get the selected origin, destination and line info 
     let starredOrigin = document.forms["journeyForm"]["f_from_stop"].value;
