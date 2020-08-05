@@ -6,3 +6,4 @@ sshtunnel
 PyMySQL
 djangorestframework
 pyleapcard
+gunicorn
