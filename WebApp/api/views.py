@@ -1,12 +1,7 @@
-<<<<<<< HEAD
 from bs4 import BeautifulSoup
 from django.shortcuts import render
 from django.http import HttpResponse
-from rest_framework import viewsets
-from rest_framework import status
-=======
 from rest_framework import viewsets, status
->>>>>>> origin/dev
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.http import JsonResponse
@@ -14,6 +9,7 @@ from django.db.models import F
 from api.models import SmartDublinBusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
 from .serializers import SmartDublinBusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
 from .direction import direction_to_first_transit, get_time_string, get_destination_string
+from .prediction import predict_journey_time
 from dublin_bus.config import GOOGLE_DIRECTION_KEY
 from datetime import datetime
 import requests
