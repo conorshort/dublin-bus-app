@@ -13,8 +13,8 @@ function routes() {
         $(document).off("click.routes")
         addOnclicksToVariations()
         // Add the route filter to the search box
-        $('#route-filter').on('keyup search', () => {
-            filterRouteList()
+        $(document).on("keyup.routes search.routes", '#route-filter', () => {
+            filterRouteList();
         });
 
         // On click for the back button when route variations are
@@ -54,7 +54,57 @@ function routes() {
             }
         });
 
+        $(document).on("click.routes", '.star', function (e) {
+            //e.preventDefault;
 
+            // Stop the route diplaying when a star is clicked
+            e.stopPropagation()
+
+            //get the route attribute associate with the selected star and push to a list
+            let starredRoute = $(this).attr("data-route") + "__" + $(this).attr("data-operator");
+            var routesList = [];
+            routesList.push(starredRoute);
+
+            //if the route is not in the list it will be saved in cookies
+            try {
+                cookiemonster.get('routesList');
+            } catch{
+                cookiemonster.set('routesList', routesList, 3650);
+
+                updateRouteFavourites()
+                return;
+            }
+
+            var previous_route = cookiemonster.get('routesList');
+            var flag = 0;
+            var newRoutes = []
+            //if selected route already in the list wont save again
+            for (let i = 0; i < previous_route.length; i++) {
+                if (starredRoute == previous_route[i]) {
+
+                    flag = 1;
+                } else {
+                    newRoutes.push(previous_route[i]);
+                }
+            }
+            if (flag == 1) {
+                cookiemonster.set('routesList', newRoutes, 3650);
+                updateRouteFavourites()
+
+
+            } else {
+                try {
+                    cookiemonster.get('routesList');
+                    cookiemonster.append('routesList', routesList, 3650);
+
+                } catch{
+                    cookiemonster.set('routesList', routesList, 3650);
+                }
+
+                updateRouteFavourites()
+            }
+
+        });
 
         // get all routes from django
         $.getJSON("api/routes/routename", function (data) {
@@ -85,8 +135,8 @@ function routes() {
             });
 
 
-
             // Add the routes to the list
+            // Add the stars to the list
             let content = '';
             routes.forEach(route => {
                 content += renderRouteListItem(route[0], route[1]);
@@ -94,13 +144,20 @@ function routes() {
 
             // Display the routes
             $("#routes-list").append(content);
+            updateRouteFavourites();
+            //save the selected route to favourite
+            $("#all-routes-loader").hide();
+            $("#all-routes-content").show();
+
+
+
 
             // Add an on click to each route
-            $(document).on("click.routes", ".route-item", function () {
+            $(document).on("click.routes", ".route-item, .fav-route-item", function () {
 
                 MapUIControl.halfscreen()
 
-
+    
                 $("#inbound-radio").prop('checked', true)
                     .parent().addClass("active");
                 $("#outbound-radio").prop('checked', false)
@@ -114,6 +171,11 @@ function routes() {
 
                 // Get the route name from the ID
                 routeName = routeElemId.split("-")[1];
+
+                // log route click event to firebase 
+                analytics.logEvent('select_content', { content_type: 'route_item', item_id: routeName});
+
+
                 $("#route-stops-title").html(routeName)
                 $("#route-stop-div").fadeIn(400);
 
@@ -133,11 +195,15 @@ function routes() {
 
 
 
+
+
+
     // Show a list of route variations
     // Returns a promise so .then() can be used to execute code
     // when it is done
     function showRouteVariations(routeName, inbound) {
         // Get the variation based on route name and direction
+        $("#single-route-loader").show();
         $("#variations-accordion").html("");
         return $.getJSON("api/routes/variations/",
             { name: routeName, inbound: inbound },
@@ -149,6 +215,8 @@ function routes() {
                     content += renderVariationAccordionItem(variation.towards, variation.shape_id, index);
                 });
                 $("#variations-accordion").append(content);
+                $("#single-route-loader").hide();
+               
             });
 
     }
@@ -161,6 +229,10 @@ function routes() {
             // stored in a data-shape-id attribute
             let shapeId = $(this).attr('data-shape-id');
             let index = $(this).attr('data-index');
+
+
+            
+
             // Get a list of stops using the shape id
             $.getJSON("api/routes/stops/", { shape: shapeId }, function (stops) {
                 // Sort the stops in the order they appear on the route.
@@ -542,18 +614,39 @@ function routes() {
                 li[i].style.display = "none";
             }
         }
+        let visible = $(".route-item:visible").length;
+        if (visible == 0){
+            $("#no-route-warning").show();
+        } else {
+            $("#no-route-warning").hide();
+        }
     }
 
     // ========= RENDER FUNCTIONS =========
     // These are all functions for rendering various elements dynamically
 
-
     // create and return list-group-item for route
-    function renderRouteListItem(route, operator) {
+    function renderRouteListItem(route, operator, fav = false) {
+        let favStr = "";
+        let solid = "far";
+        if (fav) {
+            favStr = "fav-";
+            solid = "fas"
+        }
         const content = `
-            <li class="list-group-item route-item" id="route-${route}">
+        
+            <li class="list-group-item ${favStr}route-item" id="route-${route}">
                 <ul>
-                    <li class="row"><b class="col-6">${route}</b><span class="col-6">${operator}</span></li>
+                    <li class="row">
+                    <span class="col-1">
+                        <a href="#">
+                            <i id="${favStr}star-route-${route}" class='${solid} fa-star star route-star' data-route="${route}" data-operator="${operator}">
+                            </i>
+                        </a>
+                    </span>
+                    <b class="col-6">${route}</b>
+                    <span class="col-5">${operator}</span>
+                    </li>
                 </ul>
             </li>`;
         return content;
@@ -617,7 +710,6 @@ function routes() {
 
 
 
-
     // Render the tab and the pane for displaying the timetables
     function renderNavTabAndPane(days, index) {
 
@@ -656,8 +748,46 @@ function routes() {
 
 
 
+    function updateRouteFavourites() {
+
+        $(".route-star").removeClass("fas")
+            .addClass("far");
 
 
+        let routesList;
+        try {
+            routesList = cookiemonster.get('routesList');
+        } catch{
+            $("#fav-routes-div").hide();
+            return;
+        }
+
+
+        if (routesList.length == 0) {
+            $("#fav-routes-div").hide();
+            return;
+        }
+
+        routesList = routesList.map(route => {
+            return route.split("__");
+        });
+
+        routesList.sort((a, b) => alphanumSort(a[0], b[0]));
+
+        let content = '';
+
+        routesList.forEach(routeName => {
+            content += renderRouteListItem(routeName[0], routeName[1], fav = true);
+            $("#star-route-" + routeName[0]).removeClass("far")
+                .addClass("fas");
+        });
+
+
+        $("#fav-routes-list").html("")
+            .append(content);
+        $("#fav-routes-div").show();
+
+    }
 
 
 
@@ -718,22 +848,5 @@ function routes() {
     }
 
 }
-
-
-// function toggleMobileMap() {
-//     $(".sidebar_header").hide();
-//     $("#map").show()
-//         .height(0)
-//         .animate({ height: "200px" }, 500, () => map.invalidateSize(false));
-
-// }
-
-// function fullscreenMobileMap() {
-//     $(".sidebar_header").hide();
-//     $("#map").show()
-//         .animate({ height: "500px" }, 500, () => map.invalidateSize(false));
-// }
-
-
 
 

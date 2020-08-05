@@ -1,63 +1,58 @@
-<div id="content">
-    <div class="col">
-        <div class="row sidebar_header">
-            <div class="col">
-                Leap Card
-            </div>
-        </div>
-
+<div class="content p-0 col">
+   
+    <div class="row sidebar_header">
+        Leap Card
     </div>
-    <div class="row">
+    <div class="row px-3 sidebar_content">
         <div class="col">
             <form method="post" id="formadd">
                 <b>Leap card account information:</b></br></br>
                 {% csrf_token %}
                 {{ form }}
-                <button type="submit" class="btn btn-primary float-right">Submit</button>
+                <button type="submit" class="btn btn-primary float-right" style="margin-right:2%;margin-top:15%">Submit</button>
             </form>
         </div>
     </div>
-    <div id= "leap-info">
+    <div id= "leap-info" style="font-size:180">
         <!-- <h2 id="leap-info">Card:</h2> 
         <h4>{{ result.card }}</h4>
         <h2 id="leap-info">Balance: </h2> 
         <h4>{{ result.balance }}</h4> -->
     </div>
-
 </div>
 
 
 <script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js"></script>  
-    <script>  
-        $(document).ready(function(){  
-            $.ajaxSetup({  
-                data: {csrfmiddlewaretoken: '{{ csrf_token }}' },  
-            });
-        // enact this function after form submission
-        $('#formadd').submit(function(){  
-            //info is getting username and password values by their id
-            info={      
-                    username:$('#un').val(),   
-                    password:$('#pw').val(),
-                 };
-
-                $.ajax({  
-                    type:"POST",  
-                    cache: false,  
-                    dataType: "html",  
-                    headers:{'Content-Type':"application/json"},
-                    data: info,
-                    url: "http://127.0.0.1:8000/leapinfo", //url to handle variables
-                    success: function(result, statues, xml){  
-                        // if success, return the result back to html with id "#leap-info"
-                        $("#leap-info").html(result);    
-                    },  
-                    error: function(){  
-                        //otherwise alert false
-                        alert("false");  
-                    }  
-                });  
-                return false;  
-            });  
+<script>  
+    $(document).ready(function(){  
+        $.ajaxSetup({  
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}' },  
         });
-    </script> 
+    // enact this function after form submission
+    $('#formadd').submit(function(){  
+        //info is getting username and password values by their id
+        info={      
+                username:$('#un').val(),   
+                password:$('#pw').val(),
+                };
+
+            $.ajax({  
+                type:"POST",  
+                cache: false,  
+                dataType: "html",  
+                headers:{'Content-Type':"application/json"},
+                data: info,
+                url: "http://127.0.0.1:8000/leapinfo", //url to handle variables
+                success: function(result, statues, xml){  
+                    // if success, return the result back to html with id "#leap-info"
+                    $("#leap-info").html(result);    
+                },  
+                error: function(){  
+                    //otherwise alert false
+                    alert("false");  
+                }  
+            });  
+            return false;  
+        });  
+    });
+</script> 
