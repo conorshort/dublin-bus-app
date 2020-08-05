@@ -10,7 +10,6 @@ map.on('moveend', function(e) {
 
     //clear all the markers in the layer
     stopsLayer.clearLayers();
-
     //clear all the elements in list group
     showStops(centreLocation[0], centreLocation[1]);
  });
@@ -43,16 +42,15 @@ $(document).on("click.stops", '.nav_item, .bottom_nav_item', function () {
 
 // Shows Stops and distances 
 function showStops(lat, lng){
-
-    $.getJSON(`http://127.0.0.1:8000/api/stops/nearby?latitude=${lat}&longitude=${lng}&radius=1`, function(data) {
+    $.getJSON(`/api/stops/nearby?latitude=${lat}&longitude=${lng}&radius=1`, function(data) {
         content = '';
         $.each(data, function (i, stop) {
-            content += renderListItem(stop);
             // content += document.getElementById('routes-list').innerHTML = "<a href='#'><i class='far fa-star star'></a>"
             // Get distance from centre location to every stop in kilometers
             dist_kms = distance(lat, lng,stop.latitude, stop.longitude, 'K');
             dist_ms = Math.round(dist_kms*1000);
             content += renderListItem(stop,dist_ms);
+            console.log(stop);
             markStopsOnMap(stop);
         });
 
@@ -90,7 +88,7 @@ $('form').submit(function(e){
 function showArrivingBusesOnSideBar(stopid){
 
     //get realtime data
-    $.getJSON(`http://127.0.0.1:8000/realtimeInfo/${stopid}`, function(data) {
+    $.getJSON(`/realtimeInfo/${stopid}`, function(data) {
 
         // parse response data to json 
         obj = JSON.parse(data)
