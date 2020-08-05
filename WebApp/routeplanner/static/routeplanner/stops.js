@@ -3,18 +3,19 @@ currentCentre = [53.346967, -6.259923];
 MapUIControl.halfscreen();
 
 //event will be called when map bounds change
-map.on('moveend', function(e) {
-    var mapCentra = map.getCenter();
-    //update centreLocation to centre of the map
-    centreLocation = [mapCentra["lat"], mapCentra["lng"]];
+map.on('moveend', showStopsAtCentre);
 
-    //clear all the markers in the layer
-    stopsLayer.clearLayers();
+ function showStopsAtCentre(){
+     var mapCentra = map.getCenter();
+     //update centreLocation to centre of the map
+     centreLocation = [mapCentra["lat"], mapCentra["lng"]];
 
-    //clear all the elements in list group
-    showStops(centreLocation[0], centreLocation[1]);
- });
+     //clear all the markers in the layer
+     stopsLayer.clearLayers();
 
+     //clear all the elements in list group
+     showStops(centreLocation[0], centreLocation[1]);
+ }
 
 $(document).ready(function() {
 
@@ -37,7 +38,7 @@ $(document).ready(function() {
 // Stop stops from showing on other tabs
 $(document).on("click.stops", '.nav_item, .bottom_nav_item', function () {
     stopsLayer.clearLayers();
-    map.off('moveend');
+    map.off('moveend', showStopsAtCentre);
 });
 
 

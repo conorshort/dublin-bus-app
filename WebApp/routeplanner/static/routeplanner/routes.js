@@ -14,7 +14,6 @@ function routes() {
         addOnclicksToVariations()
         // Add the route filter to the search box
         $(document).on("keyup.routes search.routes", '#route-filter', () => {
-
             filterRouteList();
         });
 
@@ -147,7 +146,8 @@ function routes() {
             $("#routes-list").append(content);
             updateRouteFavourites();
             //save the selected route to favourite
-
+            $("#all-routes-loader").hide();
+            $("#all-routes-content").show();
 
 
 
@@ -203,6 +203,7 @@ function routes() {
     // when it is done
     function showRouteVariations(routeName, inbound) {
         // Get the variation based on route name and direction
+        $("#single-route-loader").show();
         $("#variations-accordion").html("");
         return $.getJSON("api/routes/variations/",
             { name: routeName, inbound: inbound },
@@ -214,6 +215,8 @@ function routes() {
                     content += renderVariationAccordionItem(variation.towards, variation.shape_id, index);
                 });
                 $("#variations-accordion").append(content);
+                $("#single-route-loader").hide();
+               
             });
 
     }
@@ -552,6 +555,12 @@ function routes() {
             } else {
                 li[i].style.display = "none";
             }
+        }
+        let visible = $(".route-item:visible").length;
+        if (visible == 0){
+            $("#no-route-warning").show();
+        } else {
+            $("#no-route-warning").hide();
         }
     }
 
