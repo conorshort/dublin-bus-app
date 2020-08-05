@@ -80,13 +80,27 @@ function initAutoComplete(){
 
 function initFavoriteDropdown(){
     var previous_journey = cookiemonster.get('journeyList');
+    console.log('previous_journey:'+previous_journey);
     if (previous_journey){
         previous_journey.forEach(function(element){
-            console.log(element["origin"]);
-            $("#journey-favorite-dropdown").append(`<option> origin: ${element.origin} destination: ${element.destination}</option>`);
+            var favorite_journey = JSON.parse(element);
+            $("#favorite-journey-list-group").append(
+                `<li class="list-group-item favorite-journey-list-item" id=${element}> \
+                <div class="row"> \
+                <div class="col-1"><i class="far fa-star star" id="star"></i></div> \
+                <div class="col-11">
+                <b>origin:</b> ${favorite_journey.origin} </br> \
+                <b>destination:</b> ${favorite_journey.destination}</div></div></li>`);
         });
     }
 }
+
+
+$('.favorite-journey-list-item').click(function(e){
+    console.log('favorite-journey-list-item');
+    console.log(this.id);
+
+});
 
 
 
@@ -167,7 +181,7 @@ $('#star').click(function(e){
     let starredDestination=document.forms["journeyForm"]["f_to_stop"].value;
 
     //push all of them into a list then push every new selected journey into a journey list
-    var perJourney = {"origin" : starredOrigin, "destination" : starredDestination};
+    var perJourney = JSON.stringify({"origin" : starredOrigin, "destination" : starredDestination});
 
     var journeyList=[];
     journeyList.push(perJourney);
@@ -175,7 +189,7 @@ $('#star').click(function(e){
     //if the journey is not in the list it will be saved in cookies
     try{
         cookiemonster.get('journeyList');
-    }catch{
+    } catch{
         cookiemonster.set('journeyList', journeyList, 3650);
         alert('Save Sucessfully');
         return ;
@@ -359,7 +373,7 @@ function renderStepCard(step, index){
     content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;`
     
     var stops = step.transit_details.stops;
-    if (stop) {
+    if (stops) {
         content += `<b> ${stops.length}</b> stops</div>`; 
     }
       
