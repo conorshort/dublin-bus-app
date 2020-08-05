@@ -11,13 +11,32 @@
                 <input class="form-control" id="route-filter" type="search" placeholder="Find a route"
                     aria-label="Search">
             </div>
-
-            <!-- <div class="active-cyan-4 mb-4" id="operator-filter">
-            </div> -->
-
-            <ul class="list-group list-group-flush" id="routes-list">
-            </ul>
         </div>
+        
+        <div id="routes-div">
+            <div class="row" id="fav-routes-div">
+                <div class="col p-0" >
+                    <h5 class="route-heading">Your Favourites</h5>
+                    <ul class="list-group list-group-flush" id="fav-routes-list">
+                    </ul>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col p-0" id="all-routes-div">
+                    <h5 class="route-heading">All Routes</h5>
+                    <div class="active-cyan-4 mb-4">
+                        <input class="form-control" id="route-filter" type="search" placeholder="Find a route"
+                            aria-label="Search">
+                    </div>
+                    <ul class="list-group list-group-flush" id="routes-list">
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
 
         <div class="col p-0" id="route-stop-div">
             <div class="row p-1 light-yellow-box">
@@ -29,6 +48,7 @@
                 <div class="col-10">
                     <div class="btn-group btn-group-toggle direction-buttons" data-toggle="buttons">
                         <label class="btn btn-outline-warning active ">
+
                             <input type="radio" name="options" id="inbound-radio" data-inbound="1"
                                 autocomplete="off" checked>
                             Inbound
