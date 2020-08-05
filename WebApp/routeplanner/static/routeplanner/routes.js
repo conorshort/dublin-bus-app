@@ -208,19 +208,18 @@ function routes() {
         return $.getJSON("api/routes/variations/",
             { name: routeName, inbound: inbound },
             function (variations) {
-                $("#variations-accordion").html("");
                 // Display the variations
                 let content = '';
                 variations.forEach((variation, index) => {
                     content += renderVariationAccordionItem(variation.towards, variation.shape_id, index);
                 });
-                $("#variations-accordion").append(content);
+                $("#variations-accordion").html("")
+                    .append(content);
                 $("#single-route-loader").hide();
                
             });
 
     }
-
 
     function addOnclicksToVariations() {
         $(document).on("click.routes", ".stops-list-button", function () {
@@ -240,7 +239,6 @@ function routes() {
                     return a.seq - b.seq;
                 });
                 // Create a list item for each stop and add it to the list
-                console.log(stops)
                 let stopMarkers = []
                 let content = '';
                 stops.forEach(stop => {
@@ -698,6 +696,7 @@ function routes() {
                 <div id="collapse-${index}" class="collapse" aria-labelledby="heading-${index}"
                     data-parent="#variations-accordion">
                     <div class="card-body">
+
                         <ul class="list-group list-group-flush stops-list" id="stops-list-${index}">
                         </ul>
                     </div>
@@ -707,7 +706,17 @@ function routes() {
     }
 
 
+                        // <div id- class="text-center">
+                        //     <div class="spinner-grow text-warning m-5" role="status"">
+                        //         <span class=" sr-only">Loading...</span>
+                        //     </div>
+                        // </div>
 
+    `<div class="text-center">
+        <div class="spinner-grow text-warning m-5" role="status"">
+            <span class=" sr-only">Loading...</span>
+        </div>
+    </div>`
 
 
     // Render the tab and the pane for displaying the timetables
