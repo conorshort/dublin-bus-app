@@ -3,6 +3,7 @@ from weather import getWeather
 import datetime
 import pickle
 import os
+from dateutil import tz
 
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
@@ -49,7 +50,8 @@ def create_test_dataframe(lineId, segments, departure_unix):
         # get all features of the route model
         features = model.get_booster().feature_names
 
-        departure_dt = datetime.datetime.fromtimestamp(departure_unix)
+        departure_dt = datetime.datetime.fromtimestamp(
+            departure_unix, tz.gettz("Europe/London"))
         hour = departure_dt.hour
         weekday = departure_dt.weekday
         isPeak = int(is_peak_time(departure_dt))

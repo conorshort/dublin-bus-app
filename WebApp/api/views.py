@@ -12,6 +12,7 @@ from .direction import direction_to_first_transit, get_time_string, get_destinat
 from .prediction import predict_journey_time
 from dublin_bus.config import GOOGLE_DIRECTION_KEY
 from datetime import datetime
+from dateutil import tz
 import requests
 from geopy.distance import great_circle
 
@@ -292,6 +293,11 @@ def direction(request):
     departureUnix = request.GET.get('departureUnix')
 
     print('direction departureUnix:', departureUnix)
+    timestr = datetime.fromtimestamp(
+        int(departureUnix), tz.gettz("Europe/London"))
+
+    timestr = timestr.strftime("%I:%M%p")
+    print(timestr)
 
     # check if 3 papameter all given
     # if missing any parameter from request

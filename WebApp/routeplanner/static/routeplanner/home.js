@@ -2,7 +2,7 @@ const RESP_WINDOW_SIZE = 768
 let currentBounds;
 let currentCentre;
 let allowStopReload = true;
-
+let DateTime = luxon.DateTime;
 // Code in this block will be run one the page is loaded in the browser
 $(document).ready(function () {
 
