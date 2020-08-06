@@ -36,7 +36,7 @@ a:hover, a:active {
   font-size: 30px;
   box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.3); ;
   position: relative;
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .weather {
@@ -196,7 +196,7 @@ div.weather#description {
   width: 100vw !important;
   height: 60px;
   display: none;
-  z-index: 1000;
+  z-index: 1001;
   position: fixed;
   bottom: 0px;
   left: 0px;
@@ -253,7 +253,7 @@ div.weather#description {
   height: 80px;
   right: 20px;
   padding: 10px;
-  z-index: 400000;
+  z-index: 999;
   border-radius: 50%;
   box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
 
@@ -267,7 +267,7 @@ div.weather#description {
   height: 53px;
   background-color: #797878;
   bottom: 58px;
-  z-index: 9000;
+  z-index: 1002;
 }
 
 
