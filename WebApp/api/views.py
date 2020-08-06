@@ -25,6 +25,7 @@ import logging
 db_logger = logging.getLogger('db')
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
+
     queryset = SmartDublinBusStop.objects.all()
     serializer_class = SmartDublinBusStopSerializer
 
@@ -32,7 +33,6 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
     # usage example: /api/stops/nearby?longitude=-6.263695&latitude=53.3522411111&radius=0.1
     @action(detail=False)
     def nearby(self, request):
-        db_logger.error(f'here is an error')
 
         longitude = self.request.query_params.get('longitude')
         latitude = self.request.query_params.get('latitude')
@@ -249,7 +249,7 @@ def direction(request):
     if not(origin and destination and departureUnix):
 
         # Log an error message
-        logger.error(f'Missing parameters. Given parameters {parameters}')
+        db_logger.error(f'Missing parameters. Given parameters {parameters}')
 
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)
@@ -272,7 +272,7 @@ def direction(request):
     if data['status'] != 'OK':
 
         # Log an error message
-        logger.error(f'Google direction API status not OK. Given parameters {parameters}')
+        db_logger.error(f'Google direction API status not OK. Given parameters {parameters}')
 
         return JsonResponse(data)
 
@@ -330,7 +330,7 @@ def direction(request):
                             'headsign': headsign}
 
                 # Log an error message
-                logger.error(f'return data Stops list is empty. Given parameters {params}')
+                db_logger.error(f'return data Stops list is empty. Given parameters {params}')
 
 
             # print('depStopId:', depStopId)
@@ -367,7 +367,7 @@ def direction(request):
         print("type error: " + str(e))
         
         # Log an error message
-        logger.error(f'{str(e)}. Given parameters {parameters}')
+        db_logger.error(f'{str(e)}. Given parameters {parameters}')
 
         return JsonResponse(data, safe=False)
    

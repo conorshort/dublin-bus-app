@@ -16,21 +16,6 @@ import os
 from .config import db_config
 
 
-# import sentry_sdk
-# from sentry_sdk.integrations.django import DjangoIntegration
-# from sentry_sdk.integrations.logging import LoggingIntegration
-# sentry_sdk.init(
-#     dsn="https://examplePublicKey@o0.ingest.sentry.io/0",
-#     integrations=[DjangoIntegration()],
-
-#     # If you wish to associate users to errors (assuming you are using
-#     # django.contrib.auth) you may enable sending PII data.
-#     send_default_pii=True
-# )
-# sentry_sdk.init(
-#     dsn="https://examplePublicKey@o0.ingest.sentry.io/0",
-#     integrations=[sentry_logging]
-# )
 
 
 
@@ -62,15 +47,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django_db_logger',
-
     'rest_framework',
     'api',
 
 ]
-
-# CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
