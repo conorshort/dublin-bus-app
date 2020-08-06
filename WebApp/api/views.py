@@ -16,8 +16,16 @@ from dateutil import tz
 import requests
 from geopy.distance import great_circle
 
+# import the logging library
+import logging
+ 
+
+# Get an instance of a logger
+
+db_logger = logging.getLogger('db')
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
+
     queryset = SmartDublinBusStop.objects.all()
     serializer_class = SmartDublinBusStopSerializer
 
@@ -56,6 +64,11 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
 
         # If missing longitude and latitude value, return error message
         else:
+            # Log an error message
+            parameters = {'longitude': longitude,
+                        'latitude': latitude,
+                        'radius': radius}
+            db_logger.error(f'Missing parameters. Given parameters {parameters}')
             content = {'message': 'Longitude and latitude fields are required'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
@@ -292,6 +305,10 @@ def direction(request):
     destination = request.GET.get('destination')
     departureUnix = request.GET.get('departureUnix')
 
+    parameters = {'origin': origin,
+                    'destination': destination,
+                    'departureUnix': departureUnix}
+                    
     print('direction departureUnix:', departureUnix)
     timestr = datetime.fromtimestamp(
         int(departureUnix), tz.gettz("Europe/London"))
@@ -303,6 +320,9 @@ def direction(request):
     # if missing any parameter from request
     # return a http 400 response with message
     if not(origin and destination and departureUnix):
+
+        # Log an error message
+        db_logger.error(f'Missing parameters. Given parameters {parameters}')
 
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)

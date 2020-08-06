@@ -32,6 +32,9 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
     # check the status of the google direction response
     if data['status'] != 'OK':
+        db_logger.error(
+            f'Google direction API status not OK. Given parameters {parameters}')
+
         return JsonResponse(data)
 
     try:
@@ -163,6 +166,10 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
     except Exception as e:
         print("direction_to_first_transit error:", str(e))
+        parameters = {'origin': origin,
+                  'destination': destination,
+                  'departure_time': departureUnix}
+        db_logger.error(f'{str(e)}. Given parameters {parameters}')
         message = {'status': 'ZERO_RESULT'}
         return message
 
@@ -192,6 +199,16 @@ def get_stops(step, lineId):
         originTime = step['transit_details']['departure_time']['text']
 
         stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, origin_time=originTime, headsign=headsign)
+        if len(stops) <= 0:
+
+                params = {'depStopId': depStopId,
+                          'arrStopId': arrStopId,
+                          'lineId': lineId,
+                          'headsign': headsign}
+
+                # Log an error message
+                db_logger.error(
+                    f'return data Stops list is empty. Given parameters {params}')
 
     except Exception as e:
         print('function get_stops error:', e)
