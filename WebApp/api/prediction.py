@@ -8,7 +8,7 @@ import os
 ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
 
 
-def predict_journey_time(lineId, segments, departure_unix):
+def predict_journey_time(lineId, segments, departure_unix, return_list=False):
     try:
         segments_df = create_test_dataframe(lineId, segments, departure_unix)
 
@@ -24,7 +24,8 @@ def predict_journey_time(lineId, segments, departure_unix):
         else:
             model = get_route_model(lineId, hasWeather=False)
 
-        journeyTime = get_journey_perdiction(model, segments_df)
+        journeyTime = get_journey_perdiction(
+            model, segments_df, return_list=return_list)
 
         return journeyTime
 
@@ -84,12 +85,25 @@ def create_test_dataframe(lineId, segments, departure_unix):
         return pd.DataFrame()
 
 
-def get_journey_perdiction(model, test_dataframe):
+def get_journey_perdiction(model, test_dataframe,return_list=False):
     try:
         prediction = model.predict(test_dataframe)
         journeyTime = sum(prediction)
 
-        return journeyTime
+        if return_list:
+
+            segment_cols = [
+                    col for col in test_dataframe if col.startswith('segment')]
+
+            idxs = test_dataframe.loc[(test_dataframe[segment_cols] == 0).all(axis=1)].index
+
+            for idx in idxs:
+                prediction[idx] = -1
+
+            return prediction
+        else:
+            journeyTime = sum(prediction)
+            return journeyTime
     except Exception as e:
         print('function get_journey_perdiction error:', e)
         return 0

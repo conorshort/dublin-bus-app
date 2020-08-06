@@ -42,6 +42,9 @@ class GTFSTripManager(GTFSManager):
         # Get shape_ids for the given route
         # If a headsign is provided add it to the filter
         print("getting stops")
+        stop_query_set = []
+        stops_as_lists = []
+
         if headsign and origin_time:
             # First try to get with all parameters given
             shape_id_queryset = None
@@ -80,10 +83,23 @@ class GTFSTripManager(GTFSManager):
                     gtfsstoptime__departure_time__lte=(origin_time + 60),
                     gtfsstoptime__stop_id=origin_id)
 
+            if trips:
+                for trip in trips:
+                    stops = trip.gtfsstoptime_set.all()
+                    print("full stops set")
+
+                    # Get the stops sequence number for origin and desitination stops
+                    origin_seq = stops.filter(
+                        stop_id=origin_id).values("stop_sequence")
+                    dest_seq = stops.filter(
+                        stop_id=destination_id).values("stop_sequence")
+                    print(origin_seq)
+                    print(dest_seq)
+                    # The stops we want will have a sequence number between the origin and destination stops
+                    these_stops = stops.filter(stop_sequence__gte=origin_seq,
+                                            stop_sequence__lte=dest_seq)
 
             # print(shape_id_queryset)
-        stop_query_set = []
-        stops_as_lists = []
 
         if trips:
             
@@ -147,7 +163,8 @@ class GTFSTripManager(GTFSManager):
                                             stop_sequence__lte=dest_seq)
                     print(these_stops)
                     # Get the list of plate codes and stop sequences
-                    return [list(these_stops.values("stop_sequence",  stop_name=F("stop__stop_name"), plate_code=F("stop__plate_code"),))]
+                    return [list(these_stops.values("stop_sequence",  stop_name=F("stop__stop_name"), plate_code=F("stop__plate_code"), shape_id=F("trip__shape_id")))]
+
                     # # append the stops to both lists
                     # if these_stops and these_stops_list not in stops_as_lists:
                     #     stop_query_set.append(these_stops)
