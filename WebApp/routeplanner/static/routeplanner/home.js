@@ -201,11 +201,6 @@ $(window).resize(function () {
         MapUIControl.reset();
 
     }
-    // if ($(window).width() <= 768) {
-    //     $("#map").removeClass("col")
-    //         .addClass("col-12");
-    // }
-
 
 
 });
@@ -232,8 +227,6 @@ function loadSideBarContent(navId) {
                 break;
         }
     });
-
-
     // Set the active navbar item to the one currently displayed
     // for both side nave bar and bottom nav bar
     $(".bottom_nav_item, .nav_item").removeClass("nav-active");
@@ -243,6 +236,7 @@ function loadSideBarContent(navId) {
 
 $(document).on("click.mapUI", "#map", MapUIControl.fullscreen)
 $(document).on("click.mapUI", "#mobile-show-content", MapUIControl.halfscreen)
+
 
 
 

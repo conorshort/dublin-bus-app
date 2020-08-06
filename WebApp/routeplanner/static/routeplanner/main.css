@@ -442,6 +442,10 @@ div.weather#description {
     padding: 10px;
     min-height: 40px;
   }
+  #bottom-navibar {
+    height: 30px;
+  }
+
 }
 
 
