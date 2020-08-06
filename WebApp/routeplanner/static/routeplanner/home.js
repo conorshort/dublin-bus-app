@@ -1,6 +1,7 @@
 const RESP_WINDOW_SIZE = 768
 let currentBounds;
 let currentCentre;
+let allowStopReload = true;
 
 // Code in this block will be run one the page is loaded in the browser
 $(document).ready(function () {
@@ -15,7 +16,7 @@ $(document).ready(function () {
         var nav_id = $(this).attr('id');
 
         // log nav btn click event to firebase 
-        analytics.logEvent('select_content', { content_type: 'navi_item', item_id: nav_id});
+        analytics.logEvent('select_content', { content_type: 'navi_item', item_id: nav_id });
 
         // Update sidebar content with appropriate html
         loadSideBarContent(nav_id);
@@ -89,17 +90,17 @@ function initMap() {
 
     map.locate({ setView: true, watch: true });
 
-    var onLocationFound = function(e){
+    var onLocationFound = function (e) {
 
         // create custom icon
         var customIcon = L.icon({
             iconUrl: './static/img/user_marker.png',
             iconSize: [45, 45], // size of the icon
-            });
+        });
 
-        L.marker(e.latlng, {icon: customIcon})
-        .addTo(map)
-        .bindPopup("Centre")
+        L.marker(e.latlng, { icon: customIcon })
+            .addTo(map)
+            .bindPopup("Centre")
         // .openPopup();
         centreLocation = e.latlng;
         currentCentre = centreLocation;
@@ -132,28 +133,31 @@ var MapUIControl = (function () {
 
         halfscreen: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
+                allowStopReload = false;
                 $(".sidebar_header").hide();
                 $("#mobile-show-content").hide();
                 $('#sidebar').fadeIn(10);
                 // $("#map").show()
                 $("#map").animate({ height: "200px" }, 500, () => {
-                        console.log("Invalidating size")
-                        map.invalidateSize(false);
-                        if (currentBounds) {
-                            console.log("flyint to bounds");
-                            console.log(currentBounds);
-                            map.flyToBounds(currentBounds, { 'duration': 0.5 });
-                        } else if (currentCentre){
-                            console.log("flyint to centre");
-                            console.log(currentCentre);
-                            map.flyTo(currentCentre, 12, { 'duration': 0.5 });
-                        }
-                    });
+                    console.log("Invalidating size")
+                    map.invalidateSize(false);
+                    allowStopReload = true;
+                    if (currentBounds) {
+                        console.log("flyint to bounds");
+                        console.log(currentBounds);
+                        map.flyToBounds(currentBounds, { 'duration': 0.5 });
+                    } else if (currentCentre) {
+                        // console.log("flyint to centre");
+                        // console.log(currentCentre);
+                        // map.flyTo(currentCentre, 12, { 'duration': 0.5 });
+                    }
+                });
             }
         },
 
         fullscreen: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
+                allowStopReload = false;
                 $(".sidebar_header").hide();
 
                 var newHeight = $(window).height() - 80 - 60 - 50 + 5;
@@ -161,13 +165,14 @@ var MapUIControl = (function () {
                 $("#mobile-show-content").show();
                 // $("#map").show()
                 $("#map").animate({ height: newHeight }, 500, () => {
-                        map.invalidateSize(false);
-                        if (currentBounds) {
-                            map.flyToBounds(currentBounds, { 'duration': 0.5 });
-                        } else if (currentCentre) {
-                            map.flyTo(currentCentre, 12, { 'duration': 0.5 })
-                        }
-                    });
+                    map.invalidateSize(false);
+                    allowStopReload = true;
+                    if (currentBounds) {
+                        map.flyToBounds(currentBounds, { 'duration': 0.5 });
+                    } else if (currentCentre) {
+                        // map.flyTo(currentCentre, 12, { 'duration': 0.5 })
+                    }
+                });
             }
         },
         reset: function () {
