@@ -97,7 +97,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
             route__route_name=route_name,
             direction_id=inbound,
             calendar__start_date__lte=today,
-            calendar__end_date__gte=today).values("shape_id", towards=F("gtfsstoptime__stop_headsign")).distinct()
+            calendar__end_date__gte=today).values("shape_id", towards=F("gtfsstoptime__stop_headsign"), ga_towards=F("trip_headsign")).distinct()
 
         return Response(shape_id_queryset)
 

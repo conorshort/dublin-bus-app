@@ -211,7 +211,8 @@ function routes() {
                 // Display the variations
                 let content = '';
                 variations.forEach((variation, index) => {
-                    content += renderVariationAccordionItem(variation.towards, variation.shape_id, index);
+                    let headsign = variation.towards == "nan" ? variation.ga_towards : "Towards " + variation.towards;
+                    content += renderVariationAccordionItem(headsign, variation.shape_id, index);
                 });
                 $("#variations-accordion").html("")
                     .append(content);
@@ -688,7 +689,7 @@ function routes() {
                                 aria-controls="collapse-${index}"
                                 data-shape-id="${id}"
                                 data-index="${index}">
-                            Towards ${destination}
+                            ${destination}
                         </button>
                     </h2>
                 </div>
