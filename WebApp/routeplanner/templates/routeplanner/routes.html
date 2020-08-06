@@ -1,34 +1,77 @@
 {% load static %}
 
-<div id="content">
-    <div class="col">
-        <div class="row sidebar_header">
-            <div class="col">
-                Routes
-            </div>
+<div class="content p-0 col">
+
+    <div class="row py-2 sidebar_header">
+        Routes
+    </div>
+    <div id="all-routes-loader" class="text-center">
+        <div class="spinner-grow text-warning m-5" role="status"">
+            <span class=" sr-only">Loading...</span>
         </div>
-        <div class="row">
-            <div class="col p-0" id="routes-div">
-                <div class="active-cyan-4 mb-4">
-                    <input class="form-control" id="route-filter" type="search" placeholder="Find a route"
-                        aria-label="Search">
+    </div>
+    <div id="all-routes-content" class="row sidebar_content" style="display: none;">
+
+
+
+        <div id="routes-div" class="container">
+
+            <div class="row" id="fav-routes-div">
+                <div class="col">
+                    <h5 class="route-heading gray-box" style="padding-bottom: 15px;">Your Favourites</h5>
+                    <ul class="list-group list-group-flush" id="fav-routes-list">
+                    </ul>
                 </div>
-                <ul class="list-group list-group-flush" id="routes-list">
-                </ul>
             </div>
 
-            <div class="col p-0" id="route-stop-div">
-                <h6 class="btn btn-outline-secondary" id="back-to-routes">
-                    Back </h6>
-                <h3 id="route-stops-title"></h3>
-                <div class="accordion" id="variations-accordion">
+
+            <div class="row">
+
+                <div class="col" id="all-routes-div">
+                    <h5 class="route-heading gray-box">All Routes</h5>
+                    <div class="row px-4 active-cyan-4 gray-box">
+                        <input class="form-control" id="route-filter" type="search" placeholder="Find a route"
+                            aria-label="Search">
+                    </div>
+                    <div id="no-route-warning" class="row m-0 alert alert-warning" style="display: none;">No routes
+                        match this search</div>
+                    <ul class="list-group list-group-flush" id="routes-list">
+                    </ul>
                 </div>
+            </div>
+
+        </div>
+
+
+        <div class="col p-0" id="route-stop-div">
+            <div class="row p-1 light-yellow-box">
+                <h6 class="btn mx-10 my-0 btn-outline-dark btn-sm" id="back-to-routes">
+                    < Back </h6>
+            </div>
+            <div class="row">
+                <h2 class="col-2" id="route-stops-title"></h2>
+                <div class="col-10">
+                    <div class="btn-group btn-group-toggle direction-buttons" data-toggle="buttons">
+                        <label class="btn btn-outline-warning active ">
+
+                            <input type="radio" name="options" id="inbound-radio" data-inbound="1" autocomplete="off"
+                                checked>
+                            Inbound
+                        </label>
+                        <label class="btn btn-outline-warning">
+                            <input type="radio" name="options" id="outbound-radio" data-inbound="0" autocomplete="off">
+                            Outbound
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="single-route-loader" class="text-center">
+                <div class="spinner-grow text-warning m-5" role="status"">
+                            <span class=" sr-only">Loading...</span>
+                </div>
+            </div>
+            <div class="accordion" id="variations-accordion">
             </div>
         </div>
     </div>
-
-
-
-
 </div>
-<script src="{% static 'routeplanner/routes.js' %}" id="script"></script>

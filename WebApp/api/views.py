@@ -1,20 +1,19 @@
+from bs4 import BeautifulSoup
 from django.shortcuts import render
 from django.http import HttpResponse
-from rest_framework import viewsets
-from rest_framework import status
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from django.http import JsonResponse
 from rest_framework.decorators import action
+from django.http import JsonResponse
+from django.db.models import F
 from api.models import SmartDublinBusStop, GTFSRoute, GTFSShape, GTFSStopTime, GTFSTrip
 from .serializers import SmartDublinBusStopSerializer, GTFSRouteSerializer, GTFSShapeSerializer, GTFSStopTimeSerializer, GTFSTripSerializer
-from datetime import datetime
-from django.db.models import F
-import requests
+from .direction import direction_to_first_transit, get_time_string, get_destination_string
+from .prediction import predict_journey_time
 from dublin_bus.config import GOOGLE_DIRECTION_KEY
-import pandas as pd
-import copy 
-
-from prediction import predict_journey_time, get_models_name
+from datetime import datetime
+import requests
+from geopy.distance import great_circle
 
 # import the logging library
 import logging
@@ -80,7 +79,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False)
     def routename(self, response):
         ''' Return a list of distinct route names found in the db '''
-        route_queryset = GTFSRoute.objects.values('route_name').distinct()
+        route_queryset = GTFSTrip.objects.get_all_routes()
         return Response(route_queryset)
 
     @action(detail=False)
@@ -89,7 +88,7 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
         route_name = request.GET.get('name')
         inbound = request.GET.get("inbound")
 
-        today = datetime.datetime.today()
+        today = datetime.today()
 
         # Get distint shape ids and destinations for the given route name and direction
         # that are currently in service
@@ -107,7 +106,11 @@ class GTFSRouteViewSet(viewsets.ReadOnlyModelViewSet):
         shape_id = request.GET.get('shape')
 
         stops = GTFSTrip.objects.stops_on_route(shape_id).values(
-            stop_name=F("stop__stop_name"), seq=F("stop_sequence"), id=F("stop_id"))
+                    stop_name=F("stop__stop_name"),
+                    seq=F("stop_sequence"),
+                    id=F("stop_id"),
+                    lat=F("stop__stop_lat"),
+                    lon=F("stop__stop_lon"))
 
         return Response(stops)
 
@@ -121,7 +124,7 @@ class GTFSShapeViewSet(viewsets.ReadOnlyModelViewSet):
         routename = request.GET.get("routename")
         inbound = request.GET.get("inbound")
 
-        today = datetime.datetime.today()
+        today = datetime.today()
 
         shape_queryset = GTFSTrip.objects.filter(
             route__route_name=routename,
@@ -156,20 +159,21 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False)
     def stoptime(self, response):
-        queryset = GTFSStopTime.objects.all()
+
         tripid = self.request.query_params.get('tripid')
         stopSequence = self.request.query_params.get('stopsequence')
-
+        print(tripid)
         # if both tripid and stopSequence paramaters are given,
         # filter stoptime data by unique_trip_id
         if tripid and stopSequence:
             unique_tripid = tripid + ':' + stopSequence
-            queryset = queryset.filter(unique_trip_id=unique_tripid)
+            queryset = GTFSStopTime.objects.filter(
+                unique_trip_id=unique_tripid)
 
         # if only tripid paramater is given,
         # filter stoptime data by trip_id
         elif tripid:
-            queryset = queryset.filter(trip_id=tripid)
+            queryset = GTFSStopTime.objects.filter(trip_id=tripid)
 
         serializer = GTFSStopTimeSerializer(queryset, many=True)
 
@@ -180,21 +184,72 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
         ''' Given a shape id and stop id, get a timetable for that route at that stop '''
         shape_id = self.request.query_params.get("shape")
         stop_id = self.request.query_params.get("stop_id")
+        trip_id = self.request.query_params.get("trip_id")
+        if shape_id and stop_id:
+            trips = GTFSTrip.objects.filter(shape_id=shape_id)
 
-        trips = GTFSTrip.objects.filter(shape_id=shape_id)
+            calendars = trips.values("calendar__display_days").distinct()
 
-        calendars = trips.values("calendar__display_days").distinct()
+            trips_by_calendar = {}
+            for calendar in calendars:
+                calendar_days = calendar["calendar__display_days"]
+                t = trips.filter(calendar__display_days=calendar_days,
+                                gtfsstoptime__stop_id=stop_id)
 
-        trips_by_calendar = {}
-        for calendar in calendars:
-            calendar_days = calendar["calendar__display_days"]
-            t = trips.filter(calendar__display_days=calendar_days,
-                             gtfsstoptime__stop_id=stop_id)
+                trips_by_calendar[calendar_days] = t.values("trip_id",
+                    time=F("gtfsstoptime__departure_time"))
+            return Response(trips_by_calendar)
+        elif trip_id:
+            trip = GTFSStopTime.objects.filter(trip_id=trip_id).values(
+                        "departure_time",
+                        "stop_sequence",
+                        stop_name=F("stop__stop_name"),
+                        plate_code=F("stop__plate_code"),
+                        line_id=F("trip__route__route_name")).order_by("stop_sequence")
+            route = GTFSTrip.objects.filter(trip_id=trip_id).values("route__route_name","calendar__display_days" ).first()
 
-            trips_by_calendar[calendar_days] = t.values(
-                time=F("gtfsstoptime__departure_time"))
+            segments = []
+            for index in range(len(trip)-1):
+                segments.append(str(trip[index]['plate_code']) +
+                                '-' + str(trip[index+1]['plate_code']))
+            day_name = route["calendar__display_days"][:3]
+            route_name = route["route__route_name"]
+            departure_time = trip[0]["departure_time"]
 
-        return Response(trips_by_calendar)
+
+            day = {"Mon": 10,
+                "Tue": 11,
+                "Wed": 12,
+                "Thu": 13,
+                "Fri": 14,
+                "Sat": 15,
+                "Sun": 16}[day_name]
+
+            seconds =  datetime(2020, 8, day, 0, 0).timestamp()
+            unix_time = (seconds + departure_time)
+            print("passing route name", route_name)
+            journey_time = predict_journey_time(
+                route_name, segments, int(unix_time), return_list=True)
+            trip = list(trip)
+            total_journey_time = trip[0]["departure_time"]
+            for i in range(len(trip)):
+                if i == 0:
+                    trip[i]["predicted_time"] = trip[i]["departure_time"]
+                else:
+                    trip[i]["predicted_time"] = total_journey_time
+
+                    # if no prediction made for that segment use the scheduled times 
+                    if journey_time[i - 1] == -1:
+                        total_journey_time += trip[i]["departure_time"] - \
+                            trip[i -1]["departure_time"]
+                            
+                    # otherwise use the predicted times
+                    else:
+                        total_journey_time += int(journey_time[i - 1])
+
+            return Response(trip)
+
+
 
 
 class GTFSTripViewSet(viewsets.ReadOnlyModelViewSet):
@@ -206,32 +261,45 @@ class GTFSTripViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = GTFSTrip.objects.all()
         routeid = self.request.query_params.get('routeid')
         shapeid = self.request.query_params.get('shapeid')
-
+        tripid = self.request.query_params.get('tripid')
         # if shapeid paramater is given, filter trips data by shapeid
         if shapeid:
-            print(shapeid)
             queryset = queryset.filter(shape_id=shapeid)
-
         # elseif routeid paramater is given, filter trips data by routeid
         elif routeid:
             queryset = queryset.filter(route_id=routeid)
-            print(routeid)
+
+        elif tripid:
+            queryset = queryset.filter(trip_id=tripid)
+
 
         serializer = GTFSTripSerializer(queryset, many=True)
 
         return Response(serializer.data)
 
 
-
-
 def realtimeInfo(request, stop_id):
     r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
-    return JsonResponse(r.json() , safe=False)
+    return JsonResponse(r.json(), safe=False)
 
+
+def calc_fare(shape_id, board, alight):
+    try:
+        route_name = GTFSTrip.objects.filter(shape_id=shape_id).first().route.route_name
+        direction = shape_id[-1]
+        url = f"https://www.dublinbus.ie/Fare-Calculator/Fare-Calculator-Results/?routeNumber={route_name}&direction={direction}&board={board}&alight={alight}"
+        print("getting url:", url)
+        fare_page = requests.get(url)
+        soup = BeautifulSoup(fare_page.text, 'html.parser')
+        fare_elem_id = "ctl00_FullRegion_MainRegion_ContentColumns_holder_FareListingControl_lblFare"
+        fare_elem = soup.find_all(id=fare_elem_id)
+        return fare_elem[0].contents[0]
+    except:
+        return None
 
 def direction(request):
 
-    # get given parameters 
+    # get given parameters
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
     departureUnix = request.GET.get('departureUnix')
@@ -240,10 +308,9 @@ def direction(request):
                     'destination': destination,
                     'departureUnix': departureUnix}
                     
+    print('direction departureUnix:', departureUnix)
 
     # check if 3 papameter all given
-    # if yes, get journey plan for google direction API,
-    # and predict the journey time for dublin bus transit
     # if missing any parameter from request
     # return a http 400 response with message
     if not(origin and destination and departureUnix):
@@ -253,129 +320,45 @@ def direction(request):
 
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)
-        
-    
-    url = 'https://maps.googleapis.com/maps/api/directions/json'
 
-    # defining a params dict for the parameters to be sent to the API 
-    PARAMS = {'origin' : origin,
-            'destination' : destination,
-            'key' : GOOGLE_DIRECTION_KEY,
-            'transit_mode' : 'bus',
-            'mode' : 'transit'} 
-            
-    # sending get request and saving the response as response object 
-    r = requests.get(url = url, params = PARAMS) 
-    
-    # extracting data in json format 
-    data = r.json() 
-    if data['status'] != 'OK':
+    destination_coord = (destination.split(",")[0], destination.split(",")[1])
 
-        # Log an error message
-        db_logger.error(f'Google direction API status not OK. Given parameters {parameters}')
+    newData = {'leg': {'steps': []}}
 
-        return JsonResponse(data)
+    isFirstTimeRequest = True
+    requestCount = 0
 
+    while (requestCount <= 6) and ((isFirstTimeRequest) or ((great_circle((origin.split(",")[0], origin.split(",")[1]), destination_coord).meters) >= 50)):
 
+        requestCount += 1
 
-    # check if the specific route model exist
-    # if yes: predict the jourent time
-    # if not: response google direction API data 
+        data = direction_to_first_transit(origin, destination, departureUnix)
 
-    lines = [modelName.replace('.pkl', '') for modelName in get_models_name()]
+        if data['status'] != 'OK':
+            return JsonResponse(data)
 
-    try:
-        # copy another data for editing
-        newData = copy.deepcopy(data) 
+        if isFirstTimeRequest is True:
+            newData['leg']['distance'] = {'value': 0, 'text': ''}
+            newData['leg']['duration'] = {'value': 0, 'text': ''}
+            newData['leg']['start_location'] = data['leg']['start_location']
+            newData['leg']['start_address'] = data['leg']['start_address']
+            newData['leg']['end_address'] = data['leg']['end_address']
+            newData['leg']['departure_time'] = data['leg']['departure_time']
 
-        steps = newData['routes'][0]['legs'][0]['steps']
+        origin = str(data['leg']['end_location']['lat'])+"," + str(data['leg']['end_location']['lng'])
+        departureUnix = data['leg']['arrival_time']['value']
 
-        totalDuration = 0
+        # add reponsed steps' data to newData
+        newData['leg']['distance']['value'] += int(data['leg']['distance']['value'])
+        newData['leg']['duration']['value'] += int(data['leg']['duration']['value'])
+        newData['leg']['distance']['text'] = get_destination_string(int(newData['leg']['distance']['value']))
+        newData['leg']['duration']['text'] = get_time_string(int(newData['leg']['duration']['value']))
+        newData['leg']['end_location'] = data['leg']['end_location']
+        newData['leg']['steps'] += data['leg']['steps']
+        newData['leg']['arrival_time'] = data['leg']['arrival_time']
+        newData['leg']['departure_time'] = data['leg']['departure_time']
 
-        # forloop steps from google direction API response
-        for i in range(len(steps)):
+        isFirstTimeRequest = False
 
-            # check if the step travel_mode is TRANSIT
-            if steps[i]['travel_mode'] != 'TRANSIT':
-                duration = int(steps[i]['duration']['text'].split()[0])
-                totalDuration += duration
-                continue
-            
-            # check if the line model exist 
-            lineId = steps[i]['transit_details']['line']['short_name']
-            if ('route_'+lineId) not in lines:
-                continue
-
-            arrStopCoordination = steps[i]['transit_details']['arrival_stop']['location']
-            depStopCoordination = steps[i]['transit_details']['departure_stop']['location']
-
-            # get stop id by stop coordinate
-            arrStopId = SmartDublinBusStop.objects.get_nearest_id \
-                (arrStopCoordination['lat'], arrStopCoordination['lng'])
-            
-            depStopId = SmartDublinBusStop.objects.get_nearest_id \
-                (depStopCoordination['lat'], depStopCoordination['lng'])
-
-            # get stops between origin and destination stops
-            headsign = steps[i]['transit_details']['headsign']
-            stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, headsign=headsign)[0]
-
-
-            # log error if return stops is empty
-            if len(stops) <= 0:
-                
-                params = {'depStopId': depStopId,
-                            'arrStopId': arrStopId,
-                            'lineId': lineId,
-                            'headsign': headsign}
-
-                # Log an error message
-                db_logger.error(f'return data Stops list is empty. Given parameters {params}')
-
-
-            # print('depStopId:', depStopId)
-            # print('arrStopId:', arrStopId)
-            # print('lineId:', lineId)
-            # print('stops:', stops)
-
-
-            # store stops info in data json for response 
-            newData['routes'][0]['legs'][0]['steps'][i]['transit_details']['stops'] = stops
-
-
-            # get all the segmentid by stopsid
-            segments = []
-            for index in range(len(stops)-1):
-                segments.append(stops[index]['plate_code'] + '-' + stops[index+1]['plate_code'])
-            
-            
-            # predict traveling time for all segmentid
-            lineId = steps[i]['transit_details']['line']['short_name']
-            journeyTime = predict_journey_time(lineId, segments, int(departureUnix))
-
-            totalDuration += int(journeyTime) // 60
-
-            # update duration value in newData to our journey prediction
-            newData['routes'][0]['legs'][0]['steps'][i]['duration']['text'] = str(int(journeyTime) // 60) + ' mins'
-
-        newData['routes'][0]['legs'][0]['duration']['text'] = str(totalDuration) + ' mins'
-        print("=====google prediction journey time:", data['routes'][0]['legs'][0]['duration']['text'], "========")
-
-        return JsonResponse(newData, safe=False)
-
-    except Exception as e:
-        print("type error: " + str(e))
-        
-        # Log an error message
-        db_logger.error(f'{str(e)}. Given parameters {parameters}')
-
-        return JsonResponse(data, safe=False)
-   
-        
-        
-    
-    
-    
-
-
-    
+    newData['status'] = 'OK'
+    return JsonResponse(newData, safe=False)
