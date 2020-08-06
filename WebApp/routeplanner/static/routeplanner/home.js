@@ -213,13 +213,26 @@ $(window).resize(function () {
 
 
 function loadSideBarContent(navId) {
-
-    if (navId == "routes") {
-        routes()
-    }
+    console.log("loadgin...")
+    console.log(navId)
 
     // Load the appropriate HTML using the navId
-    $("#sidebar").load("/" + navId);
+    $("#sidebar").load("/" + navId, () => {
+        switch (navId) {
+            case "routes":
+                routes();
+                break;
+            case "journey":
+                journey();
+                break;
+            case "stops":
+                stops();
+                break;
+            default:
+                break;
+        }
+    });
+
 
     // Set the active navbar item to the one currently displayed
     // for both side nave bar and bottom nav bar
