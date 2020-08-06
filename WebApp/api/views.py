@@ -21,10 +21,11 @@ import logging
  
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
 
+db_logger = logging.getLogger('db')
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
+
     queryset = SmartDublinBusStop.objects.all()
     serializer_class = SmartDublinBusStopSerializer
 
@@ -67,8 +68,7 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
             parameters = {'longitude': longitude,
                         'latitude': latitude,
                         'radius': radius}
-            logger.error(f'Missing parameters. Given parameters {parameters}')
-
+            db_logger.error(f'Missing parameters. Given parameters {parameters}')
             content = {'message': 'Longitude and latitude fields are required'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
@@ -249,7 +249,7 @@ def direction(request):
     if not(origin and destination and departureUnix):
 
         # Log an error message
-        logger.error(f'Missing parameters. Given parameters {parameters}')
+        db_logger.error(f'Missing parameters. Given parameters {parameters}')
 
         response_data = {'message': 'Missing Parameter'}
         return JsonResponse(response_data, status=400)
@@ -272,7 +272,7 @@ def direction(request):
     if data['status'] != 'OK':
 
         # Log an error message
-        logger.error(f'Google direction API status not OK. Given parameters {parameters}')
+        db_logger.error(f'Google direction API status not OK. Given parameters {parameters}')
 
         return JsonResponse(data)
 
@@ -330,7 +330,7 @@ def direction(request):
                             'headsign': headsign}
 
                 # Log an error message
-                logger.error(f'return data Stops list is empty. Given parameters {params}')
+                db_logger.error(f'return data Stops list is empty. Given parameters {params}')
 
 
             # print('depStopId:', depStopId)
@@ -367,7 +367,7 @@ def direction(request):
         print("type error: " + str(e))
         
         # Log an error message
-        logger.error(f'{str(e)}. Given parameters {parameters}')
+        db_logger.error(f'{str(e)}. Given parameters {parameters}')
 
         return JsonResponse(data, safe=False)
    
