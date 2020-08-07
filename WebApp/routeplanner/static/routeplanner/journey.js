@@ -25,15 +25,33 @@ $(document).ready(function () {
     });
 
     initAutoComplete();
-    initFavoriteDropdown();　
+    updateFavoriteList();　
 });
 
 
 var favorite_journey_list = [];
 
-function initFavoriteDropdown(){
 
-    updateFavoriteList();
+function updateFavoriteList(){
+
+    $("#favorite-journey-list-group").empty();
+    favorite_journey_list = cookiemonster.get('journeyList');
+    
+    if (favorite_journey_list){
+        console.log(favorite_journey_list);
+        favorite_journey_list.forEach(function(element, index){
+            var favorite_journey = JSON.parse(element);
+       
+            // render favorite journey list-group-item
+            $("#favorite-journey-list-group").append(
+                `<li class="list-group-item favorite-journey-list-item"> \
+                <div class="row"> \
+                <div class="col-1 solid-star" id="solid-star-${index}"><i class="fas fa-star starSolid"></i></div> \
+                <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
+                <b>origin:</b> ${favorite_journey.origin.name} </br> \
+                <b>destination:</b> ${favorite_journey.destination.name}</div></div></li>`);
+        });
+    }
 
     // click the favorite journey will fill the origin 
     $('.favorite-journey-content').click(function(e){
@@ -56,31 +74,11 @@ function initFavoriteDropdown(){
 }
 
 
-function updateFavoriteList(){
-
-    $("#favorite-journey-list-group").empty();
-    favorite_journey_list = cookiemonster.get('journeyList');
-    
-    if (favorite_journey_list){
-        favorite_journey_list.forEach(function(element, index){
-            var favorite_journey = JSON.parse(element);
-       
-            // render favorite journey list-group-item
-            $("#favorite-journey-list-group").append(
-                `<li class="list-group-item favorite-journey-list-item"> \
-                <div class="row"> \
-                <div class="col-1 solid-star" id="solid-star-${index}"><i class="fas fa-star starSolid"></i></div> \
-                <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
-                <b>origin:</b> ${favorite_journey.origin} </br> \
-                <b>destination:</b> ${favorite_journey.destination}</div></div></li>`);
-        });
-    }
-}
-
-
 function updateSearchInput(origin, destination){
-    document.getElementById("f_from_stop").value = origin;
-    document.getElementById("f_to_stop").value =  destination;
+    document.getElementById("f_from_stop").value = origin.name;
+    document.getElementById("f_to_stop").value =  destination.name;
+    document.getElementById("f_from_stop").id = JSON.stringify(origin.coord);
+    document.getElementById("f_to_stop").id = JSON.stringify(destination.coord);
     $('#favoriteJourneyModalCenter').modal('toggle');
 }
 
@@ -144,8 +142,8 @@ $('form').submit(function(e){
     // Stop form refreshing page on submit
     e.preventDefault();
 
-    var fromInput = document.forms["journeyForm"]["f_from_stop"]
-    var toInput = document.forms["journeyForm"]["f_to_stop"]
+    var fromInput = document.forms["journeyForm"]["f_from_stop"];
+    var toInput = document.forms["journeyForm"]["f_to_stop"];
     var dateTime = document.forms["journeyForm"]["datetime"].value;
 
     var originCoord = JSON.parse(fromInput.id);
@@ -170,7 +168,7 @@ $('form').submit(function(e){
                 var duration = leg.duration.text;
                
                 var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length;
-                displaySearchInfoOnHeader(fromInput.value, toInput.value, dateTime);
+                displaySearchInfoOnHeader(fromInput, toInput, dateTime);
                 displayTripSummary(duration, transferCount, departure_time, arrive_time);
 
                 //render and append origin waypoint
@@ -209,12 +207,13 @@ $('#hollow-star').click(function(e){
 
     $("#hollow-star").hide();
 
-    //get the selected origin, destination and line info 
-    let starredOrigin = document.forms["journeyForm"]["f_from_stop"].value;
-    let starredDestination=document.forms["journeyForm"]["f_to_stop"].value;
+    var fromInput = document.forms["journeyForm"]["f_from_stop"];
+    var toInput = document.forms["journeyForm"]["f_to_stop"];
+    var originCoord = JSON.parse(fromInput.id);
+    var destinationCoord = JSON.parse(toInput.id);
 
     //push all of them into a list then push every new selected journey into a journey list
-    var perJourney = JSON.stringify({"origin" : starredOrigin, "destination" : starredDestination});
+    var perJourney = JSON.stringify({"origin" : {"name" : fromInput.value, "coord": originCoord}, "destination" : {"name" : toInput.value, "coord": destinationCoord}});
 
     var journeyList=[];
     journeyList.push(perJourney);
@@ -269,17 +268,20 @@ function appendElements(obj){
 
 
 
-function displaySearchInfoOnHeader(origin, destination, dateTime){
+function displaySearchInfoOnHeader(originInput, destinationInput, dateTime){
     // dictionary to store all the elements which are going to display on frontend
     // key: the element id or class name
     // value: content to append to the element 
     var obj = {
-        "#journey_result_from" : origin,
-        "#journey_result_to" : destination,
+        "#journey_result_from" : originInput.value,
+        "#journey_result_to" : destinationInput.value,
         "#journey_result_datetime" : dateTime
     };
 
-    var perJourney = JSON.stringify({"origin" : origin, "destination" : destination});
+    console.log('originInput.id:'+originInput.id);
+    console.log('originInput.id type:'+ typeof(originInput.id));
+
+    var perJourney = JSON.stringify({"origin" : {"name" : originInput.value, "coord": JSON.parse(originInput.id) }, "destination" : {"name" : destinationInput.value, "coord": JSON.parse(destinationInput.id)}});
     var index = jQuery.inArray(perJourney, favorite_journey_list);
     
     if(index > -1){
