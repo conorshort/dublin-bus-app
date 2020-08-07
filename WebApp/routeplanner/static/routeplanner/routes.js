@@ -356,7 +356,7 @@ function routes() {
 
         // chunk size dictates how many times will be displayed in 
         // each row of the timetable
-        const CHUNK_SIZE = 6;
+        const CHUNK_SIZE = 5;
 
         // The time table is a dict with keys like "Mon-Fri"
         // or Sun. These are sorted alphabetically by default
@@ -399,10 +399,11 @@ function routes() {
         });
 
         // Initialise the tooltips
-        $('[data-toggle="tooltip"]').tooltip()
+        // $('[data-toggle="tooltip"]').tooltip()
         $(".timetable-item").off("click.routes")
         $(".timetable-item").on("click.routes", function (e) {
             $("#trip-loader").show();
+            $("#timetable-modal").animate({ scrollTop: $("#timetable-modal").height() }, 200);
             $("#trip-timetable-table").hide();
             let tripId = $(e.target).attr("data-trip-id");
             let thisStop = $("#timetable-title").html();
@@ -697,7 +698,7 @@ function routes() {
                 <div id="collapse-${index}" class="collapse" aria-labelledby="heading-${index}"
                     data-parent="#variations-accordion">
                     <div class="card-body">
-
+                        <p><b>Choose a stop to see the timetable:</b></p>
                         <ul class="list-group list-group-flush stops-list" id="stops-list-${index}">
                         </ul>
                     </div>
@@ -750,7 +751,9 @@ function routes() {
     function renderTimetableRow(times) {
         let content = "<tr>";
         times.forEach(time => {
-            content += `<td class="timetable-item" data-toggle="tooltip" title="Usually 5-10 mins late" data-trip-id="${time[1]}" >${time[0]}</td>`;
+            content += `<td class="timetable-item" >
+                <button data-trip-id="${time[1]}" type="button" class="btn btn-outline-secondary btn-xs">${time[0]}</button>
+            </td>`;
         });
         content += "</tr>";
         return content;

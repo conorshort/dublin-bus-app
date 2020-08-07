@@ -1,3 +1,9 @@
+
+/* css for extra small button 
+https://stackoverflow.com/questions/33911049/btn-xs-no-longer-a-valid-option-in-bootstrap-4 */
+
+
+
 html, body {
   background: #fafafa;
   color: #333333;
@@ -388,7 +394,21 @@ div.weather#description {
   margin-left: 15px;
 }
 
+.btn-group-xs > .btn, .btn-xs {
+  border-style: none !important;
+  padding: .5rem .4rem;
+  font-size: 1rem;
+  line-height: .5;
+  border-radius: .2rem;
+  margin-right: 0px;
+  margin-left: 0px;
+  width: 95%;
+  height: 30px;
+}
 
+.timetable-item {
+  padding: 2px 0px !important;
+}
 
 
 
@@ -431,7 +451,19 @@ div.weather#description {
       bottom: 0;
     }
 
+    #timetable-modal {
+      font-size: 0.75em;
+    }
 
+    .btn-group-xs > .btn, .btn-xs {
+      border-style: solid  !important;
+      padding: .5rem .4rem;
+      font-size: .875rem;
+      line-height: .5;
+      border-radius: .2rem;
+      margin-right: 0px;
+      margin-left: 0px;
+    }
  }
 
 @media (max-height: 475px) { 
