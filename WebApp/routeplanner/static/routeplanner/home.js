@@ -3,11 +3,10 @@ let currentBounds;
 let currentCentre;
 let allowStopReload = true;
 let DateTime = luxon.DateTime;
+let dublinCoords = [53.3373266,-6.2752625]
 // Code in this block will be run one the page is loaded in the browser
 $(document).ready(function () {
 
-    // Load the journey UI content by default
-    loadSideBarContent("journey");
 
     // on click function for nav-items
     $('.nav_item').click(function () {
@@ -53,7 +52,11 @@ $(document).ready(function () {
 
     });
     initMap();
+    // Load the journey UI content by default
+    loadSideBarContent("journey");
+
 });
+
 
 
 //centreLocation: default value is Dublin city centre,
@@ -120,8 +123,15 @@ function initMap() {
 var MapUIControl = (function () {
 
     return {
+        isFirstTime: true,
+        isHidemap: true,
+        isHalfscreen: false,
+        isFullscreen: false,
         hidemap: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
+                this.isHalfscreen = false;
+                this.isHidemap = true;
+                this.isFullscreen = false;
                 $('#sidebar').fadeIn(200);
                 $(".sidebar_header").fadeIn(200);
                 $("#map").animate({ height: "0px" }, 500, () => {
@@ -133,14 +143,22 @@ var MapUIControl = (function () {
 
         halfscreen: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
+                this.isHalfscreen =true;
+                this.isHidemap=false;
+                this.isFullscreen=false;
                 allowStopReload = false;
                 $(".sidebar_header").hide();
                 $("#mobile-show-content").hide();
                 $('#sidebar').fadeIn(10);
                 // $("#map").show()
                 $("#map").animate({ height: "200px" }, 500, () => {
+
                     console.log("Invalidating size")
                     map.invalidateSize(false);
+                    if(this.isFirstTime){
+                        map.flyTo(dublinCoords, 12, { 'duration': 0.5 });
+                        this.isFirstTime = false;
+                    }
                     allowStopReload = true;
                     if (currentBounds) {
                         console.log("flyint to bounds");
@@ -157,6 +175,9 @@ var MapUIControl = (function () {
 
         fullscreen: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
+                this.isHalfscreen = false;
+                this.isHidemap = false;
+                this.isFullscreen = true;
                 allowStopReload = false;
                 $(".sidebar_header").hide();
 

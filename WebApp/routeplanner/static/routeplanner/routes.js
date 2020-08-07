@@ -1,9 +1,11 @@
-
+var routeLayerObj = {};
+var routeStopsLayer;
+var stopsObj = {};
 function routes() {
     // A global variable to hold all the currenly diplayed routed
-    var routeLayerObj = {};
-    var routeStopsLayer;
-    var stopsObj = {};
+    // var routeLayerObj = {};
+    // var routeStopsLayer;
+    // var stopsObj = {};
     // Will hold the route currently being displayed in the side bar
     var currentRoute = undefined;
 
@@ -22,7 +24,7 @@ function routes() {
         // Hides the variations div and shows the routes list
         $(document).on("click.routes", "#back-to-routes", function () {
             removeRouteStopsFromMap();
-            toggleRouteDisplay(currentRoute)
+            toggleRouteDisplay(currentRoute);
             MapUIControl.hidemap();
             $("#route-stop-div").fadeOut(10);
             $("#variations-accordion").html("");
@@ -44,15 +46,17 @@ function routes() {
         });
 
 
-
-        $(document).on("click.routes", '.bottom_nav_item', function () {
+        $(document).on("click.routes", '.nav_item, .bottom_nav_item', function () {
             // MapUIControl.reset();
             MapUIControl.hidemap();
             removeRouteStopsFromMap();
+
             for (const route in routeLayerObj) {
                 removeRouteFromMap(route);
             }
         });
+
+
 
         $(document).on("click.routes", '.star', function (e) {
             //e.preventDefault;
