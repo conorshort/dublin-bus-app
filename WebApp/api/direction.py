@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from .prediction import predict_journey_time, get_models_name
 from .models import SmartDublinBusStop, GTFSTrip
 from datetime import datetime, timedelta
+from dateutil import tz
 import requests
 
 
@@ -31,6 +32,9 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
     # check the status of the google direction response
     if data['status'] != 'OK':
+        db_logger.error(
+            f'Google direction API status not OK. Given parameters {parameters}')
+
         return JsonResponse(data)
 
     try:
@@ -62,9 +66,10 @@ def direction_to_first_transit(origin, destination, departureUnix):
         else:
             # FIXME: timezone  & daylight saving problem
             # when convert unix to time string shows one hour late
-            timestr = datetime.fromtimestamp(int(departureUnix)) \
-                + timedelta(hours=1)
+            timestr = datetime.fromtimestamp(
+                int(departureUnix), tz.gettz("Europe/London"))
             timestr = timestr.strftime("%I:%M%p")
+
             newData['leg']['arrival_time'] = {'value': int(departureUnix),
                                               'text': timestr}
             newData['leg']['departure_time'] = {'value': int(departureUnix),
@@ -94,12 +99,15 @@ def direction_to_first_transit(origin, destination, departureUnix):
                         lineId,
                         segments,
                         int(departureUnix))
-
+                    print("JOURNEEY TIME", journeyTime)
                     # set duration to predicted journey time
                     duration = int(journeyTime)
 
                     arr_unix = newData['leg']['arrival_time']['value'] + duration
-                    timestr = datetime.fromtimestamp(arr_unix) + timedelta(hours=1)
+                    timestr = datetime.fromtimestamp(
+                        int(arr_unix), tz.gettz("Europe/London"))
+                    print("+++++++++++++++++++++++++++++++++++++++======\n",
+                          arr_unix)
                     timestr = timestr.strftime('%I:%M%p')
                     step['transit_details']['arrival_time']['value'] = arr_unix
                     step['transit_details']['arrival_time']['text'] = timestr
@@ -147,14 +155,21 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
         # FIXME: timezone  & daylight saving problem
         # when convert unix to time string shows one hour late
-        timestr = datetime.fromtimestamp(newData['leg']['arrival_time']['value']) + timedelta(hours=1)
+
+        timestr = datetime.fromtimestamp(
+            int(newData['leg']['arrival_time']['value']), tz.gettz("Europe/London"))
         timestr = timestr.strftime('%I:%M%p')
+
         newData['leg']['arrival_time']['text'] = timestr
         newData['status'] = 'OK'
         return newData
 
     except Exception as e:
         print("direction_to_first_transit error:", str(e))
+        parameters = {'origin': origin,
+                  'destination': destination,
+                  'departure_time': departureUnix}
+        db_logger.error(f'{str(e)}. Given parameters {parameters}')
         message = {'status': 'ZERO_RESULT'}
         return message
 
@@ -184,6 +199,16 @@ def get_stops(step, lineId):
         originTime = step['transit_details']['departure_time']['text']
 
         stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, origin_time=originTime, headsign=headsign)
+        if len(stops) <= 0:
+
+                params = {'depStopId': depStopId,
+                          'arrStopId': arrStopId,
+                          'lineId': lineId,
+                          'headsign': headsign}
+
+                # Log an error message
+                db_logger.error(
+                    f'return data Stops list is empty. Given parameters {params}')
 
     except Exception as e:
         print('function get_stops error:', e)

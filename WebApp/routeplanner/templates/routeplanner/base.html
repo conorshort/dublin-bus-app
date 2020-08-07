@@ -62,50 +62,51 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8" crossorigin="anonymous"></script>
 
     <!-- Twitter Javascript for Widget JavaScript -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script> -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/luxon@1.24.1/build/global/luxon.min.js"
+        integrity="sha256-5FiU7kNb/UJWqMesUFnKv4dJzLMiTWljH0ONkz+h704=" crossorigin="anonymous"></script>
     <!-- datetime picker -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>
 
     <!-- Font Awesome html Icons -->
     <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin="anonymous"></script>
     
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js" ></script>
 
     <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
-    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-analytics.js" ></script>
 
     <!-- Add Firebase products that you want to use -->
-    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js" ></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-firestore.js" ></script>
     
     <script>
-    // congif firebase
-    var firebaseConfig = {
-        apiKey: "AIzaSyBccB26eAhyKwgAKTV6A39VL-YuGPaSjM0",
-        authDomain: "dublinbus-dfbfc.firebaseapp.com",
-        databaseURL: "https://dublinbus-dfbfc.firebaseio.com",
-        projectId: "dublinbus-dfbfc",
-        storageBucket: "dublinbus-dfbfc.appspot.com",
-        messagingSenderId: "587026003778",
-        appId: "1:587026003778:web:d00bc8c285c4e7fd847adb",
-        measurementId: "G-VP5HD590NV"
-    };
-    
-    //  Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const analytics = firebase.analytics();
+        // congif firebase
+        var firebaseConfig = {
+            apiKey: "AIzaSyBccB26eAhyKwgAKTV6A39VL-YuGPaSjM0",
+            authDomain: "dublinbus-dfbfc.firebaseapp.com",
+            databaseURL: "https://dublinbus-dfbfc.firebaseio.com",
+            projectId: "dublinbus-dfbfc",
+            storageBucket: "dublinbus-dfbfc.appspot.com",
+            messagingSenderId: "587026003778",
+            appId: "1:587026003778:web:d00bc8c285c4e7fd847adb",
+            measurementId: "G-VP5HD590NV"
+        };
+
+        //  Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.analytics();
 
     </script>
 
@@ -136,6 +137,26 @@
                     <div class="spinner-grow text-secondary" style="margin:auto;" id="timetable-loader" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
+                </div>
+                <div class="modal-body container" id="trip-timetable">
+                    <div class="spinner-grow text-secondary" style="margin:auto; display: none;" id="trip-loader" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+
+                    <table id="trip-timetable-table" style="display: none;" class="table table-striped table-sm">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Stop Name</th>
+                                <th style="text-align: center;">Timetable</th>
+                                <th style="text-align: center;">Prediction</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="actual-times">
+
+                        </tbody>
+                    </table>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

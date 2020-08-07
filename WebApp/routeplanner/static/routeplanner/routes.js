@@ -208,19 +208,18 @@ function routes() {
         return $.getJSON("api/routes/variations/",
             { name: routeName, inbound: inbound },
             function (variations) {
-                $("#variations-accordion").html("");
                 // Display the variations
                 let content = '';
                 variations.forEach((variation, index) => {
                     content += renderVariationAccordionItem(variation.towards, variation.shape_id, index);
                 });
-                $("#variations-accordion").append(content);
+                $("#variations-accordion").html("")
+                    .append(content);
                 $("#single-route-loader").hide();
                
             });
 
     }
-
 
     function addOnclicksToVariations() {
         $(document).on("click.routes", ".stops-list-button", function () {
@@ -240,7 +239,6 @@ function routes() {
                     return a.seq - b.seq;
                 });
                 // Create a list item for each stop and add it to the list
-                console.log(stops)
                 let stopMarkers = []
                 let content = '';
                 stops.forEach(stop => {
@@ -281,6 +279,8 @@ function routes() {
 
     function displayTimetable(e) {
         // Get the stop id and stop name from the clicked element
+        $("#trip-timetable-table").hide();
+        $("#trip-loader").hide();
         let stopId = $(this).attr('data-stop-id');
         let shapeId = $(this).attr('data-shape-id');
         console.log(this);
@@ -374,14 +374,15 @@ function routes() {
             // Make a list of all the times
             timesArr = []
             timetables[days].forEach(time => {
-                timesArr.push(time.time)
+                timesArr.push([time.time, time.trip_id]);
+                console.log(timesArr);
             });
             // Sort the times
-            timesArr.sort();
+            timesArr.sort((a, b) => a[0] - b[0]);
 
             // Convert the time from seconds after midnight to a human readable format
             timesArr = timesArr.map(time => {
-                return new Date((time % 86400) * 1000).toISOString().substr(11, 5);
+                return [new Date((time[0] % 86400) * 1000).toISOString().substr(11, 5), time[1]];
             });
 
             // Split the times into chunks, one chunk for each row
@@ -398,6 +399,61 @@ function routes() {
 
         // Initialise the tooltips
         $('[data-toggle="tooltip"]').tooltip()
+        $(".timetable-item").off("click.routes")
+        $(".timetable-item").on("click.routes", function (e) {
+            $("#trip-loader").show();
+            $("#trip-timetable-table").hide();
+            let tripId = $(e.target).attr("data-trip-id");
+            let thisStop = $("#timetable-title").html();
+            let thisTime = $(e.target).html();
+            let thisPredTime;
+
+            console.log("getting json");
+            $.getJSON("/api/stoptime/timetable",
+                { trip_id: tripId }, (tripTimetable) => {
+                    // Sort the times
+                    tripTimetable.sort((a, b) => a.stop_sequence - b.stop_sequence);
+
+                    console.log(tripTimetable)
+                    // Convert the time from seconds after midnight to a human readable format
+                    tripTimetable = tripTimetable.map(elem => {
+
+                        elem.departure_time_readable = new Date((elem.departure_time % 86400) * 1000).toISOString().substr(11, 5);
+                        elem.predicted_time_readable = new Date((elem.predicted_time % 86400) * 1000).toISOString().substr(11, 5);
+                        if (elem.departure_time_readable == thisTime && elem.stop_name == thisStop) {
+                            thisPredTime = elem.predicted_time;
+                        }
+                        return elem;
+                    });
+
+                    console.log(tripTimetable)
+
+                    let content = '';
+
+
+
+                    tripTimetable.forEach(element => {
+                        console.log(thisPredTime); console.log(element.predicted_time);
+                        let jourTime = element.predicted_time - thisPredTime
+                        jourTime = Math.floor(jourTime / 60) + " mins";
+                        let highlight = false;
+                        if (element.departure_time_readable == thisTime && element.stop_name == thisStop) { 
+                            highlight = true;
+                        }
+                        content += renderTripTimetableItem(element.stop_name,
+                                                            element.departure_time_readable,
+                                                            element.predicted_time_readable,
+                                                            jourTime,
+                                                            highlight);
+                    });
+                    $("#actual-times").html("");
+                    $("#actual-times").append(content);
+                }).then(() => {
+                    $("#trip-timetable-table").show();
+                    $("#trip-loader").hide();
+
+                });
+        });
     }
 
 
@@ -603,6 +659,21 @@ function routes() {
             </li>`;
         return content;
     }
+    function renderTripTimetableItem(stop, actTime, predTime, jourTime, highlight) {
+        let clsStr = "";
+        if (highlight) {
+            clsStr = 'class="table-warning"'
+        }
+        const content = `
+            <tr ${clsStr}>
+                <td><b>${stop}</b></td>
+                <td style="text-align: center;">${actTime}</span></td>
+                <td style="text-align: center;">${predTime}</span></td>
+                <td>${jourTime}</span></td>
+            </tr>`;
+        return content;
+    }
+
 
 
 
@@ -625,6 +696,7 @@ function routes() {
                 <div id="collapse-${index}" class="collapse" aria-labelledby="heading-${index}"
                     data-parent="#variations-accordion">
                     <div class="card-body">
+
                         <ul class="list-group list-group-flush stops-list" id="stops-list-${index}">
                         </ul>
                     </div>
@@ -634,7 +706,17 @@ function routes() {
     }
 
 
+                        // <div id- class="text-center">
+                        //     <div class="spinner-grow text-warning m-5" role="status"">
+                        //         <span class=" sr-only">Loading...</span>
+                        //     </div>
+                        // </div>
 
+    `<div class="text-center">
+        <div class="spinner-grow text-warning m-5" role="status"">
+            <span class=" sr-only">Loading...</span>
+        </div>
+    </div>`
 
 
     // Render the tab and the pane for displaying the timetables
@@ -667,7 +749,7 @@ function routes() {
     function renderTimetableRow(times) {
         let content = "<tr>";
         times.forEach(time => {
-            content += `<td data-toggle="tooltip" title="Usually 5-10 mins late">${time}</td>`;
+            content += `<td class="timetable-item" data-toggle="tooltip" title="Usually 5-10 mins late" data-trip-id="${time[1]}" >${time[0]}</td>`;
         });
         content += "</tr>";
         return content;

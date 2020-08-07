@@ -5,8 +5,8 @@ import time
 import pickle
 from os import walk
 
-def predict_journey_time(lineId, segments, departure_unix):
-    
+def predict_journey_time(lineId, segments, departure_unix, return_list=False):
+    print(departure_unix)
     segments_df = create_test_dataframe(lineId, segments, departure_unix)
 
     # cheak if df has weather features
@@ -17,8 +17,9 @@ def predict_journey_time(lineId, segments, departure_unix):
     else:
         model = get_route_model(lineId, hasWeather = False)
 
+
     # ger journey time prediction for all segments
-    journeyTime = predict_journey_time_by_df(model, segments_df)
+    journeyTime = predict_journey_time_by_df(model, segments_df, return_list=return_list)
     
     return journeyTime
 
@@ -41,26 +42,25 @@ def create_test_dataframe(lineId, segments, departure_unix):
     features = model.get_booster().feature_names
 
 
-    # create a dictionary as data for creating tested dataframe 
-    # set dictionary key to features and value to [0]
-    data = {feature: [0] for feature in features}
+
     departure_dt = datetime.datetime.fromtimestamp(departure_unix)
-    
+    print(departure_dt)
+    print("Line", lineId, )
     hour = departure_dt.hour
-    weekday = departure_dt.weekday
+    weekday = departure_dt.weekday()
     isPeak = int(isPeaktime(departure_dt) == True)
 
     segments_df = pd.DataFrame()
 
     for seg in segments:
-        
-        try:
-            data['arr_hour_' + hour] = [1]
-            data['segment_id_' + seg] = [1]
-            data['weekday' + weekday] = [1]
-            data['isPeaktime'] = [isPeak]
-        except:
-            pass
+            # create a dictionary as data for creating tested dataframe
+        # set dictionary key to features and value to [0]
+        data = {feature: [0] for feature in features}
+
+        data['arr_hour_' + str(hour)] = [1]
+        data['segment_id_' + str(seg)] = [1]
+        data['weekday_' + str(weekday)] = [1]
+        data['isPeaktime'] = [isPeak]
         
 
         if weather:
@@ -69,27 +69,39 @@ def create_test_dataframe(lineId, segments, departure_unix):
             if 'rain' in weather:
                 data['rain'] = [weather['rain']['1h']]
         
-
         # create segment dataframe which storing segment data
         seg_df = pd.DataFrame(data=data)
 
+        # print(seg_df)
         # reorder the columns sequence same as the model
         seg_df = seg_df[features]
 
         # add each segment dataframe to df dataframe
         segments_df = segments_df.append(seg_df, ignore_index=True)
-    
+    segments_df.to_csv(r'C:\Users\cls15\Desktop\test.csv', index=False)
     return segments_df
 
 
 
 
-def predict_journey_time_by_df(model, test_dataframe):
-
+def predict_journey_time_by_df(model, test_dataframe, return_list=False):
+    
     prediction = model.predict(test_dataframe)
-    journeyTime = sum(prediction)
 
-    return journeyTime
+    if return_list:
+
+        segment_cols = [
+                col for col in test_dataframe if col.startswith('segment')]
+
+        idxs = test_dataframe.loc[(test_dataframe[segment_cols] == 0).all(axis=1)].index
+
+        for idx in idxs:
+            prediction[idx] = -1
+        print(prediction)
+        return prediction
+    else:
+        journeyTime = sum(prediction)
+        return journeyTime
 
 
 
