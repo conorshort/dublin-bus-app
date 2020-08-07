@@ -34,15 +34,35 @@ var favorite_journey_list;
 
 function initFavoriteDropdown(){
 
+    updateFavoriteList();
+
+    // click the favorite journey will fill the origin 
+    $('.favorite-journey-content').click(function(e){
+        var index = $(this).parent().attr('id');
+        var favorite_journey = JSON.parse(favorite_journey_list[index]);
+        updateSearchInput(favorite_journey.origin, favorite_journey.destination);
+    });
+
+    // click the solid star icon on favorite journey 
+    // will remove the journey from the cookie journeyList 
+    $('.solid-star').click(function(e){
+        var index = $(this).parent().attr('id');
+        cookiemonster.splice('journeyList', favorite_journey_list[index], 1, 3650);
+        updateFavoriteList();
+    });
+}
+
+
+function updateFavoriteList(){
+
     $("#favorite-journey-list-group").empty();
-    
     favorite_journey_list = cookiemonster.get('journeyList');
     
     if (favorite_journey_list){
         favorite_journey_list.forEach(function(element, index){
             var favorite_journey = JSON.parse(element);
-            console.log('index:'+index);
-            console.log('element:'+element);
+       
+            // render favorite journey list-group-item
             $("#favorite-journey-list-group").append(
                 `<li class="list-group-item favorite-journey-list-item"> \
                 <div class="row" id=${index}> \
@@ -52,16 +72,6 @@ function initFavoriteDropdown(){
                 <b>destination:</b> ${favorite_journey.destination}</div></div></li>`);
         });
     }
-
-    $('.solid-star').click(function(e){
-        var index = $(this).parent().attr('id');
-    });
-
-    $('.favorite-journey-content').click(function(e){
-        var index = $(this).parent().attr('id');
-        var favorite_journey = JSON.parse(favorite_journey_list[index]);
-        updateSearchInput(favorite_journey.origin, favorite_journey.destination);
-    });
 }
 
 
