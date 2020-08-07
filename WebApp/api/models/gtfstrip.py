@@ -156,7 +156,7 @@ class GTFSTripManager(GTFSManager):
             return stop_query_set
         else:
             print("returning")
-            print(stops_as_lists)
+            # print(stops_as_lists)
             return stops_as_lists
 
     def stops_on_route(self, shape_id):

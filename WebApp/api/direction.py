@@ -7,10 +7,10 @@ import requests
 
 
 def direction_to_first_transit(origin, destination, departureUnix):
-    print("=============================================")
-    print('origin:', origin)
-    print('destination:', destination)
-    print('departureUnix:', departureUnix)
+    # print("=============================================")
+    # print('origin:', origin)
+    # print('destination:', destination)
+    # print('departureUnix:', departureUnix)
 
     # check is all the parameters given
     # response 400 error if missing any parameter
@@ -94,8 +94,6 @@ def direction_to_first_transit(origin, destination, departureUnix):
                         lineId,
                         segments,
                         int(departureUnix))
-
-                    print('journeyTime:', journeyTime)
 
                     # set duration to predicted journey time
                     duration = int(journeyTime)

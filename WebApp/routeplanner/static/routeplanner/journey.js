@@ -26,11 +26,10 @@ $(document).ready(function () {
 
     initAutoComplete();
     initFavoriteDropdown();　
-
 });
 
 
-var favorite_journey_list;
+var favorite_journey_list = [];
 
 function initFavoriteDropdown(){
 
@@ -38,7 +37,9 @@ function initFavoriteDropdown(){
 
     // click the favorite journey will fill the origin 
     $('.favorite-journey-content').click(function(e){
-        var index = $(this).parent().attr('id');
+        var id = $(this).attr('id');
+        var index = id.replace("favorite-journey-content-", "");
+        console.log('content index:'+ index)
         var favorite_journey = JSON.parse(favorite_journey_list[index]);
         updateSearchInput(favorite_journey.origin, favorite_journey.destination);
     });
@@ -46,8 +47,10 @@ function initFavoriteDropdown(){
     // click the solid star icon on favorite journey 
     // will remove the journey from the cookie journeyList 
     $('.solid-star').click(function(e){
-        var index = $(this).parent().attr('id');
-        cookiemonster.splice('journeyList', favorite_journey_list[index], 1, 3650);
+        var id = $(this).attr('id');
+        var index = id.replace("solid-star-", "");
+        var favorite_journey = JSON.parse(favorite_journey_list[index]);
+        cookiemonster.splice('journeyList', favorite_journey, 1, 3650);
         updateFavoriteList();
     });
 }
@@ -65,9 +68,9 @@ function updateFavoriteList(){
             // render favorite journey list-group-item
             $("#favorite-journey-list-group").append(
                 `<li class="list-group-item favorite-journey-list-item"> \
-                <div class="row" id=${index}> \
-                <div class="col-1 solid-star"><i class="fas fa-star starSolid"></i></div> \
-                <div class="col-11 favorite-journey-content">
+                <div class="row"> \
+                <div class="col-1 solid-star" id="solid-star-${index}"><i class="fas fa-star starSolid"></i></div> \
+                <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
                 <b>origin:</b> ${favorite_journey.origin} </br> \
                 <b>destination:</b> ${favorite_journey.destination}</div></div></li>`);
         });
@@ -203,7 +206,9 @@ $('form').submit(function(e){
 
 //save the selected journey to favourite
 $('#hollow-star').click(function(e){
-    
+
+    $("#hollow-star").hide();
+
     //get the selected origin, destination and line info 
     let starredOrigin = document.forms["journeyForm"]["f_from_stop"].value;
     let starredDestination=document.forms["journeyForm"]["f_to_stop"].value;
@@ -248,7 +253,6 @@ $('#edit_journey_input').click(function () {
 });
 
 
-
 //append value to key element
 function displayElements(obj){
     $.each( obj, function( key, value ) {
@@ -275,6 +279,14 @@ function displaySearchInfoOnHeader(origin, destination, dateTime){
         "#journey_result_datetime" : dateTime
     };
 
+    var perJourney = JSON.stringify({"origin" : origin, "destination" : destination});
+    var index = jQuery.inArray(perJourney, favorite_journey_list);
+    
+    if(index > -1){
+        $("#hollow-star").hide();
+    } else {
+        $("#hollow-star").show();
+    }
     displayElements(obj);
 }
 
