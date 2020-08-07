@@ -5,7 +5,12 @@ from .models import SmartDublinBusStop, GTFSTrip
 from datetime import datetime, timedelta
 from dateutil import tz
 import requests
+import logging
 
+
+# Get an instance of a logger
+
+db_logger = logging.getLogger('db')
 
 def direction_to_first_transit(origin, destination, departureUnix):
     print("=============================================")
@@ -37,7 +42,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
         return JsonResponse(data)
 
-    try:
+    if True:
         # count how many steps which travel model is TRANSIT
         transitCount = r.text.count("TRANSIT")
 
@@ -118,7 +123,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
                 else:
                     arr_time_unix = int(
-                        steps[i]['transit_details']['arrival_time']['value'])
+                        steps[index]['transit_details']['arrival_time']['value'])
                     newData['leg']['arrival_time']['value'] = arr_time_unix
 
                 distance = int(step['distance']['value'])
@@ -164,7 +169,8 @@ def direction_to_first_transit(origin, destination, departureUnix):
         newData['status'] = 'OK'
         return newData
 
-    except Exception as e:
+    # except Exception as e:
+    else:
         print("direction_to_first_transit error:", str(e))
         parameters = {'origin': origin,
                   'destination': destination,

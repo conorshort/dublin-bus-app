@@ -4,7 +4,12 @@ import datetime
 import pickle
 import os
 from dateutil import tz
+import logging
 
+
+# Get an instance of a logger
+
+db_logger = logging.getLogger('db')
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
 
