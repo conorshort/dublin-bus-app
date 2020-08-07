@@ -15,10 +15,11 @@ class SmartDublinBusStopManager(models.Manager):
                         as distance_in_metres
                 from sd_bus_stops
                 order by distance_in_metres asc
-                limit 1;""" % (longitude, latitude))
+                limit 10;""" % (longitude, latitude))
             result_list = []
             # There should only be one nearest stop
             for row in cursor.fetchall():
+                print("NEAREST STOPT", row)
                 return row[0]
         return None
 

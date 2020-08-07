@@ -157,7 +157,7 @@ class GTFSTripManager(GTFSManager):
 
                 print(origin_seq)
                 print(dest_seq)
-                if origin_seq and dest_seq:
+                if origin_seq and dest_seq and origin_seq[0]['stop_sequence'] < dest_seq[0]['stop_sequence']:
                     # The stops we want will have a sequence number between the origin and destination stops
                     these_stops = stops.filter(stop_sequence__gte=origin_seq,
                                             stop_sequence__lte=dest_seq)
