@@ -38,7 +38,6 @@ function updateFavoriteList(){
     favorite_journey_list = cookiemonster.get('journeyList');
     
     if (favorite_journey_list){
-        console.log(favorite_journey_list);
         favorite_journey_list.forEach(function(element, index){
             var favorite_journey = JSON.parse(element);
        
@@ -57,7 +56,6 @@ function updateFavoriteList(){
     $('.favorite-journey-content').click(function(e){
         var id = $(this).attr('id');
         var index = id.replace("favorite-journey-content-", "");
-        console.log('content index:'+ index)
         var favorite_journey = JSON.parse(favorite_journey_list[index]);
         updateSearchInput(favorite_journey.origin, favorite_journey.destination);
     });
@@ -67,8 +65,7 @@ function updateFavoriteList(){
     $('.solid-star').click(function(e){
         var id = $(this).attr('id');
         var index = id.replace("solid-star-", "");
-        var favorite_journey = JSON.parse(favorite_journey_list[index]);
-        cookiemonster.splice('journeyList', favorite_journey, 1, 3650);
+        cookiemonster.splice('journeyList', index, 1, 3650);
         updateFavoriteList();
     });
 }
@@ -277,9 +274,6 @@ function displaySearchInfoOnHeader(originInput, destinationInput, dateTime){
         "#journey_result_to" : destinationInput.value,
         "#journey_result_datetime" : dateTime
     };
-
-    console.log('originInput.id:'+originInput.id);
-    console.log('originInput.id type:'+ typeof(originInput.id));
 
     var perJourney = JSON.stringify({"origin" : {"name" : originInput.value, "coord": JSON.parse(originInput.id) }, "destination" : {"name" : destinationInput.value, "coord": JSON.parse(destinationInput.id)}});
     var index = jQuery.inArray(perJourney, favorite_journey_list);
