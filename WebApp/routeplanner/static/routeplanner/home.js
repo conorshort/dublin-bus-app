@@ -69,7 +69,6 @@ var stopsLayer = L.layerGroup().addTo(map);
 var journeyLayer = L.layerGroup().addTo(map);
 var userLocationLayer = L.layerGroup().addTo(map);
 
-
 function clearElementsInLayers() {
     //clear all the markers in the layer
     stopsLayer.clearLayers();
@@ -79,10 +78,11 @@ function clearElementsInLayers() {
 
 
 function initMap() {
-
+    console.log('initMap()');
+    
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 18,
+        maxZoom: MAP_ZOOM_NUM,
         id: 'mapbox/streets-v11',
         tileSize: 512,
         zoomOffset: -1,
@@ -91,29 +91,27 @@ function initMap() {
 
     map.locate({ setView: true, watch: true });
 
-    var onLocationFound = function(e){
-
-        // create custom icon
-        var customIcon = L.icon({
-            iconUrl: './static/img/user_marker.png',
-            iconSize: [45, 45], // size of the icon
+    // if geolocation is available
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            console.log(position.coords);
+            // create custom icon
+            var customIcon = L.icon({
+                iconUrl: './static/img/user_marker.png',
+                iconSize: [35, 45], // size of the icon
             });
+                
+            var marker = L.marker([position.coords.latitude, position.coords.longitude], {icon: customIcon})
+            .addTo(map)
+            .bindPopup("Centre");
             
-        var marker = L.marker(e.latlng, {icon: customIcon})
-        .addTo(map)
-        .bindPopup("Centre");
-
-        userLocationLayer.clearLayers();
-        userLocationLayer.addLayer(marker);
-
-        // .openPopup();
-        centreLocation = e.latlng;
-        currentCentre = centreLocation;
-        // map.setView(e.latlng, MAP_ZOOM_NUM);
-    };
-
-
-    map.on('locationfound', onLocationFound);
+            userLocationLayer.addLayer(marker);
+            centreLocation = [position.coords.latitude, position.coords.longitude];
+            currentCentre = centreLocation;
+            map.setView(centreLocation, MAP_ZOOM_NUM);
+        });
+    } 
+    
 
     // on click function for my location btn
     $('#my_location_btn').click(function () {
