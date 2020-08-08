@@ -1,8 +1,12 @@
 $(document).ready(function () {    
 
-    showSearchJourneyDiv(0);
+    //load script widgets.js before twttr.widgets.load()
+    $.getScript( "https://platform.twitter.com/widgets.js" )
+    .done(function( script, textStatus ) {
+        twttr.widgets.load();
+    });
 
-    twttr.widgets.load()
+    showSearchJourneyDiv(0);
 
     //hide loader
     $("#journey-loader").hide();
@@ -36,6 +40,8 @@ function updateFavoriteList(){
 
     $("#favorite-journey-list-group").empty();
     favorite_journey_list = cookiemonster.get('journeyList');
+
+    console.log('favorite_journey_list:'+favorite_journey_list);
     
     if (favorite_journey_list){
         favorite_journey_list.forEach(function(element, index){
@@ -72,10 +78,10 @@ function updateFavoriteList(){
 
 
 function updateSearchInput(origin, destination){
-    document.getElementById("f_from_stop").value = origin.name;
-    document.getElementById("f_to_stop").value =  destination.name;
-    document.getElementById("f_from_stop").id = JSON.stringify(origin.coord);
-    document.getElementById("f_to_stop").id = JSON.stringify(destination.coord);
+    $("#f_from_stop").value = origin.name;
+    $("#f_to_stop").value =  destination.name;
+    $("#f_from_stop").attr('coord-data') = JSON.stringify(origin.coord);
+    $("#f_to_stop").attr('coord-data') = JSON.stringify(destination.coord);
     $('#favoriteJourneyModalCenter').modal('toggle');
 }
 
@@ -114,7 +120,6 @@ function initAutoComplete(){
             //save place coordinate to element id
             input.id = `{"lat":${place.geometry.location.lat()}, "lng":${place.geometry.location.lng()}}`;
 
-            var address = '';
             if (place.address_components) {
                 address = [
                 (place.address_components[0] && place.address_components[0].short_name || ''),
@@ -133,8 +138,9 @@ $("#use-user-location").click(function(e){
     // if geolocation is available
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            document.getElementById("f_from_stop").value = 'Your Current Location';
-            document.getElementById("f_from_stop").id = `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`;
+            console.log('posution:'+ [position.coords.latitude, position.coords.longitude]);
+            $("#f_from_stop").value = 'Your Current Location';
+            $("#f_from_stop").attr('coord-data') = `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`;
             map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
         });
     } else {
@@ -157,8 +163,8 @@ $('form').submit(function(e){
     var toInput = document.forms["journeyForm"]["f_to_stop"];
     var dateTime = document.forms["journeyForm"]["datetime"].value;
 
-    var originCoord = JSON.parse(fromInput.id);
-    var destinationCoord = JSON.parse(toInput.id);
+    var originCoord = JSON.parse(fromInput.attr('coord-data'));
+    var destinationCoord = JSON.parse(toInput.attr('coord-data'));
 
     var dt = new Date(Date.parse(dateTime));
     var unix = dt.getTime()/1000;
@@ -220,8 +226,8 @@ $('#hollow-star').click(function(e){
 
     var fromInput = document.forms["journeyForm"]["f_from_stop"];
     var toInput = document.forms["journeyForm"]["f_to_stop"];
-    var originCoord = JSON.parse(fromInput.id);
-    var destinationCoord = JSON.parse(toInput.id);
+    var originCoord = JSON.parse(fromInput.attr('coord-data'));
+    var destinationCoord = JSON.parse(toInput.attr('coord-data'));
 
     //push all of them into a list then push every new selected journey into a journey list
     var perJourney = JSON.stringify({"origin" : {"name" : fromInput.value, "coord": originCoord}, "destination" : {"name" : toInput.value, "coord": destinationCoord}});
@@ -289,7 +295,7 @@ function displaySearchInfoOnHeader(originInput, destinationInput, dateTime){
         "#journey_result_datetime" : dateTime
     };
 
-    var perJourney = JSON.stringify({"origin" : {"name" : originInput.value, "coord": JSON.parse(originInput.id) }, "destination" : {"name" : destinationInput.value, "coord": JSON.parse(destinationInput.id)}});
+    var perJourney = JSON.stringify({"origin" : {"name" : originInput.value, "coord": JSON.parse(originInput.attr('coord-data')) }, "destination" : {"name" : destinationInput.value, "coord": JSON.parse(destinationInput.attr('coord-data'))}});
     var index = jQuery.inArray(perJourney, favorite_journey_list);
     
     if(index > -1){
