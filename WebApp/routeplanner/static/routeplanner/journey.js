@@ -129,6 +129,19 @@ function initAutoComplete(){
 }
 
 
+$("#use-user-location").click(function(e){
+    // if geolocation is available
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            document.getElementById("f_from_stop").value = 'Your Current Location';
+            document.getElementById("f_from_stop").id = `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`;
+        });
+    } else {
+        alert('Geolocation is not available. Please accept the location permission.')
+    }
+});
+
+
 
 // submit button click event 
 $('form').submit(function(e){

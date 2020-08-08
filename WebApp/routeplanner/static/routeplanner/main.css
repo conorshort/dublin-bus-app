@@ -174,6 +174,12 @@ div.weather#description {
   background-color: green;
 }
 
+/* .hyper-link:hover {
+  cursor: pointer;
+ } */
+
+
+
 /* ==== leapcard ==== */
 #leap-info {
   color: #ffbf00;
