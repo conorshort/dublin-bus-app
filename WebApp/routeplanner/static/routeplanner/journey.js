@@ -60,8 +60,11 @@ function updateFavoriteList(){
 
     // click the favorite journey will fill the origin 
     $('.favorite-journey-content').click(function(e){
+        console.log('favorite-journey-content click');
         var id = $(this).attr('id');
+        console.log('favorite-journey-content id:'+id);
         var index = id.replace("favorite-journey-content-", "");
+        console.log('favorite-journey-content index:'+ index);
         var favorite_journey = JSON.parse(favorite_journey_list[index]);
         updateSearchInput(favorite_journey.origin, favorite_journey.destination);
     });
@@ -78,10 +81,12 @@ function updateFavoriteList(){
 
 
 function updateSearchInput(origin, destination){
-    $("#f_from_stop").value = origin.name;
-    $("#f_to_stop").value =  destination.name;
-    $("#f_from_stop").attr('coord-data') = JSON.stringify(origin.coord);
-    $("#f_to_stop").attr('coord-data') = JSON.stringify(destination.coord);
+    console.log('origin:'+origin.name);
+    $("#f_from_stop").val(origin.name);
+    $("#f_to_stop").val(destination.name);
+    $("#f_from_stop").attr('coord-data', JSON.stringify(origin.coord));
+    $("#f_to_stop").attr('coord-data', JSON.stringify(destination.coord));
+    console.log($("#f_from_stop").attr('coord-data'));
     $('#favoriteJourneyModalCenter').modal('toggle');
 }
 
@@ -139,8 +144,8 @@ $("#use-user-location").click(function(e){
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
             console.log('posution:'+ [position.coords.latitude, position.coords.longitude]);
-            $("#f_from_stop").value = 'Your Current Location';
-            $("#f_from_stop").attr('coord-data') = `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`;
+            $("#f_from_stop").val('Your Current Location');
+            $("#f_from_stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
             map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
         });
     } else {
@@ -159,12 +164,14 @@ $('form').submit(function(e){
     // Stop form refreshing page on submit
     e.preventDefault();
 
+    console.log('form submit');
+
     var fromInput = document.forms["journeyForm"]["f_from_stop"];
     var toInput = document.forms["journeyForm"]["f_to_stop"];
     var dateTime = document.forms["journeyForm"]["datetime"].value;
 
-    var originCoord = JSON.parse(fromInput.attr('coord-data'));
-    var destinationCoord = JSON.parse(toInput.attr('coord-data'));
+    var originCoord = JSON.parse(fromInput.getAttribute('coord-data'));
+    var destinationCoord = JSON.parse(toInput.getAttribute('coord-data'));
 
     var dt = new Date(Date.parse(dateTime));
     var unix = dt.getTime()/1000;
@@ -226,8 +233,8 @@ $('#hollow-star').click(function(e){
 
     var fromInput = document.forms["journeyForm"]["f_from_stop"];
     var toInput = document.forms["journeyForm"]["f_to_stop"];
-    var originCoord = JSON.parse(fromInput.attr('coord-data'));
-    var destinationCoord = JSON.parse(toInput.attr('coord-data'));
+    var originCoord = JSON.parse(fromInput.getAttribute('coord-data'));
+    var destinationCoord = JSON.parse(toInput.getAttribute('coord-data'));
 
     //push all of them into a list then push every new selected journey into a journey list
     var perJourney = JSON.stringify({"origin" : {"name" : fromInput.value, "coord": originCoord}, "destination" : {"name" : toInput.value, "coord": destinationCoord}});
@@ -295,7 +302,7 @@ function displaySearchInfoOnHeader(originInput, destinationInput, dateTime){
         "#journey_result_datetime" : dateTime
     };
 
-    var perJourney = JSON.stringify({"origin" : {"name" : originInput.value, "coord": JSON.parse(originInput.attr('coord-data')) }, "destination" : {"name" : destinationInput.value, "coord": JSON.parse(destinationInput.attr('coord-data'))}});
+    var perJourney = JSON.stringify({"origin" : {"name" : originInput.value, "coord": JSON.parse(originInput.getAttribute('coord-data')) }, "destination" : {"name" : destinationInput.value, "coord": JSON.parse(destinationInput.getAttribute('coord-data'))}});
     var index = jQuery.inArray(perJourney, favorite_journey_list);
     
     if(index > -1){
