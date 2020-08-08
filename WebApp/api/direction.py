@@ -64,7 +64,8 @@ def direction_to_first_transit(origin, destination, departureUnix):
             # when convert unix to time string shows one hour late
             timestr = datetime.fromtimestamp(int(departureUnix)) \
                 + timedelta(hours=1)
-            timestr = timestr.strftime("%I:%M%p")
+            timestr = timestr.strftime("%l:%M%p")
+            timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
             newData['leg']['arrival_time'] = {'value': int(departureUnix),
                                               'text': timestr}
             newData['leg']['departure_time'] = {'value': int(departureUnix),
@@ -100,7 +101,8 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
                     arr_unix = newData['leg']['arrival_time']['value'] + duration
                     timestr = datetime.fromtimestamp(arr_unix) + timedelta(hours=1)
-                    timestr = timestr.strftime('%I:%M%p')
+                    timestr = timestr.strftime('%l:%M%p')
+                    timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
                     step['transit_details']['arrival_time']['value'] = arr_unix
                     step['transit_details']['arrival_time']['text'] = timestr
                     step['transit_details']['stops'] = stops
@@ -142,7 +144,8 @@ def direction_to_first_transit(origin, destination, departureUnix):
         # FIXME: timezone  & daylight saving problem
         # when convert unix to time string shows one hour late
         timestr = datetime.fromtimestamp(newData['leg']['arrival_time']['value']) + timedelta(hours=1)
-        timestr = timestr.strftime('%I:%M%p')
+        timestr = timestr.strftime('%l:%M%p')
+        timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
         newData['leg']['arrival_time']['text'] = timestr
         newData['status'] = 'OK'
         return newData
