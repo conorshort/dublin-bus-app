@@ -135,6 +135,7 @@ $("#use-user-location").click(function(e){
         navigator.geolocation.getCurrentPosition(function(position) {
             document.getElementById("f_from_stop").value = 'Your Current Location';
             document.getElementById("f_from_stop").id = `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`;
+            map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
         });
     } else {
         alert('Geolocation is not available. Please accept the location permission.')
