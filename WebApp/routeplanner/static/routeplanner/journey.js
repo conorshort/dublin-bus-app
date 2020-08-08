@@ -1,8 +1,12 @@
-$(document).ready(function () {    
+var favorite_journey_list = [];
+
+
+// shorter method for the document ready event
+$(function(){ 
 
     //load script widgets.js before twttr.widgets.load()
     $.getScript( "https://platform.twitter.com/widgets.js" )
-    .done(function( script, textStatus ) {
+    .done(function() {
         twttr.widgets.load();
     });
 
@@ -16,10 +20,10 @@ $(document).ready(function () {
     journeyLayer.clearLayers();
 
     //init datetime picker
-    document.getElementsByClassName("datetimeInput").flatpickr({
+    $(".datetimeInput").flatpickr({
         enableTime: true,
         dateFormat: "Y-m-d H:i",
-        
+
         //set datetime picker default value to current datetime
         onReady: function (selectedDates, dateStr, instance) {
             $('.datetimeInput').val(
@@ -33,16 +37,14 @@ $(document).ready(function () {
 });
 
 
-var favorite_journey_list = [];
 
 
 function updateFavoriteList(){
 
+    // clear all favorite journey list group
     $("#favorite-journey-list-group").empty();
     favorite_journey_list = cookiemonster.get('journeyList');
 
-    console.log('favorite_journey_list:'+favorite_journey_list);
-    
     if (favorite_journey_list){
         favorite_journey_list.forEach(function(element, index){
             var favorite_journey = JSON.parse(element);
@@ -101,6 +103,9 @@ function initAutoComplete(){
     var from_input = document.forms["journeyForm"]["f_from_stop"];
     var to_input = document.forms["journeyForm"]["f_to_stop"];
 
+    console.log(typeof(from_input));
+    console.log(typeof($('#f_from_stop')));
+
     function initAutocomplete(input){
 
         //use Google Place Autocomplete for input box
@@ -123,7 +128,7 @@ function initAutoComplete(){
 
             //TODO: not the good way to store coordinate, fund a way to replace this
             //save place coordinate to element id
-            input.id = `{"lat":${place.geometry.location.lat()}, "lng":${place.geometry.location.lng()}}`;
+            input.setAttribute('coord-data' ,`{"lat":${place.geometry.location.lat()}, "lng":${place.geometry.location.lng()}}`);
 
             if (place.address_components) {
                 address = [
@@ -169,6 +174,8 @@ $('form').submit(function(e){
     var fromInput = document.forms["journeyForm"]["f_from_stop"];
     var toInput = document.forms["journeyForm"]["f_to_stop"];
     var dateTime = document.forms["journeyForm"]["datetime"].value;
+
+    console.log('coord-data:'+ fromInput.getAttribute('coord-data'));
 
     var originCoord = JSON.parse(fromInput.getAttribute('coord-data'));
     var destinationCoord = JSON.parse(toInput.getAttribute('coord-data'));
