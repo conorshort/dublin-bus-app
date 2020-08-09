@@ -15,8 +15,9 @@ def direction_to_first_transit(origin, destination, departureUnix):
     # check is all the parameters given
     # response 400 error if missing any parameter
     if not(origin and destination and departureUnix):
-        response_data = {'message': 'Missing Parameter'}
-        return JsonResponse(response_data, status=400)
+        response_data = {'message': 'Missing Parameter',
+                        'status': 'Zero Result'}
+        return response_data
 
     url = 'https://maps.googleapis.com/maps/api/directions/json'
     PARAMS = {'origin': origin,
@@ -31,7 +32,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
     # check the status of the google direction response
     if data['status'] != 'OK':
-        return JsonResponse(data)
+        return data
 
     try:
         # count how many steps which travel model is TRANSIT
