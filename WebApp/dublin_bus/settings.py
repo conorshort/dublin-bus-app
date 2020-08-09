@@ -137,3 +137,36 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 CSRF_COOKIE_SECURE = True
+
+
+
+# configuring logging
+LOGGING = {
+
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console':{
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'normal',
+        },
+    },
+    'formatters': {
+        'normal': {
+            'format': '%(asctime)s,%(msecs)d %(name)s, %(levelname)s, [%(filename)s:%(lineno)s - %(funcName)10s()], %(message)s'
+        },
+        'simple': {
+            'format': '[%(levelname)s] %(message)s'
+        },
+    },
+
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False
+        },
+    },
+}
+

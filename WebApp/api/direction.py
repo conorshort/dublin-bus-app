@@ -4,18 +4,12 @@ from .prediction import predict_journey_time, get_models_name
 from .models import SmartDublinBusStop, GTFSTrip
 from datetime import datetime, timedelta
 import requests
-import logging
-
-
-logger = logging.getLogger(__name__)
 
 def direction_to_first_transit(origin, destination, departureUnix):
     print("=============================================")
     print('origin:', origin)
     print('destination:', destination)
     print('departureUnix:', departureUnix)
-
-    logger.info("這是一個info級別的日誌。。。。")
 
 
     # check is all the parameters given

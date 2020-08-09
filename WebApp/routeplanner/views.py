@@ -5,6 +5,11 @@ from pyleapcard import *
 import re
 import requests
 from .forms import leapCardForm
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 
 def home(request):
@@ -27,6 +32,7 @@ def home(request):
 
 
 def journey(request, template_name="routeplanner/home.html"):
+    logger.warning("這是一個info級別的日誌。。。。")
     return render(request, 'routeplanner/journey.html')
 
 
