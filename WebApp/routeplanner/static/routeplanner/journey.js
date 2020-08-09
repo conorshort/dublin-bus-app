@@ -36,7 +36,6 @@ $(function(){
 
 
 
-
 function updateFavoriteList(){
 
     // clear all favorite journey list group
@@ -46,28 +45,37 @@ function updateFavoriteList(){
     if (favorite_journey_list){
         favorite_journey_list.forEach(function(element, index){
             var favorite_journey = JSON.parse(element);
-       
-            // render favorite journey list-group-item
-            $("#favorite-journey-list-group").append(
+
+            var origin_name = ((favorite_journey||{}).origin||{}).name,
+                destination_name = ((favorite_journey||{}).destination||{}).name;
+            
+            if (origin_name && destination_name){
+                // render favorite journey list-group-item
+                $("#favorite-journey-list-group").append(
                 `<li class="list-group-item favorite-journey-list-item"> \
                 <div class="row"> \
                 <div class="col-1 solid-star" id="solid-star-${index}"><i class="fas fa-star starSolid"></i></div> \
                 <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
-                <b>origin:</b> ${favorite_journey.origin.name} </br> \
-                <b>destination:</b> ${favorite_journey.destination.name}</div></div></li>`);
+                <b>origin:</b> ${origin_name} </br> \
+                <b>destination:</b> ${destination_name}</div></div></li>`);
+            }
         });
     }
 
+
     // click the favorite journey will fill the origin 
     $('.favorite-journey-content').click(function(e){
-        console.log('favorite-journey-content click');
         var id = $(this).attr('id');
-        console.log('favorite-journey-content id:'+id);
         var index = id.replace("favorite-journey-content-", "");
-        console.log('favorite-journey-content index:'+ index);
         var favorite_journey = JSON.parse(favorite_journey_list[index]);
-        updateSearchInput(favorite_journey.origin, favorite_journey.destination);
+        var origin = (favorite_journey||{}).origin,
+            destination = (favorite_journey||{}).destination;
+
+        if (origin && destination){
+            updateSearchInput(origin, destination);
+        }
     });
+
 
     // click the solid star icon on favorite journey 
     // will remove the journey from the cookie journeyList 
@@ -77,16 +85,22 @@ function updateFavoriteList(){
         cookiemonster.splice('journeyList', index, 1, 3650);
         updateFavoriteList();
     });
+  
 }
 
 
 function updateSearchInput(origin, destination){
-    console.log('origin:'+origin.name);
-    $("#f-from-stop").val(origin.name);
-    $("#f-to-stop").val(destination.name);
-    $("#f-from-stop").attr('coord-data', JSON.stringify(origin.coord));
-    $("#f-to-stop").attr('coord-data', JSON.stringify(destination.coord));
-    console.log($("#f-from-stop").attr('coord-data'));
+    var origin_name = (origin||{}).name,
+    destination_name = (destination||{}).name,
+    origin_coord = (origin||{}).coord,
+    destination_coord = (destination||{}).coord;
+
+    if (origin_name && destination_name && origin_coord && destination_coord){
+        $("#f-from-stop").val(origin_name);
+        $("#f-to-stop").val(destination_name);
+        $("#f-from-stop").attr('coord-data', JSON.stringify(origin_coord));
+        $("#f-to-stop").attr('coord-data', JSON.stringify(destination_coord));
+    }
     $('#favoriteJourneyModalCenter').modal('toggle');
 }
 
@@ -202,12 +216,12 @@ $('form').submit(function(e){
 
                 //render and append origin waypoint
                 var origin_waypoint = renderTransitStop(departure_time, leg.start_address, leg.start_location);
-                appendElements({"#journey-result-steps" : origin_waypoint});
+                $("#journey-result-steps").append(origin_waypoint);
                 displayJourneySteps(leg.steps);
 
                 //render and append origin waypoint
                 var destination_waypoint = renderTransitStop(arrive_time, leg.end_address, leg.end_location);
-                appendElements({"#journey-result-steps" : destination_waypoint});
+                $("#journey-result-steps").append(destination_waypoint);
 
                 //drop origin marker
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address, "");
@@ -268,7 +282,7 @@ $('#hollow-star').click(function(e){
         } catch{
             cookiemonster.set('journeyList', journeyList, 3650);
         }
-        alert('Save Sucessfully');
+        alert('Save as favorite journey sucessfully');
     }
 });
 
@@ -281,31 +295,13 @@ $('#edit-journey-input').click(function () {
 });
 
 
-//append value to key element
-function displayElements(obj){
-    $.each( obj, function( key, value ) {
-        $(key).html(value);
-    });
-}
-
-//append value to key element
-function appendElements(obj){
-    $.each( obj, function( key, value ) {
-        $(key).append(value);
-    });
-}
-
-
-
 function displaySearchInfoOnHeader(originInput, destinationInput, dateTime){
     // dictionary to store all the elements which are going to display on frontend
     // key: the element id or class name
     // value: content to append to the element 
-    var obj = {
-        "#journey-result-from" : originInput.value,
-        "#journey-result-to" : destinationInput.value,
-        "#journey-result-datetime" : dateTime
-    };
+    $("#journey-result-from").html(originInput.value)
+    $("#journey-result-to").html(destinationInput.value)
+    $("#journey-result-datetime").html(dateTime)
 
     var perJourney = JSON.stringify({"origin" : {"name" : originInput.value, "coord": JSON.parse(originInput.getAttribute('coord-data')) }, "destination" : {"name" : destinationInput.value, "coord": JSON.parse(destinationInput.getAttribute('coord-data'))}});
     var index = jQuery.inArray(perJourney, favorite_journey_list);
@@ -315,8 +311,8 @@ function displaySearchInfoOnHeader(originInput, destinationInput, dateTime){
     } else {
         $("#hollow-star").show();
     }
-    displayElements(obj);
 }
+
 
 function displayTripSummary(duration, transferCount, departure_time, arrive_time){
     // dictionary to store all the elements which are going to display on frontend
@@ -328,15 +324,9 @@ function displayTripSummary(duration, transferCount, departure_time, arrive_time
                                 + "<b>" + transferCount + "</b>" 
                                 + "  transfers"});
 
-    var obj = {
-        "#journey-result-detail" : duration_tranfer_count,
-        "#section-trip-summary" : departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time,
-                    
-    };
-    displayElements(obj);
-
+    $("#journey-result-detail").html(duration_tranfer_count);
+    $("#section-trip-summary").html(departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time);
 }
-
 
 
 
@@ -352,31 +342,38 @@ function renderTransitStop(timeline, name, coordinates){
 
 
 
-
 function renderTransitDetail(step, index){
+
+    var travel_mode = (step||{}).travel_mode,
+    duration_text = ((step||{}).duration||{}).text,
+    distance_text = ((step||{}).distance||{}).text;
 
     content = '<div class="transit-stop row"> ';
     
-    if (step.travel_mode == "TRANSIT"){
-        content += `<div class="transit-timeline col-3" style="text-align:right;"><img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon"></div>`
-        content += '<div class="col-1"><div style="border-left: 4px solid red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+    if (travel_mode){
+        if (travel_mode == "TRANSIT"){
+            content += `<div class="transit-timeline col-3" style="text-align:right;"><img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon"></div>`
+            content += '<div class="col-1"><div style="border-left: 4px solid red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+    
+        } else {
+            content += `<div class="transit-timeline col-3" style="text-align:right";><img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon"></div>`
+            content += '<div class="col-1"><div style="border-left: 4px dotted red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+        }
 
-    } else {
-        content += `<div class="transit-timeline col-3" style="text-align:right";><img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon"></div>`
-        content += '<div class="col-1"><div style="border-left: 4px dotted red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+        content +=  '<div class="transit-detail col-8" style="padding-top: 20px; padding-bottom: 20px;">';
+        content +=  `<div class="transit-mode row"> ${travel_mode}</div>`;
     }
 
-    content +=  '<div class="transit-detail col-8" style="padding-top: 20px; padding-bottom: 20px;">';
-    content +=  `<div class="transit-mode row"> ${step.travel_mode}</div>`;
-    content +=  `<div class="transit-duration row">${step.duration.text}&nbsp;&nbsp;&nbsp;&nbsp;${step.distance.text}</div>`;
+    if (duration_text && distance_text){
+        content +=  `<div class="transit-duration row">${duration_text}&nbsp;&nbsp;&nbsp;&nbsp;${distance_text}</div>`;
+    }
 
-    if (step.travel_mode == "TRANSIT"){
-        content += renderStepCard(step, index);
+    if (travel_mode == "TRANSIT"){
+        content += renderTransitStepCard(step, index);
         // content +=  `<div class="transit-num-stops row">${step.transit_details.num_stops}</div>`;
     }
 
     content += '</div></div>'
-
     return content;
 }
 
@@ -387,45 +384,62 @@ function displayJourneySteps(steps){
     stepLength = steps.length;
 
     $.each( steps, function( index, step ) {
+
+        var travel_mode = (step||{}).travel_mode,
+        transit_details = (step||{}).transit_details;
         
-        if (step.travel_mode == "TRANSIT"){
-            
-            var transit_details = step.transit_details;
-            content += renderTransitStop(transit_details.departure_time.text, 
-                transit_details.departure_stop.name,
-                transit_details.departure_stop.location);
+        if (travel_mode == "TRANSIT"){
+            if (transit_details){
+                
+                var departure_time_text = ((transit_details||{}).departure_time||{}).text,
+                departure_stop_name = ((transit_details||{}).departure_stop||{}).name,
+                departure_stop_location = ((transit_details||{}).departure_stop||{}).location,
+                arrival_time_text = ((transit_details||{}).arrival_time||{}).text,
+                arrival_stop_name = ((transit_details||{}).arrival_stop||{}).name,
+                arrival_stop_location = ((transit_details||{}).arrival_stop||{}).location;
 
-            content += renderTransitDetail(step, index);
+                //check if the keys exist in the step object
+                if (departure_time_text 
+                    && departure_stop_name 
+                    && departure_stop_location 
+                    && arrival_time_text
+                    && arrival_stop_name
+                    && arrival_stop_location) {
+                        content += renderTransitStop(departure_time_text, 
+                                                    departure_stop_name,
+                                                    departure_stop_location);
+                        content += renderTransitDetail(step, index);
+                        content += renderTransitStop(arrival_time_text, 
+                                                    arrival_stop_name,
+                                                    arrival_stop_location);
 
-            content += renderTransitStop(transit_details.arrival_time.text, 
-                transit_details.arrival_stop.name,
-                transit_details.arrival_stop.location);
-
-
-        } else if (step.travel_mode == "WALKING") {
+                }
+            }
+        } else {
             content += renderTransitDetail(step, index);
         }
 
-        //get encoding journey polyline
-        var encodingPolyline = step.polyline.points;
-        //decode polyline to latlngs array
-        var coordinates = decode(encodingPolyline);
-        
-        drawPolylineOnMap(step.travel_mode, coordinates);
+        var points = ((step||{}).polyline||{}).points,
+            end_location_lat = ((step||{}).end_location||{}).lat,
+            end_location_lng = ((step||{}).end_location||{}).lng;
 
-        if (index !== (stepLength - 1)) {
+        if (points){
+            var coordinates = decode(points);
+            drawPolylineOnMap(travel_mode, coordinates);
+        }
+       
+        if (index !== (stepLength - 1) && end_location_lat && end_location_lng) {
             //drop destination marker
-            dropMarkerOnMap(step.end_location.lat, step.end_location.lng, "", "circle");
+            dropMarkerOnMap(end_location_lat, end_location_lng, "", "circle");
         }
-        
     });
 
-    appendElements({"#journey-result-steps" : content});
+    $("#journey-result-steps").append(content);
 }
 
 
 
-function renderStepCard(step, index){
+function renderTransitStepCard(step, index){
 
     content = "";
     
@@ -437,28 +451,36 @@ function renderStepCard(step, index){
         <div class="card-header" id="heading-${index}"><h5 class="mb-0">
         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-${index}" aria-expanded="false" aria-controls="collapse-${index}">`;
 
-    content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;`
-    
-    var stops = step.transit_details.stops;
-    if (stops) {
-        content += `<b> ${stops.length}</b> stops</div>`; 
+    //check if short_name and stops exist in json object
+    var short_name = (((step||{}).transit_details||{}).line||{}).short_name,
+    stops = ((step||{}).transit_details||{}).stops,
+    html_instructions = (step||{}).html_instructions;
+    console.log('short_name:'+short_name);
+    console.log('html_instructions:'+html_instructions);
+    console.log('stops:'+stops);
+
+    if (short_name){
+        content +=  `<div class="transit-bus-line row">Route ${short_name}`
     }
-      
+
+    if (stops) {
+        content += `&nbsp;&nbsp;&nbsp;&nbsp<b> ${stops.length}</b> stops</div>`; 
+    }
+
     // add journey steps detail in card body
     content += `
         </button></h5></div>
         <div id="collapse-${index}" class="collapse" aria-labelledby="heading-${index}" data-parent="#journey-result-steps">
         <div class="card-body">`;
 
-    // if the travel_mode is TRANSIT, add bus icon and bus route number to content
-    var stops = step.transit_details.stops;
-
-   if (stops) {
+    if (stops) {
         $.each(stops, function( index, value ) {
             content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
         });
     } else {
-        content += "<p>" + step.html_instructions + "</p>";
+        if (html_instructions){
+            content += "<p>" + html_instructions + "</p>";
+        }
     }
     content += '</div></div></div>';
     
