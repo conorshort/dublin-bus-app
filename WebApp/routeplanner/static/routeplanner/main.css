@@ -60,7 +60,7 @@ div.weather#description {
 }
 
 /* ==== Sidebar ==== */
-.sidebar_header {
+.sidebar-header {
   font-size: 30px;
   background-color: #ffbf00;
   margin: auto;
@@ -108,7 +108,7 @@ div.weather#description {
   padding: 10px;
 }
 
-.black_box {
+.black-box {
   background-color: rgba(0, 0, 0, 0.1);
   padding: 10px;
   margin-top: 10px;
@@ -149,13 +149,13 @@ div.weather#description {
   margin-bottom: 10px;
 }
 
-#edit_journey_input {
+#edit-journey-input {
   border-top: 1px solid rgb(185, 185, 185);
   border-bottom: 1px solid rgb(185, 185, 185);
   padding: 10px 25px;
 }
 
-#journey_result_content {
+#journey-result-content {
   padding: 15px;
 }
 

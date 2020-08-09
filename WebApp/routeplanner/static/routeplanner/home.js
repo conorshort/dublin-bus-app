@@ -126,7 +126,7 @@ var MapUIControl = (function () {
         hidemap: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
                 $('#sidebar').fadeIn(200);
-                $(".sidebar_header").fadeIn(200);
+                $(".sidebar-header").fadeIn(200);
                 $("#map").animate({ height: "0px" }, 500, () => {
                     // $("#map").hide();
                     $("#mobile-show-content").hide();
@@ -136,7 +136,7 @@ var MapUIControl = (function () {
 
         halfscreen: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
-                $(".sidebar_header").hide();
+                $(".sidebar-header").hide();
                 $("#mobile-show-content").hide();
                 $('#sidebar').fadeIn(10);
                 // $("#map").show()
@@ -158,7 +158,7 @@ var MapUIControl = (function () {
 
         fullscreen: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
-                $(".sidebar_header").hide();
+                $(".sidebar-header").hide();
 
                 var newHeight = $(window).height() - 80 - 60 - 50 + 5;
                 $('#sidebar').fadeOut(10);

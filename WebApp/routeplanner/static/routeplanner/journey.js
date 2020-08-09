@@ -15,9 +15,7 @@ $(function(){
     //hide loader
     $("#journey-loader").hide();
 
-    //clear all markers and polyline on the map
-    stopsLayer.clearLayers();
-    journeyLayer.clearLayers();
+    clearMapLayers();
 
     //init datetime picker
     $(".datetimeInput").flatpickr({
@@ -84,11 +82,11 @@ function updateFavoriteList(){
 
 function updateSearchInput(origin, destination){
     console.log('origin:'+origin.name);
-    $("#f_from_stop").val(origin.name);
-    $("#f_to_stop").val(destination.name);
-    $("#f_from_stop").attr('coord-data', JSON.stringify(origin.coord));
-    $("#f_to_stop").attr('coord-data', JSON.stringify(destination.coord));
-    console.log($("#f_from_stop").attr('coord-data'));
+    $("#f-from-stop").val(origin.name);
+    $("#f-to-stop").val(destination.name);
+    $("#f-from-stop").attr('coord-data', JSON.stringify(origin.coord));
+    $("#f-to-stop").attr('coord-data', JSON.stringify(destination.coord));
+    console.log($("#f-from-stop").attr('coord-data'));
     $('#favoriteJourneyModalCenter').modal('toggle');
 }
 
@@ -100,11 +98,11 @@ function initAutoComplete(){
         componentRestrictions: {country: "IE"}
     };
 
-    var from_input = document.forms["journeyForm"]["f_from_stop"];
-    var to_input = document.forms["journeyForm"]["f_to_stop"];
+    var from_input = document.forms["journeyForm"]["f-from-stop"];
+    var to_input = document.forms["journeyForm"]["f-to-stop"];
 
     console.log(typeof(from_input));
-    console.log(typeof($('#f_from_stop')));
+    console.log(typeof($('#f-from-stop')));
 
     function initAutocomplete(input){
 
@@ -149,8 +147,8 @@ $("#use-user-location").click(function(e){
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
             console.log('posution:'+ [position.coords.latitude, position.coords.longitude]);
-            $("#f_from_stop").val('Your Current Location');
-            $("#f_from_stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
+            $("#f-from-stop").val('Your Current Location');
+            $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
             map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
         });
     } else {
@@ -171,8 +169,8 @@ $('form').submit(function(e){
 
     console.log('form submit');
 
-    var fromInput = document.forms["journeyForm"]["f_from_stop"];
-    var toInput = document.forms["journeyForm"]["f_to_stop"];
+    var fromInput = document.forms["journeyForm"]["f-from-stop"];
+    var toInput = document.forms["journeyForm"]["f-to-stop"];
     var dateTime = document.forms["journeyForm"]["datetime"].value;
 
     console.log('coord-data:'+ fromInput.getAttribute('coord-data'));
@@ -204,12 +202,12 @@ $('form').submit(function(e){
 
                 //render and append origin waypoint
                 var origin_waypoint = renderTransitStop(departure_time, leg.start_address, leg.start_location);
-                appendElements({"#journey_result_steps" : origin_waypoint});
+                appendElements({"#journey-result-steps" : origin_waypoint});
                 displayJourneySteps(leg.steps);
 
                 //render and append origin waypoint
                 var destination_waypoint = renderTransitStop(arrive_time, leg.end_address, leg.end_location);
-                appendElements({"#journey_result_steps" : destination_waypoint});
+                appendElements({"#journey-result-steps" : destination_waypoint});
 
                 //drop origin marker
                 dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address, "");
@@ -238,8 +236,8 @@ $('#hollow-star').click(function(e){
 
     $("#hollow-star").hide();
 
-    var fromInput = document.forms["journeyForm"]["f_from_stop"];
-    var toInput = document.forms["journeyForm"]["f_to_stop"];
+    var fromInput = document.forms["journeyForm"]["f-from-stop"];
+    var toInput = document.forms["journeyForm"]["f-to-stop"];
     var originCoord = JSON.parse(fromInput.getAttribute('coord-data'));
     var destinationCoord = JSON.parse(toInput.getAttribute('coord-data'));
 
@@ -276,7 +274,7 @@ $('#hollow-star').click(function(e){
 
 
 
-$('#edit_journey_input').click(function () {
+$('#edit-journey-input').click(function () {
     showSearchJourneyDiv(10);
     clearSearchResult(10);
 
@@ -304,9 +302,9 @@ function displaySearchInfoOnHeader(originInput, destinationInput, dateTime){
     // key: the element id or class name
     // value: content to append to the element 
     var obj = {
-        "#journey_result_from" : originInput.value,
-        "#journey_result_to" : destinationInput.value,
-        "#journey_result_datetime" : dateTime
+        "#journey-result-from" : originInput.value,
+        "#journey-result-to" : destinationInput.value,
+        "#journey-result-datetime" : dateTime
     };
 
     var perJourney = JSON.stringify({"origin" : {"name" : originInput.value, "coord": JSON.parse(originInput.getAttribute('coord-data')) }, "destination" : {"name" : destinationInput.value, "coord": JSON.parse(destinationInput.getAttribute('coord-data'))}});
@@ -331,7 +329,7 @@ function displayTripSummary(duration, transferCount, departure_time, arrive_time
                                 + "  transfers"});
 
     var obj = {
-        "#journey_result_detail" : duration_tranfer_count,
+        "#journey-result-detail" : duration_tranfer_count,
         "#section-trip-summary" : departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time,
                     
     };
@@ -422,7 +420,7 @@ function displayJourneySteps(steps){
         
     });
 
-    appendElements({"#journey_result_steps" : content});
+    appendElements({"#journey-result-steps" : content});
 }
 
 
@@ -430,15 +428,14 @@ function displayJourneySteps(steps){
 function renderStepCard(step, index){
 
     content = "";
-
     
     // Using the card component, show the steps of journey on card header
     // show detail of each step in card body 
     // resource: https://getbootstrap.com/docs/4.0/components/collapse/
     content += `
         <div class="card" style="margin: 10px 0px;"> 
-        <div class="card-header" id="heading${index}"><h5 class="mb-0">
-        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">`;
+        <div class="card-header" id="heading-${index}"><h5 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-${index}" aria-expanded="false" aria-controls="collapse-${index}">`;
 
     content +=  `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;`
     
@@ -447,14 +444,11 @@ function renderStepCard(step, index){
         content += `<b> ${stops.length}</b> stops</div>`; 
     }
       
-
-     
     // add journey steps detail in card body
     content += `
         </button></h5></div>
-        <div id="collapse${index}" class="collapse" aria-labelledby="heading${index}" data-parent="#journey_result_steps">
+        <div id="collapse-${index}" class="collapse" aria-labelledby="heading-${index}" data-parent="#journey-result-steps">
         <div class="card-body">`;
-
 
     // if the travel_mode is TRANSIT, add bus icon and bus route number to content
     var stops = step.transit_details.stops;
@@ -469,7 +463,6 @@ function renderStepCard(step, index){
     content += '</div></div></div>';
     
     return content;
-
 }
 
 
@@ -487,17 +480,18 @@ function renderContent(obj){
 }
 
 
+
 function dropMarkerOnMap(lat, lon, location="", markerShape="default"){
 
     if (markerShape == "circle"){
         var marker = new L.CircleMarker([lat, lon], {
             radius: 10,
             color: '#FF0000'
-          });
+        });
     } else {
         var marker = L.marker([lat, lon]);
-
     }
+
     if (location != ""){
         marker.bindPopup(`<b> ${location}</b>`)
     }
@@ -522,30 +516,34 @@ function drawPolylineOnMap(travel_mode, points){
 
 
 function clearSearchResult(){
-    var obj = {
-        "#journey_result_from" : "",
-        "#journey_result_to" : "",
-        "#journey_result_datetime" : "",
-        "#section-trip-summary" : "",
-        "#journey_result_steps" : "",
-        "#journey_result_detail" : ""
-    };
 
-    displayElements(obj);
+    $("#journey-result-from").empty();
+    $("#journey-result-to").empty();
+    $("#journey-result-datetime").empty();
+    $("#section-trip-summary").empty();
+    $("#journey-result-steps").empty();
+    $("#journey-result-detail").empty();
+
+    clearMapLayers()
+}
+
+
+function clearMapLayers(){
     journeyLayer.clearLayers();
     stopsLayer.clearLayers();
 }
 
 
 function showSearchJourneyDiv(time){
-    $("#journey_search_div").fadeIn(time);
-    $("#journey_result_div").fadeOut(time);
+    $("#journey-search-div").fadeIn(time);
+    $("#journey-result-div").fadeOut(time);
     
 }
 
+
 function showResultJourneyDiv(time){
-    $("#journey_result_div").fadeIn(time);
-    $("#journey_search_div").fadeOut(time);
+    $("#journey-result-div").fadeIn(time);
+    $("#journey-search-div").fadeOut(time);
     
 }
 
@@ -562,25 +560,22 @@ function decode(encoded){
     while (index < len) {
         var b, shift = 0, result = 0;
         do {
-
-    b = encoded.charAt(index++).charCodeAt(0) - 63;//finds ascii                                                                                    //and substract it by 63
-              result |= (b & 0x1f) << shift;
-              shift += 5;
-             } while (b >= 0x20);
-       var dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-       lat += dlat;
-      shift = 0;
-      result = 0;
-     do {
-        b = encoded.charAt(index++).charCodeAt(0) - 63;
-        result |= (b & 0x1f) << shift;
-       shift += 5;
-         } while (b >= 0x20);
-     var dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-     lng += dlng;
- 
-   points.push([(lat / 1E5), ( lng / 1E5)])  
- 
-  }
+            b = encoded.charAt(index++).charCodeAt(0) - 63;//finds ascii                                                                                    //and substract it by 63
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+        } while (b >= 0x20);
+            var dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+        shift = 0;
+        result = 0;
+        do {
+            b = encoded.charAt(index++).charCodeAt(0) - 63;
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+        } while (b >= 0x20);
+    var dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+    lng += dlng;
+    points.push([(lat / 1E5), ( lng / 1E5)])  
+    }
   return points
 }

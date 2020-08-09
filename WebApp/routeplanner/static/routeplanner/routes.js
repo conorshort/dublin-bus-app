@@ -715,7 +715,7 @@ function routes() {
 
 
 // function toggleMobileMap() {
-//     $(".sidebar_header").hide();
+//     $(".sidebar-header").hide();
 //     $("#map").show()
 //         .height(0)
 //         .animate({ height: "200px" }, 500, () => map.invalidateSize(false));
@@ -723,7 +723,7 @@ function routes() {
 // }
 
 // function fullscreenMobileMap() {
-//     $(".sidebar_header").hide();
+//     $(".sidebar-header").hide();
 //     $("#map").show()
 //         .animate({ height: "500px" }, 500, () => map.invalidateSize(false));
 // }
