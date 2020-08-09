@@ -4,13 +4,19 @@ from .prediction import predict_journey_time, get_models_name
 from .models import SmartDublinBusStop, GTFSTrip
 from datetime import datetime, timedelta
 import requests
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 def direction_to_first_transit(origin, destination, departureUnix):
     print("=============================================")
     print('origin:', origin)
     print('destination:', destination)
     print('departureUnix:', departureUnix)
+
+    logger.info("這是一個info級別的日誌。。。。")
+
 
     # check is all the parameters given
     # response 400 error if missing any parameter
@@ -91,27 +97,30 @@ def direction_to_first_transit(origin, destination, departureUnix):
                 if len(stops) >= 2:
                     segments = get_segments(stops)
 
-                    # predict traveling time for all segmentid
-                    journeyTime = predict_journey_time(
-                        lineId,
-                        segments,
-                        int(departureUnix))
+                    if segments:
+                        # predict traveling time for all segmentid
+                        journeyTime = predict_journey_time(
+                            lineId,
+                            segments,
+                            int(departureUnix))
 
-                    if journeyTime:
-                        # set duration to predicted journey time
-                        duration = int(journeyTime)
+                        if journeyTime:
+                            # set duration to predicted journey time
+                            duration = int(journeyTime)
 
-                        arr_unix = newData['leg']['arrival_time']['value'] + duration
-                        timestr = datetime.fromtimestamp(arr_unix) + timedelta(hours=1)
-                        timestr = timestr.strftime('%l:%M%p')
-                        timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
-                        step['transit_details']['arrival_time']['value'] = arr_unix
-                        step['transit_details']['arrival_time']['text'] = timestr
-                        step['transit_details']['stops'] = stops
-                        step['duration']['value'] = duration
-                        step['duration']['text'] = get_time_string(duration)
-                        newData['leg']['arrival_time']['value'] = arr_unix
+                            arr_unix = newData['leg']['arrival_time']['value'] + duration
+                            timestr = datetime.fromtimestamp(arr_unix) + timedelta(hours=1)
+                            timestr = timestr.strftime('%l:%M%p')
+                            timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
+                            step['transit_details']['arrival_time']['value'] = arr_unix
+                            step['transit_details']['arrival_time']['text'] = timestr
+                            step['transit_details']['stops'] = stops
+                            step['duration']['value'] = duration
+                            step['duration']['text'] = get_time_string(duration)
+                            newData['leg']['arrival_time']['value'] = arr_unix
 
+                        else:
+                            newData['leg']['arrival_time'] = step['transit_details']['arrival_time']
                     else:
                         newData['leg']['arrival_time'] = step['transit_details']['arrival_time']
                 else:
@@ -165,7 +174,7 @@ def is_valid_for_prediction(step):
         # get all ML models' name
         # only do the journey time prediction if the model of the line is existed
         lines = [modelName.replace('.pkl', '') for modelName in get_models_name()]
-        print('step transit_details line:', step['transit_details']['line'])
+        
         try:
             lineId = step['transit_details']['line']['short_name'].upper()
             if ('route_'+lineId) in lines:
@@ -206,7 +215,7 @@ def get_segments(stops):
         for index, stop in enumerate(stops, start=1):
             segments.append(stops[index-1]['plate_code'] + '-' + stop['plate_code'])
         return segments
-    return []
+    return None
 
 
 def get_time_string(seconds):

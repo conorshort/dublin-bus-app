@@ -78,7 +78,6 @@ function clearElementsInLayers() {
 
 
 function initMap() {
-    console.log('initMap()');
     
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -94,7 +93,7 @@ function initMap() {
     // if geolocation is available
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            console.log(position.coords);
+            
             // create custom icon
             var customIcon = L.icon({
                 iconUrl: './static/img/user_marker.png',
