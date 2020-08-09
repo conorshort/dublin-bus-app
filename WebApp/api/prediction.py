@@ -26,6 +26,7 @@ def predict_journey_time(lineId, segments, departure_unix):
         journeyTime = get_journey_perdiction(model, segments_df)
 
         return journeyTime
+        
 
     except Exception as e:
         print('function predict_journey_time error:', e)
@@ -82,7 +83,7 @@ def create_test_dataframe(lineId, segments, departure_unix):
 
     except Exception as e:
         print('function create_test_dataframe error:', e)
-        return pd.DataFrame()
+        return None
 
 
 def get_journey_perdiction(model, test_dataframe):

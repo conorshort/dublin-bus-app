@@ -189,6 +189,9 @@ $('form').submit(function(e){
     ${parseFloat(destinationCoord.lng).toFixed(7)}\
     &departureUnix=${unix}`
     , function(data) {
+
+        console.log(JSON.stringify(data));
+
         var status = (data||{}).status,
         leg = (data||{}).leg,
         steps = (leg||{}).steps;
@@ -213,7 +216,7 @@ $('form').submit(function(e){
 
                 var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length;
                 displaySearchInfoOnHeader($('#f-from-stop')[0], $('#f-to-stop')[0], $("#datetimePicker")[0]);
-                displayTripSummary(duration_text, transferCount, arrival_time_text, departure_time_text);
+                displayTripSummary(duration_text, transferCount, departure_time_text, arrival_time_text);
 
 
                 //render and append origin waypoint
@@ -411,7 +414,6 @@ function displayJourneySteps(steps){
                         content += renderTransitStop(arrival_time_text, 
                                                     arrival_stop_name,
                                                     arrival_stop_location);
-
                 }
             }
         } else {

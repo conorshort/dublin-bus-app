@@ -1,14 +1,10 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from pyleapcard import *
 import re
 import requests
 from .forms import leapCardForm
-import logging
-
-
-logger = logging.getLogger(__name__)
 
 
 
@@ -32,7 +28,6 @@ def home(request):
 
 
 def journey(request, template_name="routeplanner/home.html"):
-    logger.warning("這是一個info級別的日誌。。。。")
     return render(request, 'routeplanner/journey.html')
 
 
