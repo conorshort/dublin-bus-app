@@ -97,20 +97,23 @@ def direction_to_first_transit(origin, destination, departureUnix):
                         segments,
                         int(departureUnix))
 
-                    # set duration to predicted journey time
-                    duration = int(journeyTime)
+                    if journeyTime:
+                        # set duration to predicted journey time
+                        duration = int(journeyTime)
 
-                    arr_unix = newData['leg']['arrival_time']['value'] + duration
-                    timestr = datetime.fromtimestamp(arr_unix) + timedelta(hours=1)
-                    timestr = timestr.strftime('%l:%M%p')
-                    timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
-                    step['transit_details']['arrival_time']['value'] = arr_unix
-                    step['transit_details']['arrival_time']['text'] = timestr
-                    step['transit_details']['stops'] = stops
-                    step['duration']['value'] = duration
-                    step['duration']['text'] = get_time_string(duration)
-                    newData['leg']['arrival_time']['value'] = arr_unix
+                        arr_unix = newData['leg']['arrival_time']['value'] + duration
+                        timestr = datetime.fromtimestamp(arr_unix) + timedelta(hours=1)
+                        timestr = timestr.strftime('%l:%M%p')
+                        timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
+                        step['transit_details']['arrival_time']['value'] = arr_unix
+                        step['transit_details']['arrival_time']['text'] = timestr
+                        step['transit_details']['stops'] = stops
+                        step['duration']['value'] = duration
+                        step['duration']['text'] = get_time_string(duration)
+                        newData['leg']['arrival_time']['value'] = arr_unix
 
+                    else:
+                        newData['leg']['arrival_time'] = step['transit_details']['arrival_time']
                 else:
                     newData['leg']['arrival_time'] = step['transit_details']['arrival_time']
 

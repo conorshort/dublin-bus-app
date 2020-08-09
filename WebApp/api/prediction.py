@@ -30,7 +30,7 @@ def predict_journey_time(lineId, segments, departure_unix):
 
     except Exception as e:
         print('function predict_journey_time error:', e)
-        return 0
+        return None
 
 
 def create_test_dataframe(lineId, segments, departure_unix):
@@ -94,16 +94,15 @@ def get_journey_perdiction(model, test_dataframe):
         return journeyTime
     except Exception as e:
         print('function get_journey_perdiction error:', e)
-        return 0
+        return None
 
 
 def get_models_name():
 
     files = []
-
     for (dirpath, dirnames, filenames) in os.walk(f'{ROOT_DIR}/WebApp/pickles/pickles'):
         files.extend(filenames)
-        break
+
     return files
 
 

@@ -156,7 +156,6 @@ $("#use-user-location").click(function(e){
     // if geolocation is available
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            console.log('posution:'+ [position.coords.latitude, position.coords.longitude]);
             $("#f-from-stop").val('Your Current Location');
             $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
             map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
@@ -375,7 +374,7 @@ function displaySearchInfoOnHeader(originInput, destinationInput, dateTime){
     // value: content to append to the element 
     $("#journey-result-from").html(originInput.value)
     $("#journey-result-to").html(destinationInput.value)
-    $("#journey-result-datetime").html(dateTime)
+    $("#journey-result-datetime").html(dateTime.value)
 
     var perJourney = JSON.stringify({"origin" : {"name" : originInput.value, "coord": JSON.parse(originInput.getAttribute('coord-data')) }, "destination" : {"name" : destinationInput.value, "coord": JSON.parse(destinationInput.getAttribute('coord-data'))}});
     var index = jQuery.inArray(perJourney, favorite_journey_list);
@@ -529,9 +528,7 @@ function renderTransitStepCard(step, index){
     var short_name = (((step||{}).transit_details||{}).line||{}).short_name,
     stops = ((step||{}).transit_details||{}).stops,
     html_instructions = (step||{}).html_instructions;
-    console.log('short_name:'+short_name);
-    console.log('html_instructions:'+html_instructions);
-    console.log('stops:'+stops);
+   
 
     if (short_name){
         content +=  `<div class="transit-bus-line row">Route ${short_name}`
