@@ -1,3 +1,8 @@
+const POLYLINE_COLOR = '#ff5947';
+const POLYLINE_HIGHTLIGHT_COLOR = '#fc723f';
+const STOP_CIRCLE_COLOR = '#ffa047';
+const STOP_CIRCLE_HIGHLIGHT_COLOR = '#18c4de';
+
 
 function routes() {
     // A global variable to hold all the currenly diplayed routed
@@ -229,7 +234,7 @@ function routes() {
                     content += renderStopListItem(stop.stop_name, stop.id, shapeId)
                     let stopMarker = new L.CircleMarker([stop.lat, stop.lon], { radius: 6, fillOpacity: 0.5 });
                     stopMarker.setStyle({
-                        color: 'green',
+                        color: STOP_CIRCLE_COLOR,
                     });
                     stopMarker.stopId = stop.id;
                     stopMarker.shapeId = shapeId;
@@ -308,7 +313,7 @@ function routes() {
         }
         let latLng = stopsObj[stopId].getLatLng();
         stopsObj[stopId].setStyle({
-            color: 'orange',
+            color: STOP_CIRCLE_HIGHLIGHT_COLOR,
             weight: 10,
         })
             .setRadius(10)
@@ -324,7 +329,7 @@ function routes() {
             stopId = this.stopId
         }
         stopsObj[stopId].setStyle({
-            color: 'green',
+            color: STOP_CIRCLE_COLOR,
             weight: 5,
         })
             .setRadius(6);
@@ -400,7 +405,7 @@ function routes() {
 
                 // Some settings for displaying the line on the map
                 var style = {
-                    "color": "#CD0000",
+                    "color": POLYLINE_COLOR,
                     "weight": 5,
                     "opacity": 0.65
                 };
@@ -442,13 +447,13 @@ function routes() {
             // hovered over
             button.hover(() => {
                 routeObj[shapeId].setStyle({
-                    color: 'blue',
+                    color: POLYLINE_HIGHTLIGHT_COLOR,
                     weight: 10,
                 });
                 routeObj[shapeId].bringToFront();
             }, () => {
                 routeObj[shapeId].setStyle({
-                    color: 'red',
+                    color: POLYLINE_COLOR,
                     weight: 5,
                 });
             });
