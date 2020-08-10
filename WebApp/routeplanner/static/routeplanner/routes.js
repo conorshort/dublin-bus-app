@@ -4,11 +4,14 @@ const STOP_CIRCLE_COLOR = '#ffa047';
 const STOP_CIRCLE_HIGHLIGHT_COLOR = '#18c4de';
 
 
+var routeLayerObj = {};
+var routeStopsLayer;
+var stopsObj = {};
 function routes() {
     // A global variable to hold all the currenly diplayed routed
-    var routeLayerObj = {};
-    var routeStopsLayer;
-    var stopsObj = {};
+    // var routeLayerObj = {};
+    // var routeStopsLayer;
+    // var stopsObj = {};
     // Will hold the route currently being displayed in the side bar
     var currentRoute = undefined;
 
@@ -18,8 +21,8 @@ function routes() {
         $(document).off("click.routes")
         addOnclicksToVariations()
         // Add the route filter to the search box
-        $('#route-filter').on('keyup search', () => {
-            filterRouteList()
+        $(document).on("keyup.routes search.routes", '#route-filter', () => {
+            filterRouteList();
         });
 
         // On click for the back button when route variations are
@@ -27,7 +30,7 @@ function routes() {
         // Hides the variations div and shows the routes list
         $(document).on("click.routes", "#back-to-routes", function () {
             removeRouteStopsFromMap();
-            toggleRouteDisplay(currentRoute)
+            toggleRouteDisplay(currentRoute);
             MapUIControl.hidemap();
             $("#route-stop-div").fadeOut(10);
             $("#variations-accordion").html("");
@@ -49,17 +52,69 @@ function routes() {
         });
 
 
-
-        $(document).on("click.routes", '.bottom_nav_item', function () {
+        $(document).on("click.routes", '.nav_item, .bottom_nav_item', function () {
             // MapUIControl.reset();
             MapUIControl.hidemap();
             removeRouteStopsFromMap();
+
             for (const route in routeLayerObj) {
                 removeRouteFromMap(route);
             }
         });
 
 
+
+        $(document).on("click.routes", '.star', function (e) {
+            //e.preventDefault;
+
+            // Stop the route diplaying when a star is clicked
+            e.stopPropagation()
+
+            //get the route attribute associate with the selected star and push to a list
+            let starredRoute = $(this).attr("data-route") + "__" + $(this).attr("data-operator");
+            var routesList = [];
+            routesList.push(starredRoute);
+
+            //if the route is not in the list it will be saved in cookies
+            try {
+                cookiemonster.get('routesList');
+            } catch{
+                cookiemonster.set('routesList', routesList, 3650);
+
+                updateRouteFavourites()
+                return;
+            }
+
+            var previous_route = cookiemonster.get('routesList');
+            var flag = 0;
+            var newRoutes = []
+            //if selected route already in the list wont save again
+            for (let i = 0; i < previous_route.length; i++) {
+                if (starredRoute == previous_route[i]) {
+
+                    flag = 1;
+                } else {
+                    newRoutes.push(previous_route[i]);
+                }
+            }
+            if (flag == 1) {
+                cookiemonster.set('routesList', newRoutes, 3650);
+                updateRouteFavourites()
+
+
+            } else {
+                try {
+                    cookiemonster.get('routesList');
+                    cookiemonster.append('routesList', routesList, 3650);
+
+                } catch{
+                    cookiemonster.set('routesList', routesList, 3650);
+                }
+
+                updateRouteFavourites()
+            }
+
+        });
 
         // get all routes from django
         $.getJSON("api/routes/routename", function (data) {
@@ -98,65 +153,21 @@ function routes() {
             });
 
             // Display the routes
-             $("#routes-list").append(content);
-
-
-
-
+            $("#routes-list").append(content);
+            updateRouteFavourites();
             //save the selected route to favourite
-             $('.star').click(function(e){
-                e.preventDefault;
-
-                //get the route attribute associate with the selected star and push to a list
-                let starredRoute = $(this).attr("data-route");
-                var routesList = [];
-                routesList.push(starredRoute);
-
-                //if the route is not in the list it will be saved in cookies
-                try{
-                    cookiemonster.get('routesList');
-                }catch{
-                    cookiemonster.set('routesList', routesList, 3650);
-                    alert('Save Sucessfully');
-                    return ;
-                }
-
-                var previous_route = cookiemonster.get('routesList');
-                var flag = 0;
-
-                //if selected route already in the list wont save again
-                for(let i=0;i<previous_route.length;i++){
-                    if(starredRoute==previous_route[i]){
-                        alert('This route is already in the list');
-                        flag = 1;
-                    }
-                }
-
-                //if it is not in the list then will append to cookies 
-                    if (flag==0){
-                        try{
-                            cookiemonster.get('routesList');
-                            cookiemonster.append('routesList', routesList, 3650);
-                            
-                        } catch{
-                            cookiemonster.set('routesList', routesList, 3650);
-                        }
-                        alert('Save Sucessfully');
-                    }
-
-                });
-
-
+            $("#all-routes-loader").hide();
+            $("#all-routes-content").show();
 
 
 
 
             // Add an on click to each route
-            $(document).on("click.routes", ".route-item", function () {
+            $(document).on("click.routes", ".route-item, .fav-route-item", function () {
 
                 MapUIControl.halfscreen()
 
-
+    
                 $("#inbound-radio").prop('checked', true)
                     .parent().addClass("active");
                 $("#outbound-radio").prop('checked', false)
@@ -170,6 +181,11 @@ function routes() {
 
                 // Get the route name from the ID
                 routeName = routeElemId.split("-")[1];
+
+                // log route click event to firebase 
+                analytics.logEvent('select_content', { content_type: 'route_item', item_id: routeName});
+
+
                 $("#route-stops-title").html(routeName)
                 $("#route-stop-div").fadeIn(400);
 
@@ -197,21 +213,24 @@ function routes() {
     // when it is done
     function showRouteVariations(routeName, inbound) {
         // Get the variation based on route name and direction
+        $("#single-route-loader").show();
         $("#variations-accordion").html("");
         return $.getJSON("api/routes/variations/",
             { name: routeName, inbound: inbound },
             function (variations) {
-                $("#variations-accordion").html("");
                 // Display the variations
                 let content = '';
                 variations.forEach((variation, index) => {
-                    content += renderVariationAccordionItem(variation.towards, variation.shape_id, index);
+                    let headsign = variation.towards == "nan" ? variation.ga_towards : "Towards " + variation.towards;
+                    content += renderVariationAccordionItem(headsign, variation.shape_id, index);
                 });
-                $("#variations-accordion").append(content);
+                $("#variations-accordion").html("")
+                    .append(content);
+                $("#single-route-loader").hide();
+               
             });
 
     }
-
 
     function addOnclicksToVariations() {
         $(document).on("click.routes", ".stops-list-button", function () {
@@ -220,6 +239,10 @@ function routes() {
             // stored in a data-shape-id attribute
             let shapeId = $(this).attr('data-shape-id');
             let index = $(this).attr('data-index');
+
+
+            
+
             // Get a list of stops using the shape id
             $.getJSON("api/routes/stops/", { shape: shapeId }, function (stops) {
                 // Sort the stops in the order they appear on the route.
@@ -227,7 +250,6 @@ function routes() {
                     return a.seq - b.seq;
                 });
                 // Create a list item for each stop and add it to the list
-                console.log(stops)
                 let stopMarkers = []
                 let content = '';
                 stops.forEach(stop => {
@@ -268,6 +290,8 @@ function routes() {
 
     function displayTimetable(e) {
         // Get the stop id and stop name from the clicked element
+        $("#trip-timetable-table").hide();
+        $("#trip-loader").hide();
         let stopId = $(this).attr('data-stop-id');
         let shapeId = $(this).attr('data-shape-id');
         console.log(this);
@@ -342,7 +366,7 @@ function routes() {
 
         // chunk size dictates how many times will be displayed in 
         // each row of the timetable
-        const CHUNK_SIZE = 6;
+        const CHUNK_SIZE = 5;
 
         // The time table is a dict with keys like "Mon-Fri"
         // or Sun. These are sorted alphabetically by default
@@ -361,14 +385,15 @@ function routes() {
             // Make a list of all the times
             timesArr = []
             timetables[days].forEach(time => {
-                timesArr.push(time.time)
+                timesArr.push([time.time, time.trip_id]);
+                console.log(timesArr);
             });
             // Sort the times
-            timesArr.sort();
+            timesArr.sort((a, b) => a[0] - b[0]);
 
             // Convert the time from seconds after midnight to a human readable format
             timesArr = timesArr.map(time => {
-                return new Date((time % 86400) * 1000).toISOString().substr(11, 5);
+                return [new Date((time[0] % 86400) * 1000).toISOString().substr(11, 5), time[1]];
             });
 
             // Split the times into chunks, one chunk for each row
@@ -384,7 +409,63 @@ function routes() {
         });
 
         // Initialise the tooltips
-        $('[data-toggle="tooltip"]').tooltip()
+        // $('[data-toggle="tooltip"]').tooltip()
+        $(".timetable-item").off("click.routes")
+        $(".timetable-item").on("click.routes", function (e) {
+            $("#trip-loader").show();
+            $("#timetable-modal").animate({ scrollTop: $("#timetable-modal").height() }, 200);
+            $("#trip-timetable-table").hide();
+            let tripId = $(e.target).attr("data-trip-id");
+            let thisStop = $("#timetable-title").html();
+            let thisTime = $(e.target).html();
+            let thisPredTime;
+
+            console.log("getting json");
+            $.getJSON("/api/stoptime/timetable",
+                { trip_id: tripId }, (tripTimetable) => {
+                    // Sort the times
+                    tripTimetable.sort((a, b) => a.stop_sequence - b.stop_sequence);
+
+                    console.log(tripTimetable)
+                    // Convert the time from seconds after midnight to a human readable format
+                    tripTimetable = tripTimetable.map(elem => {
+
+                        elem.departure_time_readable = new Date((elem.departure_time % 86400) * 1000).toISOString().substr(11, 5);
+                        elem.predicted_time_readable = new Date((elem.predicted_time % 86400) * 1000).toISOString().substr(11, 5);
+                        if (elem.departure_time_readable == thisTime && elem.stop_name == thisStop) {
+                            thisPredTime = elem.predicted_time;
+                        }
+                        return elem;
+                    });
+
+                    console.log(tripTimetable)
+
+                    let content = '';
+
+
+
+                    tripTimetable.forEach(element => {
+                        console.log(thisPredTime); console.log(element.predicted_time);
+                        let jourTime = element.predicted_time - thisPredTime
+                        jourTime = Math.floor(jourTime / 60) + " mins";
+                        let highlight = false;
+                        if (element.departure_time_readable == thisTime && element.stop_name == thisStop) { 
+                            highlight = true;
+                        }
+                        content += renderTripTimetableItem(element.stop_name,
+                                                            element.departure_time_readable,
+                                                            element.predicted_time_readable,
+                                                            jourTime,
+                                                            highlight);
+                    });
+                    $("#actual-times").html("");
+                    $("#actual-times").append(content);
+                }).then(() => {
+                    $("#trip-timetable-table").show();
+                    $("#trip-loader").hide();
+
+                });
+        });
     }
 
 
@@ -543,21 +624,38 @@ function routes() {
                 li[i].style.display = "none";
             }
         }
+        let visible = $(".route-item:visible").length;
+        if (visible == 0){
+            $("#no-route-warning").show();
+        } else {
+            $("#no-route-warning").hide();
+        }
     }
 
     // ========= RENDER FUNCTIONS =========
     // These are all functions for rendering various elements dynamically
 
     // create and return list-group-item for route
-    function renderRouteListItem(route, operator) {
+    function renderRouteListItem(route, operator, fav = false) {
+        let favStr = "";
+        let solid = "far";
+        if (fav) {
+            favStr = "fav-";
+            solid = "fas"
+        }
         const content = `
         
-            <li class="list-group-item route-item" id="route-${route}">
+            <li class="list-group-item ${favStr}route-item" id="route-${route}">
                 <ul>
                     <li class="row">
-                    <span class="col-1"><a href="#"><i class="far fa-star star"></i></a></span>
-                        <b class="col-6">${route}</b>
-                        <span class="col-5">${operator}</span>
+                    <span class="col-1">
+                        <a href="#">
+                            <i id="${favStr}star-route-${route}" class='${solid} fa-star star route-star' data-route="${route}" data-operator="${operator}">
+                            </i>
+                        </a>
+                    </span>
+                    <b class="col-6">${route}</b>
+                    <span class="col-5">${operator}</span>
                     </li>
                 </ul>
             </li>`;
@@ -573,6 +671,21 @@ function routes() {
             </li>`;
         return content;
     }
+    function renderTripTimetableItem(stop, actTime, predTime, jourTime, highlight) {
+        let clsStr = "";
+        if (highlight) {
+            clsStr = 'class="table-warning"'
+        }
+        const content = `
+            <tr ${clsStr}>
+                <td><b>${stop}</b></td>
+                <td style="text-align: center;">${actTime}</span></td>
+                <td style="text-align: center;">${predTime}</span></td>
+                <td>${jourTime}</span></td>
+            </tr>`;
+        return content;
+    }
+
 
 
 
@@ -587,7 +700,7 @@ function routes() {
                                 aria-controls="collapse-${index}"
                                 data-shape-id="${id}"
                                 data-index="${index}">
-                            Towards ${destination}
+                            ${destination}
                         </button>
                     </h2>
                 </div>
@@ -595,6 +708,7 @@ function routes() {
                 <div id="collapse-${index}" class="collapse" aria-labelledby="heading-${index}"
                     data-parent="#variations-accordion">
                     <div class="card-body">
+                        <p><b>Choose a stop to see the timetable:</b></p>
                         <ul class="list-group list-group-flush stops-list" id="stops-list-${index}">
                         </ul>
                     </div>
@@ -604,8 +718,17 @@ function routes() {
     }
 
 
+                        // <div id- class="text-center">
+                        //     <div class="spinner-grow text-warning m-5" role="status"">
+                        //         <span class=" sr-only">Loading...</span>
+                        //     </div>
+                        // </div>
 
-
+    `<div class="text-center">
+        <div class="spinner-grow text-warning m-5" role="status"">
+            <span class=" sr-only">Loading...</span>
+        </div>
+    </div>`
 
 
     // Render the tab and the pane for displaying the timetables
@@ -638,7 +761,9 @@ function routes() {
     function renderTimetableRow(times) {
         let content = "<tr>";
         times.forEach(time => {
-            content += `<td data-toggle="tooltip" title="Usually 5-10 mins late">${time}</td>`;
+            content += `<td class="timetable-item" >
+                <button data-trip-id="${time[1]}" type="button" class="btn btn-outline-secondary btn-xs">${time[0]}</button>
+            </td>`;
         });
         content += "</tr>";
         return content;
@@ -646,16 +771,45 @@ function routes() {
 
 
 
-    // https://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
-    function getTextColour(color) {
-        if (color.length == 7) {
-            color = color.substring(1);
+    function updateRouteFavourites() {
+
+        $(".route-star").removeClass("fas")
+            .addClass("far");
+
+
+        let routesList;
+        try {
+            routesList = cookiemonster.get('routesList');
+        } catch{
+            $("#fav-routes-div").hide();
+            return;
         }
-        var R = parseInt(color.substring(0, 2), 16);
-        var G = parseInt(color.substring(2, 4), 16);
-        var B = parseInt(color.substring(4, 6), 16);
-        percievedBrightness = Math.sqrt(R * R * .241 + G * G * .691 + B * B * .068);
-        return percievedBrightness < 130 ? '#FFFFFF' : '#000000';
+
+
+        if (routesList.length == 0) {
+            $("#fav-routes-div").hide();
+            return;
+        }
+
+        routesList = routesList.map(route => {
+            return route.split("__");
+        });
+
+        routesList.sort((a, b) => alphanumSort(a[0], b[0]));
+
+        let content = '';
+
+        routesList.forEach(routeName => {
+            content += renderRouteListItem(routeName[0], routeName[1], fav = true);
+            $("#star-route-" + routeName[0]).removeClass("far")
+                .addClass("fas");
+        });
+
+
+        $("#fav-routes-list").html("")
+            .append(content);
+        $("#fav-routes-div").show();
+
     }
 
 
@@ -717,22 +871,5 @@ function routes() {
     }
 
 }
-
-
-// function toggleMobileMap() {
-//     $(".sidebar-header").hide();
-//     $("#map").show()
-//         .height(0)
-//         .animate({ height: "200px" }, 500, () => map.invalidateSize(false));
-
-// }
-
-// function fullscreenMobileMap() {
-//     $(".sidebar-header").hide();
-//     $("#map").show()
-//         .animate({ height: "500px" }, 500, () => map.invalidateSize(false));
-// }
-
-
 
 

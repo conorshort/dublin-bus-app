@@ -3,12 +3,17 @@ from django.http import JsonResponse
 from .prediction import predict_journey_time, get_models_name
 from .models import SmartDublinBusStop, GTFSTrip
 from datetime import datetime, timedelta
+from dateutil import tz
 import requests
 import logging
 
 
 logger = logging.getLogger(__name__)
 
+
+# Get an instance of a logger
+
+db_logger = logging.getLogger('db')
 
 def direction_to_first_transit(origin, destination, departureUnix):
     print("=============================================")
@@ -41,10 +46,12 @@ def direction_to_first_transit(origin, destination, departureUnix):
         return data
     
     if data['status'] != 'OK':
-        logger.warning('Status is not OK in google direction api response.')
-        return data
+        db_logger.error(
+            f'Google direction API status not OK. Given parameters {parameters}')
 
-    try:
+        return JsonResponse(data)
+
+    if True:
         # count how many steps which travel model is TRANSIT
         transitCount = r.text.count("TRANSIT")
 
@@ -82,10 +89,12 @@ def direction_to_first_transit(origin, destination, departureUnix):
         else:
             # FIXME: timezone  & daylight saving problem
             # when convert unix to time string shows one hour late
-            timestr = datetime.fromtimestamp(int(departureUnix)) \
-                + timedelta(hours=1)
-            timestr = timestr.strftime("%l:%M%p")
-            timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
+            timestr = datetime.fromtimestamp(
+                int(departureUnix), tz.gettz("Europe/London"))
+            timestr = timestr.strftime("%I:%M%p")
+
+            newData['leg']['arrival_time'] = {'value': int(departureUnix),
+                                              'text': timestr}
             newData['leg']['departure_time'] = {'value': int(departureUnix),
                                                 'text': timestr}
             newData['leg']['arrival_time'] = {'value': int(departureUnix),
@@ -110,29 +119,50 @@ def direction_to_first_transit(origin, destination, departureUnix):
                 lineId = step['transit_details']['line']['short_name']
                 stops = get_stops(step, lineId)
 
-                if stops == None:
-                    isValiedForPrediction = False
-                    logger.warning('get None stop fron getStop function.')
-                    break
-                
-                if len(stops) < 2:
-                    isValiedForPrediction = False
-                    logger.warning('length stops less than 2')
-                    break
-                
-                segments = get_segments(stops)
-                if segments == None:
-                    isValiedForPrediction = False
-                    break
-                
-                # predict traveling time for all segmentid
-                journeyTime = predict_journey_time(
-                    lineId,
-                    segments,
-                    int(departureUnix))
+                # if stops num greater than one,
+                # then segements will be created by stops
+                # prediction will be made by segments
+                if len(stops) >= 2:
+                    segments = get_segments(stops)
 
-                if journeyTime == None:
-                    isValiedForPrediction = False
+                    # predict traveling time for all segmentid
+                    journeyTime = predict_journey_time(
+                        lineId,
+                        segments,
+                        int(departureUnix))
+                    print("JOURNEEY TIME", journeyTime)
+                    # set duration to predicted journey time
+                    duration = int(journeyTime)
+
+                    arr_unix = newData['leg']['arrival_time']['value'] + duration
+                    timestr = datetime.fromtimestamp(
+                        int(arr_unix), tz.gettz("Europe/London"))
+                    print("+++++++++++++++++++++++++++++++++++++++======\n",
+                          arr_unix)
+                    timestr = timestr.strftime('%I:%M%p')
+                    step['transit_details']['arrival_time']['value'] = arr_unix
+                    step['transit_details']['arrival_time']['text'] = timestr
+                    step['transit_details']['stops'] = stops
+                    step['duration']['value'] = duration
+                    step['duration']['text'] = get_time_string(duration)
+                    newData['leg']['arrival_time']['value'] = arr_unix
+
+                else:
+                    arr_time_unix = int(
+                        steps[index]['transit_details']['arrival_time']['value'])
+                    newData['leg']['arrival_time']['value'] = arr_time_unix
+
+                distance = int(step['distance']['value'])
+                totalDistance += distance
+
+                newData['leg']['steps'].append(step)
+                newData['leg']['end_location'] = step['end_location']
+
+                # if there have more than one transit
+                # break the for loop
+                # set another google direction API requestion
+                # to get the direction for rest of the journey
+                if transitCount > 1:
                     break
 
                 # set duration to predicted journey time
@@ -178,7 +208,9 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
         # FIXME: timezone  & daylight saving problem
         # when convert unix to time string shows one hour late
-        timestr = datetime.fromtimestamp(newData['leg']['arrival_time']['value']) + timedelta(hours=1)
+
+        timestr = datetime.fromtimestamp(
+            int(newData['leg']['arrival_time']['value']), tz.gettz("Europe/London"))
         timestr = timestr.strftime('%l:%M%p')
         timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
         newData['leg']['arrival_time']['text'] = timestr
@@ -186,8 +218,13 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
         return newData
 
-    except Exception as e:
+    # except Exception as e:
+    else:
         print("direction_to_first_transit error:", str(e))
+        parameters = {'origin': origin,
+                  'destination': destination,
+                  'departure_time': departureUnix}
+        db_logger.error(f'{str(e)}. Given parameters {parameters}')
         message = {'status': 'ZERO_RESULT'}
         return message
 
@@ -234,6 +271,16 @@ def get_stops(step, lineId):
         originTime = step['transit_details']['departure_time']['text']
 
         stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, origin_time=originTime, headsign=headsign)
+        if len(stops) <= 0:
+
+                params = {'depStopId': depStopId,
+                          'arrStopId': arrStopId,
+                          'lineId': lineId,
+                          'headsign': headsign}
+
+                # Log an error message
+                db_logger.error(
+                    f'return data Stops list is empty. Given parameters {params}')
 
     except Exception as e:
         print('function get_stops error:', e)

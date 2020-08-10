@@ -1,3 +1,9 @@
+
+/* css for extra small button 
+https://stackoverflow.com/questions/33911049/btn-xs-no-longer-a-valid-option-in-bootstrap-4 */
+
+
+
 html, body {
   background: #fafafa;
   color: #333333;
@@ -36,7 +42,7 @@ a:hover, a:active {
   font-size: 30px;
   box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.3); ;
   position: relative;
-  z-index: 99999999;
+  z-index: 1001;
 }
 
 /* ==== weather ==== */
@@ -135,7 +141,7 @@ div.weather#description {
   height: 80px;
   right: 20px;
   padding: 10px;
-  z-index: 400000;
+  z-index: 999;
   border-radius: 50%;
   box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
 
@@ -275,7 +281,7 @@ div.weather#description {
   width: 100vw !important;
   height: 60px;
   display: none;
-  z-index: 1000;
+  z-index: 1001;
   position: fixed;
   bottom: 0px;
   left: 0px;
@@ -324,7 +330,7 @@ div.weather#description {
   height: 53px;
   background-color: #797878;
   bottom: 58px;
-  z-index: 9000;
+  z-index: 1002;
 }
 
 
@@ -364,38 +370,51 @@ div.weather#description {
 }
 
 
-/* #timetable-loader {
-  display: none;
-} */
 
-.loader {
-    border: 4px solid #797878;
-    -webkit-animation: spin 1s linear infinite;
-    animation: spin 1s linear infinite;
-    border-top: 4px solid #ffbf00;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
+#trip-timetable {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-top: 0px;
+}
+
+#trip-timetable thead tr th {
+  position: sticky;
+  top: 0;
+  border-width: 0px;
+
 }
 
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.journey_result_icon {
+  width: 20px;
 }
 
-
-
-.loader-large {
-    border: 16px solid #797878;
-    -webkit-animation: spin 1s linear infinite;
-    animation: spin 1s linear infinite;
-    border-top: 16px solid #ffbf00;
-    border-radius: 50%;
-    width: 120px;
-    height: 120px;
+.route-heading {
+  margin: 0px;
+  padding-left: 25px;
+  padding-bottom: 0px;
 }
 
+#route-filter {
+  width: 95%;
+  margin-left: 15px;
+}
+
+.btn-group-xs > .btn, .btn-xs {
+  border-style: none !important;
+  padding: .5rem .4rem;
+  font-size: 1rem;
+  line-height: .5;
+  border-radius: .2rem;
+  margin-right: 0px;
+  margin-left: 0px;
+  width: 95%;
+  height: 30px;
+}
+
+.timetable-item {
+  padding: 2px 0px !important;
+}
 
 
 
@@ -412,6 +431,9 @@ div.weather#description {
       padding-bottom: 60px;
     }
 
+    #side_navibar {
+      display:none;
+    }
     .content {
       width: 100vw;
       height: auto;
@@ -435,7 +457,19 @@ div.weather#description {
       bottom: 0;
     }
 
+    #timetable-modal {
+      font-size: 0.75em;
+    }
 
+    .btn-group-xs > .btn, .btn-xs {
+      border-style: solid  !important;
+      padding: .5rem .4rem;
+      font-size: .875rem;
+      line-height: .5;
+      border-radius: .2rem;
+      margin-right: 0px;
+      margin-left: 0px;
+    }
  }
 
 @media (max-height: 475px) { 
@@ -446,6 +480,10 @@ div.weather#description {
     padding: 10px;
     min-height: 40px;
   }
+  #bottom-navibar {
+    height: 30px;
+  }
+
 }
 
 

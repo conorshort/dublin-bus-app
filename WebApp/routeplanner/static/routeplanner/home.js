@@ -2,13 +2,12 @@ const RESP_WINDOW_SIZE = 768;
 const MAP_ZOOM_NUM = 12;
 let currentBounds;
 let currentCentre;
-
-
+let allowStopReload = true;
+let DateTime = luxon.DateTime;
+let dublinCoords = [53.3373266,-6.2752625]
 // Code in this block will be run one the page is loaded in the browser
 $(document).ready(function () {
 
-    // Load the journey UI content by default
-    loadSideBarContent("journey");
 
     // on click function for nav-items
     $('.nav_item').click(function () {
@@ -17,7 +16,7 @@ $(document).ready(function () {
         var nav_id = $(this).attr('id');
 
         // log nav btn click event to firebase 
-        analytics.logEvent('select_content', { content_type: 'navi_item', item_id: nav_id});
+        analytics.logEvent('select_content', { content_type: 'navi_item', item_id: nav_id });
 
         // Update sidebar content with appropriate html
         loadSideBarContent(nav_id);
@@ -54,7 +53,11 @@ $(document).ready(function () {
 
     });
     initMap();
+    // Load the journey UI content by default
+    loadSideBarContent("journey");
+
 });
+
 
 
 //centreLocation: default value is Dublin city centre,
@@ -122,8 +125,15 @@ function initMap() {
 var MapUIControl = (function () {
 
     return {
+        isFirstTime: true,
+        isHidemap: true,
+        isHalfscreen: false,
+        isFullscreen: false,
         hidemap: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
+                this.isHalfscreen = false;
+                this.isHidemap = true;
+                this.isFullscreen = false;
                 $('#sidebar').fadeIn(200);
                 $(".sidebar-header").fadeIn(200);
                 $("#map").animate({ height: "0px" }, 500, () => {
@@ -135,42 +145,57 @@ var MapUIControl = (function () {
 
         halfscreen: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
-                $(".sidebar-header").hide();
+                this.isHalfscreen =true;
+                this.isHidemap=false;
+                this.isFullscreen=false;
+                allowStopReload = false;
+                $(".sidebar_header").hide();
                 $("#mobile-show-content").hide();
                 $('#sidebar').fadeIn(10);
                 // $("#map").show()
                 $("#map").animate({ height: "200px" }, 500, () => {
-                        console.log("Invalidating size")
-                        map.invalidateSize(false);
-                        if (currentBounds) {
-                            console.log("flyint to bounds");
-                            console.log(currentBounds);
-                            map.flyToBounds(currentBounds, { 'duration': 0.5 });
-                        } else if (currentCentre){
-                            console.log("flyint to centre");
-                            console.log(currentCentre);
-                            map.flyTo(currentCentre, MAP_ZOOM_NUM, { 'duration': 0.5 });
-                        }
-                    });
+
+                    console.log("Invalidating size")
+                    map.invalidateSize(false);
+                    if(this.isFirstTime){
+                        map.flyTo(dublinCoords, 12, { 'duration': 0.5 });
+                        this.isFirstTime = false;
+                    }
+                    allowStopReload = true;
+                    if (currentBounds) {
+                        console.log("flyint to bounds");
+                        console.log(currentBounds);
+                        map.flyToBounds(currentBounds, { 'duration': 0.5 });
+                    } else if (currentCentre) {
+                        // console.log("flyint to centre");
+                        // console.log(currentCentre);
+                        // map.flyTo(currentCentre, 12, { 'duration': 0.5 });
+                    }
+                });
             }
         },
 
         fullscreen: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
-                $(".sidebar-header").hide();
+                this.isHalfscreen = false;
+                this.isHidemap = false;
+                this.isFullscreen = true;
+                allowStopReload = false;
+                $(".sidebar_header").hide();
 
                 var newHeight = $(window).height() - 80 - 60 - 50 + 5;
                 $('#sidebar').fadeOut(10);
                 $("#mobile-show-content").show();
                 // $("#map").show()
                 $("#map").animate({ height: newHeight }, 500, () => {
-                        map.invalidateSize(false);
-                        if (currentBounds) {
-                            map.flyToBounds(currentBounds, { 'duration': 0.5 });
-                        } else if (currentCentre) {
-                            map.flyTo(currentCentre, MAP_ZOOM_NUM, { 'duration': 0.5 })
-                        }
-                    });
+                    map.invalidateSize(false);
+                    allowStopReload = true;
+                    if (currentBounds) {
+                        map.flyToBounds(currentBounds, { 'duration': 0.5 });
+                    } else if (currentCentre) {
+                        // map.flyTo(currentCentre, 12, { 'duration': 0.5 })
+                    }
+                });
             }
         },
         reset: function () {
@@ -199,11 +224,6 @@ $(window).resize(function () {
         MapUIControl.reset();
 
     }
-    // if ($(window).width() <= 768) {
-    //     $("#map").removeClass("col")
-    //         .addClass("col-12");
-    // }
-
 
 
 });
@@ -211,14 +231,25 @@ $(window).resize(function () {
 
 
 function loadSideBarContent(navId) {
-
-    if (navId == "routes") {
-        routes()
-    }
+    console.log("loadgin...")
+    console.log(navId)
 
     // Load the appropriate HTML using the navId
-    $("#sidebar").load("/" + navId);
-
+    $("#sidebar").load("/" + navId, () => {
+        switch (navId) {
+            case "routes":
+                routes();
+                break;
+            case "journey":
+                journey();
+                break;
+            case "stops":
+                stops();
+                break;
+            default:
+                break;
+        }
+    });
     // Set the active navbar item to the one currently displayed
     // for both side nave bar and bottom nav bar
     $(".bottom_nav_item, .nav_item").removeClass("nav-active");
@@ -228,6 +259,7 @@ function loadSideBarContent(navId) {
 
 $(document).on("click.mapUI", "#map", MapUIControl.fullscreen)
 $(document).on("click.mapUI", "#mobile-show-content", MapUIControl.halfscreen)
+
 
 
 

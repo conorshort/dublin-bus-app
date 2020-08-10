@@ -33,6 +33,7 @@ def getWeather(unixTime):
     with open("weatherData.txt", "r") as file:
         contents = file.read()
         data = ast.literal_eval(contents)
+        print(data)
         weather_hourly_data = data['weather_hourly_data']
         weather_dt_values = data['weather_dt_values']
         file.close()

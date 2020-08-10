@@ -6,8 +6,6 @@ import re
 import requests
 from .forms import leapCardForm
 
-
-
 def home(request):
     # api key and url for weather data
     API = '83e8d16b48f83517a5d89158fc88656e'

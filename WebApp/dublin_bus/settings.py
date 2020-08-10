@@ -17,6 +17,8 @@ from .config import db_config
 
 
 
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_db_logger',
     'rest_framework',
     'api',
 
@@ -89,8 +92,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': db_config["schema_name"],
-        'USER': db_config["read_only_username"],
-        'PASSWORD': db_config["read_only_pw"],
+        'USER': db_config["admin_username"],
+        'PASSWORD': db_config["admin_pw"],
         'HOST': db_config["host"],
         'PORT': '3306',
     }
@@ -146,10 +149,10 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'console':{
-            'level': 'WARNING',
-            'class': 'logging.StreamHandler',
-            'formatter': 'normal',
+        'db_log': {
+            'level': 'ERROR',
+            'class': 'django_db_logger.db_log_handler.DatabaseLogHandler',
+            'formatter': 'normal'
         },
     },
     'formatters': {
@@ -162,11 +165,10 @@ LOGGING = {
     },
 
     'loggers': {
-        '': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-            'propagate': False
+        'db': {
+            'handlers': ['db_log'],
+            'level': 'ERROR'
+            # 'propagate': True,
         },
     },
 }
-

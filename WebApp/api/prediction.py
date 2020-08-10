@@ -3,11 +3,18 @@ from weather import getWeather
 import datetime
 import pickle
 import os
+from dateutil import tz
+import logging
+
+
+# Get an instance of a logger
+
+db_logger = logging.getLogger('db')
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
 
 
-def predict_journey_time(lineId, segments, departure_unix):
+def predict_journey_time(lineId, segments, departure_unix, return_list=False):
     try:
         segments_df = create_test_dataframe(lineId, segments, departure_unix)
 
@@ -23,7 +30,8 @@ def predict_journey_time(lineId, segments, departure_unix):
         else:
             model = get_route_model(lineId, hasWeather=False)
 
-        journeyTime = get_journey_perdiction(model, segments_df)
+        journeyTime = get_journey_perdiction(
+            model, segments_df, return_list=return_list)
 
         return journeyTime
         
@@ -47,7 +55,8 @@ def create_test_dataframe(lineId, segments, departure_unix):
         # get all features of the route model
         features = model.get_booster().feature_names
 
-        departure_dt = datetime.datetime.fromtimestamp(departure_unix)
+        departure_dt = datetime.datetime.fromtimestamp(
+            departure_unix, tz.gettz("Europe/London"))
         hour = departure_dt.hour
         weekday = departure_dt.weekday
         isPeak = int(is_peak_time(departure_dt))
@@ -86,12 +95,25 @@ def create_test_dataframe(lineId, segments, departure_unix):
         return None
 
 
-def get_journey_perdiction(model, test_dataframe):
+def get_journey_perdiction(model, test_dataframe,return_list=False):
     try:
         prediction = model.predict(test_dataframe)
         journeyTime = sum(prediction)
 
-        return journeyTime
+        if return_list:
+
+            segment_cols = [
+                    col for col in test_dataframe if col.startswith('segment')]
+
+            idxs = test_dataframe.loc[(test_dataframe[segment_cols] == 0).all(axis=1)].index
+
+            for idx in idxs:
+                prediction[idx] = -1
+
+            return prediction
+        else:
+            journeyTime = sum(prediction)
+            return journeyTime
     except Exception as e:
         print('function get_journey_perdiction error:', e)
         return None
