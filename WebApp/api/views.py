@@ -15,14 +15,11 @@ from datetime import datetime
 from dateutil import tz
 import requests
 from geopy.distance import great_circle
-
-# import the logging library
 import logging
- 
 
 # Get an instance of a logger
-
 db_logger = logging.getLogger('db')
+
 
 class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
 
@@ -66,8 +63,8 @@ class SmartDublinBusStopViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             # Log an error message
             parameters = {'longitude': longitude,
-                        'latitude': latitude,
-                        'radius': radius}
+                          'latitude': latitude,
+                          'radius': radius}
             db_logger.error(f'Missing parameters. Given parameters {parameters}')
             content = {'message': 'Longitude and latitude fields are required'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
@@ -195,19 +192,19 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
             for calendar in calendars:
                 calendar_days = calendar["calendar__display_days"]
                 t = trips.filter(calendar__display_days=calendar_days,
-                                gtfsstoptime__stop_id=stop_id)
+                                 gtfsstoptime__stop_id=stop_id)
 
                 trips_by_calendar[calendar_days] = t.values("trip_id",
-                    time=F("gtfsstoptime__departure_time"))
+                                                            time=F("gtfsstoptime__departure_time"))
             return Response(trips_by_calendar)
         elif trip_id:
             trip = GTFSStopTime.objects.filter(trip_id=trip_id).values(
-                        "departure_time",
-                        "stop_sequence",
-                        stop_name=F("stop__stop_name"),
-                        plate_code=F("stop__plate_code"),
-                        line_id=F("trip__route__route_name")).order_by("stop_sequence")
-            route = GTFSTrip.objects.filter(trip_id=trip_id).values("route__route_name","calendar__display_days" ).first()
+                                               "departure_time",
+                                               "stop_sequence",
+                                               stop_name=F("stop__stop_name"),
+                                               plate_code=F("stop__plate_code"),
+                                               line_id=F("trip__route__route_name")).order_by("stop_sequence")
+            route = GTFSTrip.objects.filter(trip_id=trip_id).values("route__route_name", "calendar__display_days").first()
 
             segments = []
             for index in range(len(trip)-1):
@@ -217,16 +214,15 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
             route_name = route["route__route_name"]
             departure_time = trip[0]["departure_time"]
 
-
             day = {"Mon": 10,
-                "Tue": 11,
-                "Wed": 12,
-                "Thu": 13,
-                "Fri": 14,
-                "Sat": 15,
-                "Sun": 16}[day_name]
+                   "Tue": 11,
+                   "Wed": 12,
+                   "Thu": 13,
+                   "Fri": 14,
+                   "Sat": 15,
+                   "Sun": 16}[day_name]
 
-            seconds =  datetime(2020, 8, day, 0, 0).timestamp()
+            seconds = datetime(2020, 8, day, 0, 0).timestamp()
             unix_time = (seconds + departure_time)
             print("passing route name", route_name)
             journey_time = predict_journey_time(
@@ -239,18 +235,16 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
                 else:
                     trip[i]["predicted_time"] = total_journey_time
 
-                    # if no prediction made for that segment use the scheduled times 
+                    # if no prediction made for that segment use the scheduled times
                     if journey_time[i - 1] == -1:
                         total_journey_time += trip[i]["departure_time"] - \
-                            trip[i -1]["departure_time"]
-                            
+                            trip[i - 1]["departure_time"]
+
                     # otherwise use the predicted times
                     else:
                         total_journey_time += int(journey_time[i - 1])
 
             return Response(trip)
-
-
 
 
 class GTFSTripViewSet(viewsets.ReadOnlyModelViewSet):
@@ -273,7 +267,6 @@ class GTFSTripViewSet(viewsets.ReadOnlyModelViewSet):
         elif tripid:
             queryset = queryset.filter(trip_id=tripid)
 
-
         serializer = GTFSTripSerializer(queryset, many=True)
 
         return Response(serializer.data)
@@ -295,8 +288,9 @@ def calc_fare(shape_id, board, alight):
         fare_elem_id = "ctl00_FullRegion_MainRegion_ContentColumns_holder_FareListingControl_lblFare"
         fare_elem = soup.find_all(id=fare_elem_id)
         return fare_elem[0].contents[0]
-    except:
+    except e:
         return None
+
 
 def direction(request):
 
@@ -306,9 +300,9 @@ def direction(request):
     departureUnix = request.GET.get('departureUnix')
 
     parameters = {'origin': origin,
-                    'destination': destination,
-                    'departureUnix': departureUnix}
-                    
+                  'destination': destination,
+                  'departureUnix': departureUnix}
+
     print('direction departureUnix:', departureUnix)
     timestr = datetime.fromtimestamp(
         int(departureUnix), tz.gettz("Europe/London"))
@@ -339,7 +333,7 @@ def direction(request):
         requestCount += 1
 
         data = direction_to_first_transit(origin, destination, departureUnix)
-        
+
         if data['status'] != 'OK':
             return JsonResponse(data)
 

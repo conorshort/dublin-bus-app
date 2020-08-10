@@ -180,11 +180,6 @@ div.weather#description {
   background-color: green;
 }
 
-/* .hyper-link:hover {
-  cursor: pointer;
- } */
-
-
 
 /* ==== leapcard ==== */
 #leap-info {
@@ -510,14 +505,7 @@ div.weather#description {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
-/* Styling for even number list-item */
-/* .list-group-item:nth-child(odd) { 
-  background-color: white;
-}
 
-.list-group-item:nth-child(even) { 
-  background-color: #f5f5f5;
-} */
 
 .list-group-item {
   width: 100%;

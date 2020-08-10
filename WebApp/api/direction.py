@@ -15,18 +15,19 @@ logger = logging.getLogger(__name__)
 
 db_logger = logging.getLogger('db')
 
+
 def direction_to_first_transit(origin, destination, departureUnix):
+
     print("=============================================")
     print('origin:', origin)
     print('destination:', destination)
     print('departureUnix:', departureUnix)
 
-
     # check is all the parameters given
     # response 400 error if missing any parameter
     if not(origin and destination and departureUnix):
         response_data = {'message': 'Missing Parameter',
-                        'status': 'Zero Result'}
+                         'status': 'Zero Result'}
         return response_data
 
     url = 'https://maps.googleapis.com/maps/api/directions/json'
@@ -41,10 +42,10 @@ def direction_to_first_transit(origin, destination, departureUnix):
     data = r.json()
 
     # check the status and existance of the google direction response
-    if keys_exists(data, 'status') == False:
+    if not keys_exists(data, 'status'):
         print('Key status does not exist in google direction api response.')
         return data
-    
+
     if data['status'] != 'OK':
         print('Google direction api status not OK. Given parameters {parameters}')
         return JsonResponse(data)
@@ -53,13 +54,13 @@ def direction_to_first_transit(origin, destination, departureUnix):
         # count how many steps which travel model is TRANSIT
         transitCount = r.text.count("TRANSIT")
 
-        if keys_exists(data, 'routes', 0, 'legs', 0) == False:
+        if not keys_exists(data, 'routes', 0, 'legs', 0):
             print('Key legs does not exist in google direction api response.')
             return data
 
         leg = data['routes'][0]['legs'][0]
 
-        if keys_exists(leg, 'steps') == False:
+        if not keys_exists(leg, 'steps'):
             print('Key steps does not exist in google direction api response.')
             return data
 
@@ -95,15 +96,17 @@ def direction_to_first_transit(origin, destination, departureUnix):
                                               'text': timestr}
             newData['leg']['departure_time'] = {'value': int(departureUnix),
                                                 'text': timestr}
-        
+
         totalDistance = 0
         transitStepCount = 0
 
         for index, step in enumerate(steps):
 
             isValiedForPrediction = True
-
-            while isValiedForPrediction:
+            
+            # get the predicted journey time,
+            # if all the condition is True
+            while True:
 
                 # check if the step is transit and the line ML model is existed
                 # ex: if the value of step is 39, than it is valid,
@@ -111,70 +114,54 @@ def direction_to_first_transit(origin, destination, departureUnix):
                 if not is_route_exist_for_prediction(step):
                     isValiedForPrediction = False
                     break
-                
+
                 lineId = step['transit_details']['line']['short_name']
+                
                 stops = get_stops(step, lineId)
+                if not stops:
+                    isValiedForPrediction = False
+                    break
 
                 # if stops num greater than one,
                 # then segements will be created by stops
                 # prediction will be made by segments
-                if len(stops) >= 2:
-                    segments = get_segments(stops)
-
-                    # predict traveling time for all segmentid
-                    journeyTime = predict_journey_time(
-                        lineId,
-                        segments,
-                        int(departureUnix))
-                    print("JOURNEEY TIME", journeyTime)
-                    # set duration to predicted journey time
-                    duration = int(journeyTime)
-
-                    arr_unix = newData['leg']['arrival_time']['value'] + duration
-                    timestr = datetime.fromtimestamp(
-                        int(arr_unix), tz.gettz("Europe/London"))
-                    print("+++++++++++++++++++++++++++++++++++++++======\n",
-                          arr_unix)
-                    timestr = timestr.strftime('%I:%M%p')
-                    step['transit_details']['arrival_time']['value'] = arr_unix
-                    step['transit_details']['arrival_time']['text'] = timestr
-                    step['transit_details']['stops'] = stops
-                    step['duration']['value'] = duration
-                    step['duration']['text'] = get_time_string(duration)
-                    newData['leg']['arrival_time']['value'] = arr_unix
-
-                else:
-                    arr_time_unix = int(
-                        steps[index]['transit_details']['arrival_time']['value'])
-                    newData['leg']['arrival_time']['value'] = arr_time_unix
-
-                distance = int(step['distance']['value'])
-                totalDistance += distance
-
-                newData['leg']['steps'].append(step)
-                newData['leg']['end_location'] = step['end_location']
-
-                # if there have more than one transit
-                # break the for loop
-                # set another google direction API requestion
-                # to get the direction for rest of the journey
-                if transitCount > 1:
+                if len(stops) < 2:
+                    isValiedForPrediction = False
                     break
+
+                segments = get_segments(stops)
+                if not segments:
+                    isValiedForPrediction = False
+                    break
+
+                # predict traveling time for all segmentid
+                journeyTime = predict_journey_time(
+                    lineId,
+                    segments,
+                    int(departureUnix))
+
+                if not journeyTime:
+                    isValiedForPrediction = False
+                    break  
+
+                print("JOURNEEY TIME", journeyTime)
 
                 # set duration to predicted journey time
                 duration = int(journeyTime)
 
                 arr_unix = newData['leg']['arrival_time']['value'] + duration
-                timestr = datetime.fromtimestamp(arr_unix) + timedelta(hours=1)
-                timestr = timestr.strftime('%l:%M%p')
-                timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
+                timestr = datetime.fromtimestamp(
+                    int(arr_unix), tz.gettz("Europe/London"))
+                print("+++++++++++++++++++++++++++++++++++++++======\n",
+                        arr_unix)
+                timestr = timestr.strftime('%I:%M%p')
                 step['transit_details']['arrival_time']['value'] = arr_unix
                 step['transit_details']['arrival_time']['text'] = timestr
                 step['transit_details']['stops'] = stops
                 step['duration']['value'] = duration
                 step['duration']['text'] = get_time_string(duration)
                 newData['leg']['arrival_time']['value'] = arr_unix
-                
+
                 transitStepCount += 1
                 break
             
@@ -188,7 +175,6 @@ def direction_to_first_transit(origin, destination, departureUnix):
             totalDistance += distance
             newData['leg']['end_location'] = step['end_location']
 
-                
             # if there have more than one transit
             # break the for loop
             # set another google direction API requestion
@@ -215,15 +201,14 @@ def direction_to_first_transit(origin, destination, departureUnix):
         return newData
 
     except Exception as e:
- 
+
         print("direction_to_first_transit error:", str(e))
         parameters = {'origin': origin,
-                  'destination': destination,
-                  'departure_time': departureUnix}
+                      'destination': destination,
+                      'departure_time': departureUnix}
         db_logger.error(f'{str(e)}. Given parameters {parameters}')
         message = {'status': 'ZERO_RESULT'}
         return message
-
 
 
 def keys_exists(element, *keys):
@@ -236,18 +221,17 @@ def keys_exists(element, *keys):
     return True
 
 
-
 def is_route_exist_for_prediction(step):
     if step['travel_mode'] == 'TRANSIT':
         # get all ML models' name
         # only do the journey time prediction if the model of the line is existed
         lines = [modelName.replace('.pkl', '') for modelName in get_models_name()]
-        
+
         try:
             lineId = step['transit_details']['line']['short_name'].upper()
             if ('route_'+lineId) in lines:
                 return True
-        except:
+        except e:
             return False
     return False
 
@@ -260,7 +244,6 @@ def get_stops(step, lineId):
         # get stop id by stop coordinate
         arrStopId = SmartDublinBusStop.objects.get_nearest_id(arrStopCoord['lat'], arrStopCoord['lng'])
         depStopId = SmartDublinBusStop.objects.get_nearest_id(depStopCoord['lat'], depStopCoord['lng'])
-        
 
         # get stops between origin and destination stops
         headsign = step['transit_details']['headsign']
@@ -270,9 +253,9 @@ def get_stops(step, lineId):
         if len(stops) <= 0:
 
             params = {'depStopId': depStopId,
-                        'arrStopId': arrStopId,
-                        'lineId': lineId,
-                        'headsign': headsign}
+                      'arrStopId': arrStopId,
+                      'lineId': lineId,
+                      'headsign': headsign}
 
             # Log an error message
             db_logger.error(

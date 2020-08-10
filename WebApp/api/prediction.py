@@ -4,12 +4,6 @@ import datetime
 import pickle
 import os
 from dateutil import tz
-import logging
-
-
-# Get an instance of a logger
-
-db_logger = logging.getLogger('db')
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
 
@@ -34,7 +28,6 @@ def predict_journey_time(lineId, segments, departure_unix, return_list=False):
             model, segments_df, return_list=return_list)
 
         return journeyTime
-        
 
     except Exception as e:
         print('function predict_journey_time error:', e)
@@ -78,15 +71,13 @@ def create_test_dataframe(lineId, segments, departure_unix):
                 data['wind_speed'] = [weather['wind_speed']]
                 if 'rain' in weather:
                     data['rain'] = [weather['rain']['1h']]
-            
-            
+
             # create segment dataframe which storing segment data
             seg_df = pd.DataFrame(data=data)
             # reorder the columns sequence same as the model
             seg_df = seg_df[features]
             # add each segment dataframe to df dataframe
             segments_df = segments_df.append(seg_df, ignore_index=True)
-
 
         return segments_df
 
@@ -95,7 +86,7 @@ def create_test_dataframe(lineId, segments, departure_unix):
         return None
 
 
-def get_journey_perdiction(model, test_dataframe,return_list=False):
+def get_journey_perdiction(model, test_dataframe, return_list=False):
     try:
         prediction = model.predict(test_dataframe)
         journeyTime = sum(prediction)

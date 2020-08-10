@@ -8,9 +8,9 @@ import datetime  # for checking date range.
 class leapCardForm(forms.Form):
     # helper = FormHelper()
 
-    username = forms.CharField(widget= forms.TextInput(attrs={'id':'un','style':'margin-right: 30%;margin-left: 2%'}))
+    username = forms.CharField(widget=forms.TextInput(attrs={'id': 'un', 'style': 'margin-right: 30%; margin-left: 2%'}))
 
-    password = forms.CharField(widget=widgets.PasswordInput(attrs={'id':'pw','style':'margin: 3%;'}))
+    password = forms.CharField(widget=widgets.PasswordInput(attrs={'id': 'pw', 'style': 'margin: 3%;'}))
     # remember_me = forms.BooleanField(required=False)
 
 

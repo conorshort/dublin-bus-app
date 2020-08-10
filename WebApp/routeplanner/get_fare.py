@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
+
 def calc_fare(shape_id, board, alight):
 
     GTFSRoute.object.get(shape_id=shape_id).route_name
@@ -11,5 +12,3 @@ def calc_fare(shape_id, board, alight):
     fare_elem_id = "ctl00_FullRegion_MainRegion_ContentColumns_holder_FareListingControl_lblFare"
     fare_elem = soup.find_all(id=fare_elem_id)
     return fare_elem[0].contents[0]
-
-

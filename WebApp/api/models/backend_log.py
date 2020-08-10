@@ -2,6 +2,7 @@ from django.db import models
 from django.templatetags.static import static
 from django.utils import timezone
 
+
 class BackendLog(models.Model):
     date_time = models.DateTimeField()
     file_name = models.CharField(max_length=128, blank=True, null=True)
