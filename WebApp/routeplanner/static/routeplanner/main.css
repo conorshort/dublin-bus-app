@@ -366,8 +366,19 @@ div.weather#description {
 
 
 
+#route-stop-div {
+  display: none;
+}
+.fav-div {
+  margin-left: 0px;
+}
+.stops-list {
+  height: 500px;
+
+
 #trip-timetable {
   max-height: 300px;
+
   overflow-y: auto;
   padding-top: 0px;
 }

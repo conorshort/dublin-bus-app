@@ -11,6 +11,18 @@
                 {% csrf_token %}
                 <button type="submit" class="col-3 btn btn-primary">Search</button>
             </form>
+
+            
+            <div class="spinner-grow text-secondary" style="margin:auto;" id="stop-loader" role="status">
+                <span class="sr-only"></span>
+            </div>
+            <div id="no-stops-warning" class="row m-0 alert alert-warning" style="display: none;">No Stops
+                match this search</div>
+            <div class="row fav-div" id="fav-stops-div">
+                <h5 class="route-heading">Your Favourite Stops</h5>
+                <ul class="list-group list-group-flush" id="fav-stops-list"></ul>
+            </div>
+            <h5 class="route-heading">All Stops</h5>
             <ul class="list-group list-group-flush p-0" id="stopsListGroup">
             </ul> 
         </div>
