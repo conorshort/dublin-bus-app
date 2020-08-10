@@ -66,8 +66,6 @@ function showStops(lat, lng){
 
 
 function moveMapToEnteredAddress(address){
-    // console.log(address)
-    // console.log("MAde it to movemap")
     $.getJSON(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA`, function(data){
         var latlng = data.results[0].geometry.location;
         //map.panTo(new L.LatLng(latlng.lat, latlng.lng))
@@ -107,65 +105,49 @@ function showArrivingBusesOnSideBar(stopid){
     });
 }
 
-$(document).on("click", ".star2", function() {
+// $(document).on("click", ".star2", function() {
 
-    //get the stop attribute associate with the selected star and push to a list
-    let starredStop = $(this).attr("data-stop");
-    alert(starredStop);
-    var stopsList = [];
-    stopsList.push(starredStop);
+//     //get the stop attribute associate with the selected star and push to a list
+//     let starredStop = $(this).attr("data-stop");
+//     var stopsList = [];
+//     stopsList.push(starredStop);
 
-    //if the stop is not in the list it will be saved in cookies
-    try{
-        cookiemonster.get('stopsList');
-    }catch{
-        cookiemonster.set('stopsList', stopsList, 3650);
-        alert('Save Sucessfully');
-        return ;
-    }
+//         //if the stop is not in the list it will be saved in cookies
+//     // try{
+//     //     cookiemonster.get('stopsList');
+//     // }catch{
+//     //     cookiemonster.set('stopsList', stopsList, 3650);
+//     //     return ;
+//     // }
 
-    var previous_stops = cookiemonster.get('stopsList');
-    var flag = 0;
+//     var previous_stops = cookiemonster.get('stopsList');
+//     var flag = 0;
 
-    //if selected stop already in the list wont save again
-    for(let i=0;i<previous_stops.length;i++){
-        if(starredStop==previous_stops[i]){
-            alert('This stop is already in the list');
-            flag = 1;
-        }
-    }
+//     //if selected stop already in the list wont save again
+//     for(let i=0;i<previous_stops.length;i++){
+//         if(starredStop==previous_stops[i]){
+//             alert('This stop is already in the list');
+//             flag = 1;
+//         }
+//     }
 
-    //if it is not in the list then will append to cookies 
-        if (flag==0){
-            try{
-                cookiemonster.get('stopsList');
-                cookiemonster.append('stopsList', stopsList, 3650);
+//     //if it is not in the list then will append to cookies 
+//         if (flag==0){
+//             try{
+//                 cookiemonster.get('stopsList');
+//                 cookiemonster.append('stopsList', stopsList, 3650);
                 
-            } catch{
-                cookiemonster.set('stopsList', stopsList, 3650);
-            }
-            alert('Save Sucessfully');
-        }
-
-
-
-
-    // $(this).toggleClass("fa fa-star fa fa-star");
-    // alert(stops);
-
-    // try{
-    //     cookiemonster.get('stops');
-    //     cookiemonster.append('stops', stops, 3650);
-        
-    // } catch(err){
-    //     cookiemonster.set('stops', stops, 3650);
-    // }
-    // alert('Save Sucessfully');
-});
+//             } catch{
+//                 cookiemonster.set('stopsList', stopsList, 3650);
+//             }
+//             alert('Save Sucessfully');
+//         }
+// });
 
 // create and return list-group-item for stop
 // stop_dist added as item
 function renderStopListItem(stop, stop_dist,fav = false) {
+    //function now recieves stopid instead so need to get stop info
     // need to do some jiggery pokery to the stop-routes to return the info without brackets or quotations
     var route_list = stop.routes;
     route_list = route_list.slice(2,-2);
@@ -187,7 +169,7 @@ function renderStopListItem(stop, stop_dist,fav = false) {
     
     <span class="col-1">
         <a href="#">
-            <i id="${favStr}star-stop-${stop}"class="${solid} far fa-star star2 stop-star" data-stop="${stop.stopid}"></i>
+            <i id="${favStr}star-stop-${stop.stopid}"class="${solid} far fa-star star2 stop-star" data-stop="${stop.stopid}"></i>
         </a>
     </span>
     <li class="list-group-item stop" id="station-${stop.stopid}">
@@ -314,108 +296,88 @@ function initAutoComplete(){
 
     initAutocomplete(stops_area);
 }
-
 $(document).on("click.stops", '.star2', function (e) {
-    //get the stop attribute associated with the selected star and push to a list
-    let starredStopID = $(this).attr("data-stop");
-    console.log(starredStopID);
+
+    // Get the clikced stop
+    const starredStopID = $(this).attr("data-stop");
     
-    $.getJSON(`/api/stops/${starredStopID}`, function(data){
-        var stop = JSON.parse(data);
-        console.log(stop);
-    });
+    let currentStopsList;
 
-    $.getJSON(`/api/stops/${starredStopID}`, function(data) {
-
-        // parse response data to json 
-        var starredStop = JSON.parse(data);
-            
-        var stopsList = [];
-        stopsList.push(starredStop);
-
-        //if the stop is not in the list it will be saved in cookies
-        try {
-            cookiemonster.get('stopsList');
-            console.log("running cook.get in try1")
-        } catch{
-            cookiemonster.set('stopsList', stopsList, 3650);
-
-            updateStopFavourites()
-            console.log("Running updateStopFavourites in catch1")
-            return;
-        }
-
-        var previous_stop = cookiemonster.get('stopsList');
-        var flag = 0;
-        var newStops = []
-        // if selected stop already in the list wont save again
-        for (let i = 0; i < previous_stop.length; i++) {
-            if (starredStop == previous_stop[i]) {
-
-                flag = 1;
-            } else {
-                newStops.push(previous_stop[i]);
-            }
-        }
-        if (flag == 1) {
-            cookiemonster.set('stopsList', newStops, 3650);
-            updateStopFavourites()
-            console.log("updateing stop favs after flag==1")
+    try {
+        // Check if the stopList cookie exists
+        // If so, get the list
+        currentStopsList = cookiemonster.get('stopsList');
+    } catch{
+        // If not just add the clicked stop to the list and return
+        console.log("Setting cookie to ", [starredStopID])
+        cookiemonster.set('stopsList', [starredStopID], 3650);
+        updateStopFavourites()
+        return;
+    }
 
 
-        } else {
-            try {
-                cookiemonster.get('stopsList');
-                cookiemonster.append('stopsList', stopsList, 3650);
-                console.log("appended to cookies w/ get")
+    // Check if the clicked stop is in the cookies array
+    const index = currentStopsList.indexOf(starredStopID);
+    if (index > -1) {
+        console.log("made it in")
+        // if index > -1 the stop is alreay in the cookies,
+        // we can remove it from the array
+        currentStopsList.splice(index, 1);
+    } else {
+        // Otherwise we add to the array
+        currentStopsList.push(starredStopID);
+    }
 
-            } catch{
-                cookiemonster.set('stopsList', stopsList, 3650);
-                console.log("cookie monster.set")
-            }
+    // Set the cookies  with the new list
+    cookiemonster.set('stopsList', currentStopsList, 3650);
 
-            updateStopFavourites()
-            console.log("running update Stop favs at end of fx")
-        }
-
-    });
-
+    // Update the favourites display
+    updateStopFavourites();
 });
 
-function updateStopFavourites() {
-    console.log("Made it into updateStopFavourites")
-    $(".stop-star").removeClass("fas").addClass("far");
 
+
+function updateStopFavourites() {
+    $(".stop-star").removeClass("fas");
+    $(".stop-star").addClass("far");
 
     let stopsList;
     try {
         stopsList = cookiemonster.get('stopsList');
     } catch{
         $("#fav-stops-div").hide();
+        console.log('fav stops hide 1');
         return;
     }
-
+    console.log("Made it past the return")
 
     if (stopsList.length == 0) {
         $("#fav-stops-div").hide();
+        console.log('fav stops hide 2');
         return;
     }
+    
+    //$("#fav-stops-list").html("");
+    $("#fav-stops-list").innerHTML = "";
+    var content = '';
+    stopsList.forEach(stopid => {
 
-    //stopsList.sort((a, b) => alphanumSort(a[0], b[0]));
-    var lat = centreLocation[0];
-    var lng = centreLocation[1];
-    var dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
-    var dist_ms = Math.round(dist_kms*1000);
+        //get stop data from stopid list 
+        $.getJSON(`/api/stops/${stopid}`, function(data) {
 
-    let content = '';
-    stopsList.forEach(stop => {
-        content += renderStopListItem(stop, dist_ms, fav = true);
-        $("#star-stop-" + stop[0]).removeClass("far")
-            .addClass("fas");
+            var stop = data;
+            //Get stop info required for render stopListitem
+            var lat = centreLocation[0];
+            var lng = centreLocation[1];
+            var dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
+            var dist_ms = Math.round(dist_kms*1000);
+            content += renderStopListItem(stop, dist_ms, fav = true);
+            $("#fav-star-stop-"+stop.stopid).removeClass("far");
+            $("#fav-star-stop-"+stop.stopid).addClass("fas");
+            console.log(content);
+            $("#fav-stops-list").append(content);
+            $("#fav-stops-div").show();
+            console.log("Fav Stops Show")
+        });
     });
-
-    $("#fav-stops-list").html("").append(content);
-    $("#fav-stops-div").show();
-    console.log("fav-stops-divs-show A !!")
-
 }
