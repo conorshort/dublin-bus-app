@@ -42,27 +42,25 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
     # check the status and existance of the google direction response
     if keys_exists(data, 'status') == False:
-        logger.warning('Key status does not exist in google direction api response.')
+        print('Key status does not exist in google direction api response.')
         return data
     
     if data['status'] != 'OK':
-        db_logger.error(
-            f'Google direction API status not OK. Given parameters {parameters}')
-
+        print('Google direction api status not OK. Given parameters {parameters}')
         return JsonResponse(data)
 
-    if True:
+    try:
         # count how many steps which travel model is TRANSIT
         transitCount = r.text.count("TRANSIT")
 
         if keys_exists(data, 'routes', 0, 'legs', 0) == False:
-            logger.warning('Key legs does not exist in google direction api response.')
+            print('Key legs does not exist in google direction api response.')
             return data
 
         leg = data['routes'][0]['legs'][0]
 
         if keys_exists(leg, 'steps') == False:
-            logger.warning('Key steps does not exist in google direction api response.')
+            print('Key steps does not exist in google direction api response.')
             return data
 
         steps = leg['steps']
@@ -97,8 +95,6 @@ def direction_to_first_transit(origin, destination, departureUnix):
                                               'text': timestr}
             newData['leg']['departure_time'] = {'value': int(departureUnix),
                                                 'text': timestr}
-            newData['leg']['arrival_time'] = {'value': int(departureUnix),
-                                              'text': timestr}
         
         totalDistance = 0
         transitStepCount = 0
@@ -218,8 +214,8 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
         return newData
 
-    # except Exception as e:
-    else:
+    except Exception as e:
+ 
         print("direction_to_first_transit error:", str(e))
         parameters = {'origin': origin,
                   'destination': destination,
@@ -273,14 +269,14 @@ def get_stops(step, lineId):
         stops = GTFSTrip.objects.get_stops_between(depStopId, arrStopId, lineId, origin_time=originTime, headsign=headsign)
         if len(stops) <= 0:
 
-                params = {'depStopId': depStopId,
-                          'arrStopId': arrStopId,
-                          'lineId': lineId,
-                          'headsign': headsign}
+            params = {'depStopId': depStopId,
+                        'arrStopId': arrStopId,
+                        'lineId': lineId,
+                        'headsign': headsign}
 
-                # Log an error message
-                db_logger.error(
-                    f'return data Stops list is empty. Given parameters {params}')
+            # Log an error message
+            db_logger.error(
+                f'return data Stops list is empty. Given parameters {params}')
 
     except Exception as e:
         print('function get_stops error:', e)
