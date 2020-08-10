@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0004_gtfsstop_plate_code'),
+        # ('api', '0004_gtfsstop_plate_code'),
     ]
 
     operations = [
