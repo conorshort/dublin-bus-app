@@ -193,7 +193,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
         timestr = datetime.fromtimestamp(
             int(newData['leg']['arrival_time']['value']), tz.gettz("Europe/London"))
-        timestr = timestr.strftime('%l:%M%p')
+        timestr = timestr.strftime('%I:%M%p')
         timestr = timestr.replace('PM', 'pm').replace('AM', 'am')
         newData['leg']['arrival_time']['text'] = timestr
         newData['status'] = 'OK'
