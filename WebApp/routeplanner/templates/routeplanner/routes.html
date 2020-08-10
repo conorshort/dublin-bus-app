@@ -10,8 +10,10 @@
             <span class=" sr-only">Loading...</span>
         </div>
     </div>
+    <div id="no-routes-loaded" class="row m-0 alert alert-warning" style="display: none;">
+        Routes could not be loaded, please try again.
+    </div>
     <div id="all-routes-content" class="row sidebar_content" style="display: none;">
-
 
 
         <div id="routes-div" class="container">
@@ -33,8 +35,10 @@
                         <input class="form-control" id="route-filter" type="search" placeholder="Find a route"
                             aria-label="Search">
                     </div>
+
                     <div id="no-route-warning" class="row m-0 alert alert-warning" style="display: none;">No routes
-                        match this search</div>
+                        match this search
+                    </div>
                     <ul class="list-group list-group-flush" id="routes-list">
                     </ul>
                 </div>
