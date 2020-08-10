@@ -65,55 +65,42 @@ function routes() {
 
 
         $(document).on("click.routes", '.star', function (e) {
-            //e.preventDefault;
-
             // Stop the route diplaying when a star is clicked
             e.stopPropagation()
 
-            //get the route attribute associate with the selected star and push to a list
-            let starredRoute = $(this).attr("data-route") + "__" + $(this).attr("data-operator");
-            var routesList = [];
-            routesList.push(starredRoute);
+            // Get the clikced route
+            const starredRoute = $(this).attr("data-route") + "__" + $(this).attr("data-operator");
+            
+            let currentRoutesList;
 
-            //if the route is not in the list it will be saved in cookies
             try {
-                cookiemonster.get('routesList');
+                // Check if the routes cookie exists
+                // If so, get the list
+                currentRoutesList = cookiemonster.get('routesList');
             } catch{
-                cookiemonster.set('routesList', routesList, 3650);
-
+                // If not just add the clicked route to the list and return
+                cookiemonster.set('routesList', [starredRoute], 3650);
                 updateRouteFavourites()
                 return;
             }
 
-            var previous_route = cookiemonster.get('routesList');
-            var flag = 0;
-            var newRoutes = []
-            //if selected route already in the list wont save again
-            for (let i = 0; i < previous_route.length; i++) {
-                if (starredRoute == previous_route[i]) {
 
-                    flag = 1;
-                } else {
-                    newRoutes.push(previous_route[i]);
-                }
-            }
-            if (flag == 1) {
-                cookiemonster.set('routesList', newRoutes, 3650);
-                updateRouteFavourites()
-
-
+            // Check if the clicked route is in the cookies array
+            const index = currentRoutesList.indexOf(starredRoute);
+            if (index > -1) {
+                // if index > -1 the route is alreay in the cookies,
+                // we can remove it from the array
+                currentRoutesList.splice(index, 1);
             } else {
-                try {
-                    cookiemonster.get('routesList');
-                    cookiemonster.append('routesList', routesList, 3650);
-
-                } catch{
-                    cookiemonster.set('routesList', routesList, 3650);
-                }
-
-                updateRouteFavourites()
+                // Otherwise we add to the array
+                currentRoutesList.push(starredRoute);
             }
 
+            // Set the cookies  with the new list
+            cookiemonster.set('routesList', currentRoutesList, 3650);
+
+            // Update the favourites display
+            updateRouteFavourites();
         });
 
         // get all routes from django
