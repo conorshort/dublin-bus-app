@@ -336,7 +336,6 @@ $(document).on("click.stops", '.star2', function (e) {
 });
 
 
-
 function updateStopFavourites() {
     $(".stop-star").removeClass("fas");
     $(".stop-star").addClass("far");
@@ -346,10 +345,8 @@ function updateStopFavourites() {
         stopsList = cookiemonster.get('stopsList');
     } catch{
         $("#fav-stops-div").hide();
-        console.log('fav stops hide 1');
         return;
     }
-    console.log("Made it past the return")
 
     if (stopsList.length == 0) {
         $("#fav-stops-div").hide();
@@ -357,27 +354,22 @@ function updateStopFavourites() {
         return;
     }
     
-    //$("#fav-stops-list").html("");
-    $("#fav-stops-list").innerHTML = "";
-    var content = '';
+    $("#fav-stops-list").html("");
     stopsList.forEach(stopid => {
 
         //get stop data from stopid list 
         $.getJSON(`/api/stops/${stopid}`, function(data) {
-
             var stop = data;
             //Get stop info required for render stopListitem
             var lat = centreLocation[0];
             var lng = centreLocation[1];
             var dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
             var dist_ms = Math.round(dist_kms*1000);
-            content += renderStopListItem(stop, dist_ms, fav = true);
-            $("#fav-star-stop-"+stop.stopid).removeClass("far");
-            $("#fav-star-stop-"+stop.stopid).addClass("fas");
-            console.log(content);
+            let content = renderStopListItem(stop, dist_ms, fav = true);
+            $("#fav-star-stop-"+stop.stopid).removeClass("far")
+                .addClass("fas");
             $("#fav-stops-list").append(content);
             $("#fav-stops-div").show();
-            console.log("Fav Stops Show")
         });
     });
 }
