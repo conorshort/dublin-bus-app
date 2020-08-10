@@ -12,6 +12,7 @@ map.on('moveend', function(e) {
     stopsLayer.clearLayers();
     //clear all the elements in list group
     showStops(centreLocation[0], centreLocation[1]);
+    updateStopFavourites();
  });
 
 
@@ -28,6 +29,7 @@ $(document).ready(function() {
 
     showStops(centreLocation[0] ,centreLocation[1]);
     initAutoComplete();
+    updateStopFavourites();
 });
 
 
@@ -300,39 +302,50 @@ $(document).on("click.stops", '.star2', function (e) {
 
     // Get the clikced stop
     const starredStopID = $(this).attr("data-stop");
-    
-    let currentStopsList;
+    let stopinfo;
+    $.getJSON(`/api/stops/${starredStopID}`, function(data) {
+        stopinfo = JSON.stringify(data);
+        console.log("This is the (hopefully stringified) data: ", stopinfo);
 
-    try {
-        // Check if the stopList cookie exists
-        // If so, get the list
-        currentStopsList = cookiemonster.get('stopsList');
-    } catch{
-        // If not just add the clicked stop to the list and return
-        console.log("Setting cookie to ", [starredStopID])
-        cookiemonster.set('stopsList', [starredStopID], 3650);
-        updateStopFavourites()
-        return;
-    }
+        let currentStopsList;
+
+        try {
+            // Check if the stopList cookie exists
+            // If so, get the list
+            currentStopsList = cookiemonster.get('stopsList');
+        } catch{
+            // If not just add the clicked stop to the list and return
+            console.log("Setting cookie to ", [stopinfo])
+            cookiemonster.set('stopsList', [stopinfo], 3650);
+            updateStopFavourites()
+            return;
+        }
 
 
-    // Check if the clicked stop is in the cookies array
-    const index = currentStopsList.indexOf(starredStopID);
-    if (index > -1) {
-        console.log("made it in")
-        // if index > -1 the stop is alreay in the cookies,
-        // we can remove it from the array
-        currentStopsList.splice(index, 1);
-    } else {
-        // Otherwise we add to the array
-        currentStopsList.push(starredStopID);
-    }
+        // Check if the clicked stop is in the cookies array
+        const index = currentStopsList.indexOf(stopinfo);
+        if (index > -1) {
+            console.log("made it in")
+            // if index > -1 the stop is alreay in the cookies,
+            // we can remove it from the array
+            console.log("stopinfo pre slice",stopinfo)
 
-    // Set the cookies  with the new list
-    cookiemonster.set('stopsList', currentStopsList, 3650);
+            currentStopsList.splice(index, 1);
+            console.log('index: ', index);
+            console.log("stopinfo post slice",stopinfo);
+        } else {
+            // Otherwise we add to the array
+            currentStopsList.push(stopinfo);
+        }
 
-    // Update the favourites display
-    updateStopFavourites();
+        // Set the cookies  with the new list
+        cookiemonster.set('stopsList', currentStopsList, 3650);
+
+
+
+        // Update the favourites display
+        updateStopFavourites();
+    }); 
 });
 
 
@@ -355,21 +368,19 @@ function updateStopFavourites() {
     }
     
     $("#fav-stops-list").html("");
-    stopsList.forEach(stopid => {
-
-        //get stop data from stopid list 
-        $.getJSON(`/api/stops/${stopid}`, function(data) {
-            var stop = data;
-            //Get stop info required for render stopListitem
-            var lat = centreLocation[0];
-            var lng = centreLocation[1];
-            var dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
-            var dist_ms = Math.round(dist_kms*1000);
-            let content = renderStopListItem(stop, dist_ms, fav = true);
-            $("#fav-star-stop-"+stop.stopid).removeClass("far")
+    stopsList.forEach(stop => {
+        stop = JSON.parse(stop)
+        $("#star-stop-"+stop.stopid).removeClass("far")
                 .addClass("fas");
-            $("#fav-stops-list").append(content);
-            $("#fav-stops-div").show();
-        });
+        //Get stop info required for render stopListitem
+        var lat = centreLocation[0];
+        var lng = centreLocation[1];
+        var dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
+        var dist_ms = Math.round(dist_kms*1000);
+        let content = renderStopListItem(stop, dist_ms, fav = true);
+        $("#fav-star-stop-"+stop.stopid).removeClass("far")
+            .addClass("fas");
+        $("#fav-stops-list").append(content);
+        $("#fav-stops-div").show();
     });
 }
