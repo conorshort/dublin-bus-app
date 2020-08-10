@@ -31,8 +31,6 @@ $(document).ready(function() {
 });
 
 
-//TO DO: Bring User to Routes info page if they click a specific route
-// Stop stops from showing on other tabs
 $(document).on("click.stops", '.nav_item, .bottom_nav_item', function () {
     stopsLayer.clearLayers();
     map.off('moveend');
@@ -49,8 +47,7 @@ function showStops(lat, lng){
             // Get distance from centre location to every stop in kilometers
             dist_kms = distance(lat, lng,stop.latitude, stop.longitude, 'K');
             dist_ms = Math.round(dist_kms*1000);
-            content += renderListItem(stop,dist_ms);
-            console.log(stop);
+            content += renderStopListItem(stop,dist_ms);
             markStopsOnMap(stop);
         });
         $("#stop-loader").hide();
@@ -72,7 +69,6 @@ function moveMapToEnteredAddress(address){
     // console.log(address)
     // console.log("MAde it to movemap")
     $.getJSON(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA`, function(data){
-        console.log(data);
         var latlng = data.results[0].geometry.location;
         //map.panTo(new L.LatLng(latlng.lat, latlng.lng))
         showStops(latlng.lat, latlng.lng); 
@@ -169,7 +165,7 @@ $(document).on("click", ".star2", function() {
 
 // create and return list-group-item for stop
 // stop_dist added as item
-function renderListItem(stop, stop_dist) {
+function renderStopListItem(stop, stop_dist,fav = false) {
     // need to do some jiggery pokery to the stop-routes to return the info without brackets or quotations
     var route_list = stop.routes;
     route_list = route_list.slice(2,-2);
@@ -180,8 +176,20 @@ function renderListItem(stop, stop_dist) {
         route_buttons += '<button type="button" class="btn btn-outline-secondary" id="stop-button">' + route_list[i] + "</button>";
     }
 
+    let favStr = "";
+    let solid = "far";
+    if (fav) {
+        favStr = "fav-";
+        solid = "fas"
+    }
+
     const content = `
-    <span class="col-1"><a href="#"><i class="far fa-star star2 " data-stop="${stop.stopid}"></i></a></span>
+    
+    <span class="col-1">
+        <a href="#">
+            <i id="${favStr}star-stop-${stop}"class="${solid} far fa-star star2 stop-star" data-stop="${stop.stopid}"></i>
+        </a>
+    </span>
     <li class="list-group-item stop" id="station-${stop.stopid}">
         <ul class="row">
             <li class="col-8"><b>${ stop.fullname },</b> Stop ${stop.stopid}</li>
@@ -305,4 +313,109 @@ function initAutoComplete(){
     }
 
     initAutocomplete(stops_area);
+}
+
+$(document).on("click.stops", '.star2', function (e) {
+    //get the stop attribute associated with the selected star and push to a list
+    let starredStopID = $(this).attr("data-stop");
+    console.log(starredStopID);
+    
+    $.getJSON(`/api/stops/${starredStopID}`, function(data){
+        var stop = JSON.parse(data);
+        console.log(stop);
+    });
+
+    $.getJSON(`/api/stops/${starredStopID}`, function(data) {
+
+        // parse response data to json 
+        var starredStop = JSON.parse(data);
+            
+        var stopsList = [];
+        stopsList.push(starredStop);
+
+        //if the stop is not in the list it will be saved in cookies
+        try {
+            cookiemonster.get('stopsList');
+            console.log("running cook.get in try1")
+        } catch{
+            cookiemonster.set('stopsList', stopsList, 3650);
+
+            updateStopFavourites()
+            console.log("Running updateStopFavourites in catch1")
+            return;
+        }
+
+        var previous_stop = cookiemonster.get('stopsList');
+        var flag = 0;
+        var newStops = []
+        // if selected stop already in the list wont save again
+        for (let i = 0; i < previous_stop.length; i++) {
+            if (starredStop == previous_stop[i]) {
+
+                flag = 1;
+            } else {
+                newStops.push(previous_stop[i]);
+            }
+        }
+        if (flag == 1) {
+            cookiemonster.set('stopsList', newStops, 3650);
+            updateStopFavourites()
+            console.log("updateing stop favs after flag==1")
+
+
+        } else {
+            try {
+                cookiemonster.get('stopsList');
+                cookiemonster.append('stopsList', stopsList, 3650);
+                console.log("appended to cookies w/ get")
+
+            } catch{
+                cookiemonster.set('stopsList', stopsList, 3650);
+                console.log("cookie monster.set")
+            }
+
+            updateStopFavourites()
+            console.log("running update Stop favs at end of fx")
+        }
+
+    });
+
+});
+
+function updateStopFavourites() {
+    console.log("Made it into updateStopFavourites")
+    $(".stop-star").removeClass("fas").addClass("far");
+
+
+    let stopsList;
+    try {
+        stopsList = cookiemonster.get('stopsList');
+    } catch{
+        $("#fav-stops-div").hide();
+        return;
+    }
+
+
+    if (stopsList.length == 0) {
+        $("#fav-stops-div").hide();
+        return;
+    }
+
+    //stopsList.sort((a, b) => alphanumSort(a[0], b[0]));
+    var lat = centreLocation[0];
+    var lng = centreLocation[1];
+    var dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
+    var dist_ms = Math.round(dist_kms*1000);
+
+    let content = '';
+    stopsList.forEach(stop => {
+        content += renderStopListItem(stop, dist_ms, fav = true);
+        $("#star-stop-" + stop[0]).removeClass("far")
+            .addClass("fas");
+    });
+
+    $("#fav-stops-list").html("").append(content);
+    $("#fav-stops-div").show();
+    console.log("fav-stops-divs-show A !!")
+
 }
