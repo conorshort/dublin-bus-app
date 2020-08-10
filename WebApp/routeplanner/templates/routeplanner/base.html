@@ -29,6 +29,7 @@
 </head>
 
 <body>
+
     <!-- Weather icon html-->
     <header class="site-header">
         <div id="header_content">
@@ -39,14 +40,15 @@
                     </a>
                 </div>
                 <div class="col-4">
-                    <div class="row">
-                        <div class="col-2 weather">
+                    <div class="row" >
+                        <div class="col-2 weather" style="display: flex;">
                             <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" id="weather_img">
-                        </div>
-                        <!-- <div class="col-3 weather" id="temp">
                             {{ weather.temperature }}°C
                         </div>
-                        <div class="col-7 weather" id="description">
+                        <div class="col-3 weather" id="temp">
+                            
+                        </div>
+                       <!-- <div class="col-7 weather" id="description">
                             {{ weather.description }}
                         </div> -->
                     </div>
