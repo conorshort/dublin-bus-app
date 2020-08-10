@@ -89,10 +89,9 @@ $('form').submit(function(e){
 
 
 function showArrivingBusesOnSideBar(stopid){
-    $("#stop-loader").show();
     //get realtime data
+    $("#stop-loader").show();
     $.getJSON(`/realtimeInfo/${stopid}`, function(data) {
-
         // parse response data to json 
         obj = JSON.parse(data)
         if (obj.errorcode == "0") {
@@ -228,6 +227,8 @@ function markStopsOnMap(stop) {
 //Click function for bus stop list-item
 $('.list-group-flush').on('click', '.stop', function(e) {
     // Get the name of tab on the navbar that was clicked
+    
+    $("#stopRealtimeListGroup").html("")
     var id = $(this).attr('id').replace("station-", "");;
     showArrivingBusesOnSideBar(id);
 

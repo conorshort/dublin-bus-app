@@ -343,7 +343,9 @@ div.weather#description {
 #route-stop-div {
   display: none;
 }
-
+.fav-div {
+  margin-left: 0px;
+}
 .stops-list {
   height: 500px;
   overflow-y: auto;
