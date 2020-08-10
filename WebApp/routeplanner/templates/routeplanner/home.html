@@ -24,8 +24,13 @@
             Favourite
         </div></a>
     </div>
-    <div id="sidebar"></div>
-    <div class="col" id="map"><input type="image" src="./static/img/my_location.png" id="my_location_btn"></div>
+
+    <div class="col-12 col-md order-md-2" id="map"><input type="image" src="./static/img/my_location.png"
+            id="my_location_btn"></div>
+    <div id="sidebar" class="col-12 col-md order-md-1"></div>
+    <div class="col-12 order-md-3" id="mobile-show-content">
+        <img src="./static/img/up-arrow-yellow.png" class="mx-auto d-block" id="show-content-arrow" alt="up-arrow">
+    </div>
 </div>
 
 <div class="container" id="bottom-navibar">
@@ -59,13 +64,17 @@
 {% endblock main %}
 
 {% block js %}
+<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="c9fbc84e-3695-4ff4-9754-113ab9f7d3b1" data-blockingmode="auto" type="text/javascript"></script>
 <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
     integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
-    crossorigin=""></script>
+    crossorigin="anonymous"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA&libraries=places" async
     defer></script>
 <script type="text/javascript" src="{% static 'routeplanner/cookiemonster.js' %}" id="script"></script>
-<script src="{% static 'routeplanner/routes.js' %}" id="script"></script>
-<script src="{% static 'routeplanner/home.js' %}"></script> 
-<script src="{% static 'routeplanner/favourite.js' %}"></script> 
+<script src="{% static 'routeplanner/routes.js' %}" ></script>
+<script src="{% static 'routeplanner/stops.js' %}" ></script>
+<script src="{% static 'routeplanner/journey.js' %}"></script>
+
+<script src="{% static 'routeplanner/home.js' %}"></script>
+<script src="{% static 'routeplanner/favourite.js' %}"></script>
 {% endblock %}

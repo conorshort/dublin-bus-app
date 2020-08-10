@@ -1,15 +1,17 @@
 <div class="content p-0 col">
    
-    <div class="row sidebar_header">
+    <div class="row sidebar-header">
         Leap Card
     </div>
-    <div class="row px-3 sidebar_content">
+    <div class="row px-3 sidebar-content">
         <div class="col">
             <form method="post" id="formadd">
                 <b>Leap card account information:</b></br></br>
                 {% csrf_token %}
+
                 {{ form }}
-                <button type="submit" class="btn btn-primary float-right" style="margin-right:2%;margin-top:15%">Submit</button>
+                <button type="submit" class="btn btn-primary float-right" style="margin-right:2%;margin-top:8%">Submit</button>
+
             </form>
         </div>
     </div>

@@ -1,3 +1,9 @@
+
+/* css for extra small button 
+https://stackoverflow.com/questions/33911049/btn-xs-no-longer-a-valid-option-in-bootstrap-4 */
+
+
+
 html, body {
   background: #fafafa;
   color: #333333;
@@ -36,8 +42,10 @@ a:hover, a:active {
   font-size: 30px;
   box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.3); ;
   position: relative;
-  z-index: 99999999;
+  z-index: 1001;
 }
+
+/* ==== weather ==== */
 
 .weather {
   height: 80px;
@@ -58,7 +66,7 @@ div.weather#description {
 }
 
 /* ==== Sidebar ==== */
-.sidebar_header {
+.sidebar-header {
   font-size: 30px;
   background-color: #ffbf00;
   margin: auto;
@@ -66,59 +74,9 @@ div.weather#description {
   padding: 10px;
 }
 
-
-.gray-box {
-  background-color: rgba(0, 0, 0, 0.1);
-  padding: 10px;
-}
-
-.dark-gray-box {
-  background-color: rgba(0, 0, 0, 0.705);
-  padding: 10px;
-}
-
-.light-yellow-box {
-  background-color: #ffbf00;
-  padding: 10px;
-}
-
-.black_box {
-  background-color: rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-#journey_search_div {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-#edit_journey_input {
-  border-top: 1px solid rgb(185, 185, 185);
-  border-bottom: 1px solid rgb(185, 185, 185);
-  padding: 10px 25px;
-
-}
-
-#map {
-  max-height: 100vh;
-  overflow-y: hidden;
-  height: 900px;
-}
-
-#leap-info {
-  color: #ffbf00;
-}
-
-#navibar {
-  background-color: #606060;
-}
-
 .sidebar {
   height:calc(100vh - 80px);
   overflow:scroll;
-
 }
 
 .content {
@@ -141,31 +99,153 @@ div.weather#description {
   padding:0px;
 }
 
+.gray-box {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
 
-#journey_result_content {
+.dark-gray-box {
+  background-color: rgba(0, 0, 0, 0.705);
+  padding: 10px;
+}
+
+.light-yellow-box {
+  background-color: #ffbf00;
+  padding: 10px;
+}
+
+.black-box {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* ==== map ==== */
+
+#map {
+  max-height: 100vh;
+  overflow-y: hidden;
+  height: 900px;
+}
+
+#map {
+  height: calc(100vh - 80px);
+  overflow-y: hidden;
+}
+
+#my_location_btn {
+  position: absolute;
+  bottom: 50px;
+  width: 80px;
+  height: 80px;
+  right: 20px;
+  padding: 10px;
+  z-index: 999;
+  border-radius: 50%;
+  box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
+
+}
+
+
+/* ==== journey ==== */
+
+#journey_search_div {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#edit-journey-input {
+  border-top: 1px solid rgb(185, 185, 185);
+  border-bottom: 1px solid rgb(185, 185, 185);
+  padding: 10px 25px;
+}
+
+#journey-result-content {
   padding: 15px;
 }
 
-
-.verticalLine {
-  border-left: thick solid #ff0000;
-  left: 50%;
+.journey_result_icon {
+  width: 20px;
 }
 
-.circle {
-  background: lightblue;
-  border-radius: 50%;
-  width: 10px;
-  height: 10px;
+#journey-favorite-dropdown {
+  width: 100%;
+  border-radius: 0px;
+  margin: 0px 5px;
 }
+
+#dropdownMenuButton {
+  margin: 0px;
+  background-color: green;
+}
+
+
+/* ==== leapcard ==== */
+#leap-info {
+  color: #ffbf00;
+}
+
+/* ==== stop ==== */
 
 #stop-button {
   margin: 2px;
   padding: 2px 8px;
 }
 
-/* form */
+/* ==== route ==== */
 
+#route-stops-title{
+  padding: 10px 0px 10px 40px;
+  display: inline-block;
+
+}
+
+#back-to-routes{
+  margin-top: 5px;
+  margin-left: 30px;
+}
+.direction-buttons{
+  margin-top: 12px;
+  margin-left: 30px;
+  margin-bottom: 8px;
+}
+.btn-outline-warning {
+  color: black !important;
+}
+
+#route-stop-div {
+  display: none;
+}
+
+.stops-list {
+  height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.stop-item {
+  padding: 5px 5px;
+}
+
+#timetable-modal {
+  top: 10%;
+}
+
+/* ==== modal ==== */
+.modal-dialog,
+.modal-content {
+    height: 80%;
+}
+
+.modal-body {
+    /* 100% = dialog height, 120px = header + footer */
+    max-height: calc(100% - 120px);;  
+    overflow-y: auto;
+}
+
+
+/* ==== form ==== */
 .form-table {
   width: 100%;
   margin: 10px 0px;
@@ -196,7 +276,7 @@ div.weather#description {
   width: 100vw !important;
   height: 60px;
   display: none;
-  z-index: 1000;
+  z-index: 1001;
   position: fixed;
   bottom: 0px;
   left: 0px;
@@ -212,7 +292,6 @@ div.weather#description {
   color: black;
   min-height: 100px;
 }
-
 
 .bottom_nav_item  {
   overflow:hidden;
@@ -239,27 +318,6 @@ div.weather#description {
 }
 
 
-
-/* ==== Map ==== */
-#map {
-  height: calc(100vh - 80px);
-  overflow-y: hidden;
-}
-
-#my_location_btn {
-  position: absolute;
-  bottom: 50px;
-  width: 80px;
-  height: 80px;
-  right: 20px;
-  padding: 10px;
-  z-index: 400000;
-  border-radius: 50%;
-  box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
-
-}
-
-
 #mobile-show-content { 
   border-radius: 10px 10px 0px 0px;
   position: absolute;
@@ -267,7 +325,7 @@ div.weather#description {
   height: 53px;
   background-color: #797878;
   bottom: 58px;
-  z-index: 9000;
+  z-index: 1002;
 }
 
 
@@ -306,38 +364,6 @@ div.weather#description {
   overflow:auto;
 }
 
-.route-active {
-  background-color: #ffe391;
-  pointer-events: auto;
-}
-.route-loading {
-  background-color: #b9b9b9;
-  pointer-events: none;
-}
-
-.route-loading-span {
-  padding-left: 40px ;
-  padding-top: 4px;
-}
-
-#route-stops-title{
-  padding: 10px 0px 10px 40px;
-  display: inline-block;
-
-}
-
-#back-to-routes{
-  margin-top: 5px;
-  margin-left: 30px;
-}
-.direction-buttons{
-  margin-top: 12px;
-  margin-left: 30px;
-  margin-bottom: 8px;
-}
-.btn-outline-warning {
-  color: black !important;
-}
 
 
 #route-stop-div {
@@ -348,17 +374,20 @@ div.weather#description {
 }
 .stops-list {
   height: 500px;
+
+
+#trip-timetable {
+  max-height: 300px;
+
   overflow-y: auto;
-  overflow-x: hidden;
+  padding-top: 0px;
 }
 
-.stop-item {
-  padding: 5px 5px;
-}
+#trip-timetable thead tr th {
+  position: sticky;
+  top: 0;
+  border-width: 0px;
 
-
-#timetable-modal {
-  top: 10%;
 }
 
 
@@ -367,7 +396,9 @@ div.weather#description {
 }
 
 .route-heading {
-  margin: 20px 0px 10px 15px;
+  margin: 0px;
+  padding-left: 25px;
+  padding-bottom: 0px;
 }
 
 #route-filter {
@@ -375,7 +406,21 @@ div.weather#description {
   margin-left: 15px;
 }
 
+.btn-group-xs > .btn, .btn-xs {
+  border-style: none !important;
+  padding: .5rem .4rem;
+  font-size: 1rem;
+  line-height: .5;
+  border-radius: .2rem;
+  margin-right: 0px;
+  margin-left: 0px;
+  width: 95%;
+  height: 30px;
+}
 
+.timetable-item {
+  padding: 2px 0px !important;
+}
 
 
 
@@ -392,6 +437,9 @@ div.weather#description {
       padding-bottom: 60px;
     }
 
+    #side_navibar {
+      display:none;
+    }
     .content {
       width: 100vw;
       height: auto;
@@ -415,7 +463,19 @@ div.weather#description {
       bottom: 0;
     }
 
+    #timetable-modal {
+      font-size: 0.75em;
+    }
 
+    .btn-group-xs > .btn, .btn-xs {
+      border-style: solid  !important;
+      padding: .5rem .4rem;
+      font-size: .875rem;
+      line-height: .5;
+      border-radius: .2rem;
+      margin-right: 0px;
+      margin-left: 0px;
+    }
  }
 
 @media (max-height: 475px) { 
@@ -426,6 +486,10 @@ div.weather#description {
     padding: 10px;
     min-height: 40px;
   }
+  #bottom-navibar {
+    height: 30px;
+  }
+
 }
 
 
@@ -452,14 +516,7 @@ div.weather#description {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
-/* Styling for even number list-item */
-/* .list-group-item:nth-child(odd) { 
-  background-color: white;
-}
 
-.list-group-item:nth-child(even) { 
-  background-color: #f5f5f5;
-} */
 
 .list-group-item {
   width: 100%;

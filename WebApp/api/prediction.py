@@ -3,12 +3,12 @@ from weather import getWeather
 import datetime
 import pickle
 import os
-
+from dateutil import tz
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
 
 
-def predict_journey_time(lineId, segments, departure_unix):
+def predict_journey_time(lineId, segments, departure_unix, return_list=False):
     try:
         segments_df = create_test_dataframe(lineId, segments, departure_unix)
 
@@ -24,13 +24,14 @@ def predict_journey_time(lineId, segments, departure_unix):
         else:
             model = get_route_model(lineId, hasWeather=False)
 
-        journeyTime = get_journey_perdiction(model, segments_df)
+        journeyTime = get_journey_perdiction(
+            model, segments_df, return_list=return_list)
 
         return journeyTime
 
     except Exception as e:
         print('function predict_journey_time error:', e)
-        return 0
+        return None
 
 
 def create_test_dataframe(lineId, segments, departure_unix):
@@ -44,11 +45,11 @@ def create_test_dataframe(lineId, segments, departure_unix):
             model = get_route_model(lineId)
         else:
             model = get_route_model(lineId, hasWeather=False)
-
         # get all features of the route model
         features = model.get_booster().feature_names
 
-        departure_dt = datetime.datetime.fromtimestamp(departure_unix)
+        departure_dt = datetime.datetime.fromtimestamp(
+            departure_unix, tz.gettz("Europe/London"))
         hour = departure_dt.hour
         weekday = departure_dt.weekday
         isPeak = int(is_peak_time(departure_dt))
@@ -77,31 +78,44 @@ def create_test_dataframe(lineId, segments, departure_unix):
             seg_df = seg_df[features]
             # add each segment dataframe to df dataframe
             segments_df = segments_df.append(seg_df, ignore_index=True)
+
         return segments_df
 
     except Exception as e:
         print('function create_test_dataframe error:', e)
-        return pd.DataFrame()
+        return None
 
 
-def get_journey_perdiction(model, test_dataframe):
+def get_journey_perdiction(model, test_dataframe, return_list=False):
     try:
         prediction = model.predict(test_dataframe)
         journeyTime = sum(prediction)
 
-        return journeyTime
+        if return_list:
+
+            segment_cols = [
+                    col for col in test_dataframe if col.startswith('segment')]
+
+            idxs = test_dataframe.loc[(test_dataframe[segment_cols] == 0).all(axis=1)].index
+
+            for idx in idxs:
+                prediction[idx] = -1
+
+            return prediction
+        else:
+            journeyTime = sum(prediction)
+            return journeyTime
     except Exception as e:
         print('function get_journey_perdiction error:', e)
-        return 0
+        return None
 
 
 def get_models_name():
 
     files = []
-
     for (dirpath, dirnames, filenames) in os.walk(f'{ROOT_DIR}/WebApp/pickles/pickles'):
         files.extend(filenames)
-        break
+
     return files
 
 

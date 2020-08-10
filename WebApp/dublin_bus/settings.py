@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_db_logger',
     'rest_framework',
     'api',
 
@@ -136,3 +137,34 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 CSRF_COOKIE_SECURE = True
+
+
+# configuring logging
+LOGGING = {
+
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'db_log': {
+            'level': 'ERROR',
+            'class': 'django_db_logger.db_log_handler.DatabaseLogHandler',
+            'formatter': 'normal'
+        },
+    },
+    'formatters': {
+        'normal': {
+            'format': '%(asctime)s,%(msecs)d %(name)s, %(levelname)s, [%(filename)s:%(lineno)s - %(funcName)10s()], %(message)s'
+        },
+        'simple': {
+            'format': '[%(levelname)s] %(message)s'
+        },
+    },
+
+    'loggers': {
+        'db': {
+            'handlers': ['db_log'],
+            'level': 'ERROR'
+            # 'propagate': True,
+        },
+    },
+}
