@@ -220,8 +220,6 @@ def direction(request):
     destination = request.GET.get('destination')
     departureUnix = request.GET.get('departureUnix')
 
-    print('direction departureUnix:', departureUnix)
-
     # check if 3 papameter all given
     # if missing any parameter from request
     # return a http 400 response with message
@@ -242,8 +240,7 @@ def direction(request):
         requestCount += 1
 
         data = direction_to_first_transit(origin, destination, departureUnix)
-        print("data:", data)
-
+        
         if data['status'] != 'OK':
             return JsonResponse(data)
 

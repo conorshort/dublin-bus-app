@@ -190,8 +190,6 @@ $('form').submit(function(e){
     &departureUnix=${unix}`
     , function(data) {
 
-        console.log(JSON.stringify(data));
-
         var status = (data||{}).status,
         leg = (data||{}).leg,
         steps = (leg||{}).steps;
@@ -217,7 +215,6 @@ $('form').submit(function(e){
                 var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length;
                 displaySearchInfoOnHeader($('#f-from-stop')[0], $('#f-to-stop')[0], $("#datetimePicker")[0]);
                 displayTripSummary(duration_text, transferCount, departure_time_text, arrival_time_text);
-
 
                 //render and append origin waypoint
                 var origin_waypoint = renderTransitStop(departure_time_text, start_address, start_location);

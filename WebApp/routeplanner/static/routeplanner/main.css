@@ -231,6 +231,18 @@ div.weather#description {
   top: 10%;
 }
 
+/* ==== modal ==== */
+.modal-dialog,
+.modal-content {
+    height: 80%;
+}
+
+.modal-body {
+    /* 100% = dialog height, 120px = header + footer */
+    max-height: calc(100% - 120px);;  
+    overflow-y: auto;
+}
+
 
 /* ==== form ==== */
 .form-table {
