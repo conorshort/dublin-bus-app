@@ -183,9 +183,9 @@ function stops() {
     <span class="col-1"><a href="#"><i class="far fa-star star2 " data-stop="${stop.stopid}"></i></a></span>
     <li class="list-group-item stop" id="station-${stop.stopid}">
         <ul class="row">
-            <li class="col-8"><b>${ stop.fullname} ${stop.stopid}</b></li>
-            <li class="col-4">${ stop_dist} Metres</li>
-            <li class="col"> ${ route_buttons}</li>
+            <li class="col-8"><b>${ stop.fullname } ${stop.stopid}</b></li>
+            <li class="col-4">${ stop_dist } Metres</li>
+            <li class="col"> ${ route_buttons }</li>
         </ul>
     </li>`;
 

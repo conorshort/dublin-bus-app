@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from pyleapcard import *
 import re
 import requests
 from .forms import leapCardForm
+
 
 def home(request):
     # api key and url for weather data
@@ -12,7 +13,7 @@ def home(request):
     URL = "http://api.openweathermap.org/data/2.5/weather?q=Dublin,ie&appid=" + API
     try:
         city_weather = requests.get(url=URL).json()  # sends request to API and resturns weather data in Json
-    except:
+    except e:
         print("Error, Weather Data Not Recieved")
 
     # weather information as dictionaryt to be included in context
@@ -62,19 +63,19 @@ def leapinfo(request):
             login_ok = session.try_login(username, password)
             overview = session.get_card_overview()
 
-            #only extract card_label and balance
+            # only extract card_label and balance
             # card_info = {"Card ":vars(overview)['card_label'],
             # "Balance ":vars(overview)['balance']}
-            resp="Card label: ",vars(overview)['card_label'],", "," balance: ",vars(overview)['balance']
-            #return them to the frontend
+            resp = "Card label: ", vars(overview)['card_label'], ", ", " balance: ", vars(overview)['balance']
+            # return them to the frontend
             return HttpResponse(resp, content_type='application/json')
 
         except Exception as e:
-            #return error message if username and password is invalid
-            error="Error: Unable to retrieve Leap Card state"
+            # return error message if username and password is invalid
+            error = "Error: Unable to retrieve Leap Card state"
             return HttpResponse(error, content_type='application/json')
             # return JsonResponse(error)
-                        
+
 
 def realtimeInfo(request, stop_id):
     r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")

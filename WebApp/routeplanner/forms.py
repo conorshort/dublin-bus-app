@@ -10,6 +10,7 @@ class leapCardForm(forms.Form):
 
     username = forms.CharField(widget= forms.TextInput(attrs={'id':'un','style':'margin-right: 80%;'}))
     password = forms.CharField(widget=widgets.PasswordInput(attrs={'id':'pw','style':'margin-right: 80%;'}))
+
     # remember_me = forms.BooleanField(required=False)
 
 

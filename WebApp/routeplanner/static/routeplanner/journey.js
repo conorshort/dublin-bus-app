@@ -1,39 +1,22 @@
+var favorite_journey_list = [];
+
 function journey() {
-    $(document).ready(function () {
-        console.log('ready');
+    // shorter method for the document ready event
+    $(function () {
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (location) {
-
-                var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
-                console.log(latlng);
+        //load script widgets.js before twttr.widgets.load()
+        $.getScript("https://platform.twitter.com/widgets.js")
+            .done(function () {
+                twttr.widgets.load();
             });
-        } else {
-            console.log('nooo');
-        };
-
-
-
-
 
         showSearchJourneyDiv(0);
-
-        twttr.widgets.load()
-
-        //hide loader
-        $("#journey-loader").hide();
-
-        //clear all markers and polyline on the map
-        stopsLayer.clearLayers();
-        journeyLayer.clearLayers();
-
-
+        clearMapLayers();
         initAutoComplete();
-
-        console.log('hiii');
+        updateFavoriteList();
 
         //init datetime picker
-        document.getElementsByClassName("datetimeInput").flatpickr({
+        $(".datetimeInput").flatpickr({
             enableTime: true,
             dateFormat: "Y-m-d H:i",
 
@@ -44,10 +27,81 @@ function journey() {
                 )
             },
         });
+
+        $("#journey-loader").hide();
     });
 
 
+    function updateFavoriteList() {
 
+        // clear all favorite journey list group
+        $("#favorite-journey-list-group").empty();
+        try {
+            favorite_journey_list = cookiemonster.get('journeyList');
+        } catch (error) {
+            console.log('cookiemonster get journeyList error:' + error)
+        }
+
+        if (favorite_journey_list) {
+            favorite_journey_list.forEach(function (element, index) {
+
+                var favorite_journey = JSON.parse(element);
+                var origin_name = ((favorite_journey || {}).origin || {}).name,
+                    destination_name = ((favorite_journey || {}).destination || {}).name;
+
+                if (origin_name && destination_name) {
+                    // render favorite journey list-group-item
+                    $("#favorite-journey-list-group").append(
+                        `<li class="list-group-item favorite-journey-list-item"> \
+                <div class="row"> \
+                <div class="col-1 solid-star" id="solid-star-${index}"><i class="fas fa-star starSolid"></i></div> \
+                <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
+                <b>origin:</b> ${origin_name} </br> \
+                <b>destination:</b> ${destination_name}</div></div></li>`);
+                }
+            });
+        }
+
+
+        // click the favorite journey will fill the origin 
+        $('.favorite-journey-content').click(function (e) {
+            var id = $(this).attr('id');
+            var index = id.replace("favorite-journey-content-", "");
+            var favorite_journey = JSON.parse(favorite_journey_list[index]);
+            var origin = (favorite_journey || {}).origin,
+                destination = (favorite_journey || {}).destination;
+
+            if (origin && destination) {
+                updateSearchInput(origin, destination);
+            }
+        });
+
+
+        // click the solid star icon on favorite journey 
+        // will remove the journey from the cookie journeyList 
+        $('.solid-star').click(function (e) {
+            var id = $(this).attr('id');
+            var index = id.replace("solid-star-", "");
+            cookiemonster.splice('journeyList', index, 1, 3650);
+            updateFavoriteList();
+        });
+    }
+
+
+    function updateSearchInput(origin, destination) {
+        var origin_name = (origin || {}).name,
+            destination_name = (destination || {}).name,
+            origin_coord = (origin || {}).coord,
+            destination_coord = (destination || {}).coord;
+
+        if (origin_name && destination_name && origin_coord && destination_coord) {
+            $("#f-from-stop").val(origin_name);
+            $("#f-to-stop").val(destination_name);
+            $("#f-from-stop").attr('coord-data', JSON.stringify(origin_coord));
+            $("#f-to-stop").attr('coord-data', JSON.stringify(destination_coord));
+        }
+        $('#favoriteJourneyModalCenter').modal('toggle');
+    }
 
 
     function initAutoComplete() {
@@ -57,8 +111,8 @@ function journey() {
             componentRestrictions: { country: "IE" }
         };
 
-        var from_input = document.forms["journeyForm"]["f_from_stop"];
-        var to_input = document.forms["journeyForm"]["f_to_stop"];
+        var from_input = document.forms["journeyForm"]["f-from-stop"];
+        var to_input = document.forms["journeyForm"]["f-to-stop"];
 
         function initAutocomplete(input) {
 
@@ -69,7 +123,6 @@ function journey() {
             // Set the data fields to return when the user selects a place.
             autocomplete.setFields(
                 ['address_components', 'geometry', 'icon', 'name']);
-
 
             autocomplete.addListener('place_changed', function () {
 
@@ -83,9 +136,8 @@ function journey() {
 
                 //TODO: not the good way to store coordinate, fund a way to replace this
                 //save place coordinate to element id
-                input.id = `{"lat":${place.geometry.location.lat()}, "lng":${place.geometry.location.lng()}}`;
+                input.setAttribute('coord-data', `{"lat":${place.geometry.location.lat()}, "lng":${place.geometry.location.lng()}}`);
 
-                var address = '';
                 if (place.address_components) {
                     address = [
                         (place.address_components[0] && place.address_components[0].short_name || ''),
@@ -95,11 +147,24 @@ function journey() {
                 }
             });
         }
-
         initAutocomplete(from_input);
         initAutocomplete(to_input);
-
     }
+
+
+    $("#use-user-location").click(function (e) {
+        // if geolocation is available
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                $("#f-from-stop").val('Your Current Location');
+                $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
+                map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
+            });
+        } else {
+            alert('Geolocation is not available. Please accept the location permission.')
+        }
+    });
+
 
 
     // submit button click event 
@@ -111,36 +176,12 @@ function journey() {
         // Stop form refreshing page on submit
         e.preventDefault();
 
-        var fromInput = document.forms["journeyForm"]["f_from_stop"]
-        var toInput = document.forms["journeyForm"]["f_to_stop"]
-        var dateTime = document.forms["journeyForm"]["datetime"].value;
+        var originCoord = JSON.parse($('#f-from-stop').attr('coord-data'));
+        var destinationCoord = JSON.parse($('#f-to-stop').attr('coord-data'));
 
-        var originCoord = JSON.parse(fromInput.id);
-        var destinationCoord = JSON.parse(toInput.id);
-        console.log("dateTime")
-        console.log(dateTime)
+        var dt = new Date(Date.parse($("#datetimePicker").val()));
+        var unix = dt.getTime() / 1000;
 
-        // 2020-08-06 14:35
-        splitDateTime = dateTime.split(/-| |:/)
-        console.log(splitDateTime)
-
-        dt = DateTime.fromObject({
-            year: splitDateTime[0],
-            month: splitDateTime[1],
-            day: splitDateTime[2],
-            hour: splitDateTime[3],
-            minute: splitDateTime[4],
-            zone: 'Europe/London',
-        });
-
-
-
-        // var dt = DateTime.fromJSDate(new Date(Date.parse(dateTime)));
-        console.log("dt")
-        console.log(dt)
-        var unix = dt.toSeconds();
-        console.log("unix")
-        console.log(unix)
         // //get direction from api /api/direction
         $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${parseFloat(originCoord.lat).toFixed(7)}\ 
     ,${parseFloat(originCoord.lng).toFixed(7)}\
@@ -148,44 +189,51 @@ function journey() {
     ${parseFloat(destinationCoord.lng).toFixed(7)}\
     &departureUnix=${unix}`
             , function (data) {
-                console.log(JSON.stringify(data));
-                if (data.status == "OK") {
-                    try {
 
-                        var leg = data.leg;
-                        var arrive_time = leg.arrival_time.text;
-                        var departure_time = leg.departure_time.text;
-                        var duration = leg.duration.text;
-                        console.log("arrive_time")
-                        console.log(arrive_time)
+                var status = (data || {}).status,
+                    leg = (data || {}).leg,
+                    steps = (leg || {}).steps;
 
-                        console.log("Trnasit FIND +++")
-                        console.log(JSON.stringify(data).match(/TRANSIT/g) || [])
+                if (status == "OK" && leg && steps) {
+
+                    var arrival_time_text = ((leg || {}).arrival_time || {}).text,
+                        departure_time_text = ((leg || {}).departure_time || {}).text,
+                        duration_text = ((leg || {}).duration || {}).text,
+                        start_address = (leg || {}).start_address,
+                        end_address = (leg || {}).end_address,
+                        start_location = (leg || {}).start_location,
+                        end_location = (leg || {}).end_location;
+
+                    if (arrival_time_text
+                        && departure_time_text
+                        && duration_text
+                        && start_address
+                        && end_address
+                        && start_location
+                        && end_location) {
+
                         var transferCount = (JSON.stringify(data).match(/TRANSIT/g) || []).length;
-                        displaySearchInfoOnHeader(fromInput.value, toInput.value, dateTime);
-                        displayTripSummary(duration, transferCount, departure_time, arrive_time);
+                        displaySearchInfoOnHeader($('#f-from-stop')[0], $('#f-to-stop')[0], $("#datetimePicker")[0]);
+                        displayTripSummary(duration_text, transferCount, departure_time_text, arrival_time_text);
 
                         //render and append origin waypoint
-                        var origin_waypoint = renderTransitStop(departure_time, leg.start_address, leg.start_location);
-                        appendElements({ "#journey_result_steps": origin_waypoint });
-                        console.log('eg.steps:' + leg.steps);
-                        displayJourneySteps(leg.steps);
+                        var origin_waypoint = renderTransitStop(departure_time_text, start_address, start_location);
+                        $("#journey-result-steps").append(origin_waypoint);
+                        displayJourneySteps(steps);
 
                         //render and append origin waypoint
-                        var destination_waypoint = renderTransitStop(arrive_time, leg.end_address, leg.end_location);
-                        appendElements({ "#journey_result_steps": destination_waypoint });
+                        var destination_waypoint = renderTransitStop(arrival_time_text, end_address, end_location);
+                        $("#journey-result-steps").append(destination_waypoint);
 
                         //drop origin marker
-                        dropMarkerOnMap(leg.start_location.lat, leg.start_location.lng, leg.start_address, "");
+                        dropMarkerOnMap(start_location.lat, start_location.lng, start_address, "");
                         //drop destinaiton marker
-                        dropMarkerOnMap(leg.end_location.lat, leg.end_location.lng, leg.end_address, "");
+                        dropMarkerOnMap(end_location.lat, end_location.lng, end_address, "");
 
                         showResultJourneyDiv(10);
-                        MapUIControl.halfscreen();
-
-                    } catch (error) {
-                        alert(error);
                     }
+                    MapUIControl.halfscreen();
+
                 } else {
                     alert("No journey planning result, please try input other locations.");
                 }
@@ -197,19 +245,19 @@ function journey() {
 
 
     //save the selected journey to favourite
-    $('#star').click(function (e) {
-        e.preventDefault;
-        //get the selected origin, destination and line info 
-        let starredOrigin = document.forms["journeyForm"]["f_from_stop"].value;
-        let starredDestination = document.forms["journeyForm"]["f_to_stop"].value;
-        let starredLine = document.getElementById("lineName").textContent;
+    $('#hollow-star').click(function (e) {
+
+        $("#hollow-star").hide();
+
+        var fromInput = document.forms["journeyForm"]["f-from-stop"];
+        var toInput = document.forms["journeyForm"]["f-to-stop"];
+        var originCoord = JSON.parse(fromInput.getAttribute('coord-data'));
+        var destinationCoord = JSON.parse(toInput.getAttribute('coord-data'));
 
         //push all of them into a list then push every new selected journey into a journey list
-        var perJourney = [];
+        var perJourney = JSON.stringify({ "origin": { "name": fromInput.value, "coord": originCoord }, "destination": { "name": toInput.value, "coord": destinationCoord } });
+
         var journeyList = [];
-        perJourney.push('Origin:  ' + starredOrigin);
-        perJourney.push('Destination:  ' + starredDestination);
-        perJourney.push('Route(s):  ' + starredLine);
         journeyList.push(perJourney);
 
         //if the journey is not in the list it will be saved in cookies
@@ -222,18 +270,10 @@ function journey() {
         }
 
         var previous_journey = cookiemonster.get('journeyList');
-        var flag = 0;
 
-        //if selected journey already in the list wont save again
-        for (let i = 0; i < previous_journey.length; i++) {
-            if (perJourney == previous_journey[i]) {
-                alert('This journey is already in the list');
-                flag = 1;
-            }
-        }
-
-        //if it is not in the list then will append to cookies 
-        if (flag == 0) {
+        if (previous_journey.includes(perJourney)) {
+            alert('This journey is already in the list');
+        } else {
             try {
                 cookiemonster.get('journeyList');
                 cookiemonster.append('journeyList', journeyList, 3650);
@@ -241,52 +281,37 @@ function journey() {
             } catch{
                 cookiemonster.set('journeyList', journeyList, 3650);
             }
-            alert('Save Sucessfully');
+            alert('Save as favorite journey sucessfully');
         }
-
     });
 
 
 
-
-
-
-    $('#edit_journey_input').click(function () {
+    $('#edit-journey-input').click(function () {
         showSearchJourneyDiv(10);
         clearSearchResult(10);
 
     });
 
 
-
-    //append value to key element
-    function displayElements(obj) {
-        $.each(obj, function (key, value) {
-            $(key).html(value);
-        });
-    }
-
-    //append value to key element
-    function appendElements(obj) {
-        $.each(obj, function (key, value) {
-            $(key).append(value);
-        });
-    }
-
-
-
-    function displaySearchInfoOnHeader(origin, destination, dateTime) {
+    function displaySearchInfoOnHeader(originInput, destinationInput, dateTime) {
         // dictionary to store all the elements which are going to display on frontend
         // key: the element id or class name
         // value: content to append to the element 
-        var obj = {
-            "#journey_result_from": origin,
-            "#journey_result_to": destination,
-            "#journey_result_datetime": dateTime
-        };
+        $("#journey-result-from").html(originInput.value)
+        $("#journey-result-to").html(destinationInput.value)
+        $("#journey-result-datetime").html(dateTime.value)
 
-        displayElements(obj);
+        var perJourney = JSON.stringify({ "origin": { "name": originInput.value, "coord": JSON.parse(originInput.getAttribute('coord-data')) }, "destination": { "name": destinationInput.value, "coord": JSON.parse(destinationInput.getAttribute('coord-data')) } });
+        var index = jQuery.inArray(perJourney, favorite_journey_list);
+
+        if (index > -1) {
+            $("#hollow-star").hide();
+        } else {
+            $("#hollow-star").show();
+        }
     }
+
 
     function displayTripSummary(duration, transferCount, departure_time, arrive_time) {
         // dictionary to store all the elements which are going to display on frontend
@@ -300,15 +325,9 @@ function journey() {
                 + "  transfers"
         });
 
-        var obj = {
-            "#journey_result_detail": duration_tranfer_count,
-            "#section-trip-summary": departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time,
-
-        };
-        displayElements(obj);
-
+        $("#journey-result-detail").html(duration_tranfer_count);
+        $("#section-trip-summary").html(departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time);
     }
-
 
 
 
@@ -324,31 +343,38 @@ function journey() {
 
 
 
-
     function renderTransitDetail(step, index) {
+
+        var travel_mode = (step || {}).travel_mode,
+            duration_text = ((step || {}).duration || {}).text,
+            distance_text = ((step || {}).distance || {}).text;
 
         content = '<div class="transit-stop row"> ';
 
-        if (step.travel_mode == "TRANSIT") {
-            content += `<div class="transit-timeline col-3" style="text-align:right;"><img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon"></div>`
-            content += '<div class="col-1"><div style="border-left: 4px solid red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+        if (travel_mode) {
+            if (travel_mode == "TRANSIT") {
+                content += `<div class="transit-timeline col-3" style="text-align:right;"><img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon"></div>`
+                content += '<div class="col-1"><div style="border-left: 4px solid red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
 
-        } else {
-            content += `<div class="transit-timeline col-3" style="text-align:right";><img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon"></div>`
-            content += '<div class="col-1"><div style="border-left: 4px dotted red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+            } else {
+                content += `<div class="transit-timeline col-3" style="text-align:right";><img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon"></div>`
+                content += '<div class="col-1"><div style="border-left: 4px dotted red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+            }
+
+            content += '<div class="transit-detail col-8" style="padding-top: 20px; padding-bottom: 20px;">';
+            content += `<div class="transit-mode row"> ${travel_mode}</div>`;
         }
 
-        content += '<div class="transit-detail col-8" style="padding-top: 20px; padding-bottom: 20px;">';
-        content += `<div class="transit-mode row"> ${step.travel_mode}</div>`;
-        content += `<div class="transit-duration row">${step.duration.text}&nbsp;&nbsp;&nbsp;&nbsp;${step.distance.text}</div>`;
+        if (duration_text && distance_text) {
+            content += `<div class="transit-duration row">${duration_text}&nbsp;&nbsp;&nbsp;&nbsp;${distance_text}</div>`;
+        }
 
-        if (step.travel_mode == "TRANSIT") {
-            content += renderStepCard(step, index);
+        if (travel_mode == "TRANSIT") {
+            content += renderTransitStepCard(step, index);
             // content +=  `<div class="transit-num-stops row">${step.transit_details.num_stops}</div>`;
         }
 
         content += '</div></div>'
-
         return content;
     }
 
@@ -357,91 +383,106 @@ function journey() {
     function displayJourneySteps(steps) {
         content = '';
         stepLength = steps.length;
-        console.log('stepLength:' + stepLength);
 
         $.each(steps, function (index, step) {
-            console.log(index);
 
-            if (step.travel_mode == "TRANSIT") {
+            var travel_mode = (step || {}).travel_mode,
+                transit_details = (step || {}).transit_details;
 
-                var transit_details = step.transit_details;
-                content += renderTransitStop(transit_details.departure_time.text,
-                    transit_details.departure_stop.name,
-                    transit_details.departure_stop.location);
+            if (travel_mode == "TRANSIT") {
+                if (transit_details) {
 
-                content += renderTransitDetail(step, index);
+                    var departure_time_text = ((transit_details || {}).departure_time || {}).text,
+                        departure_stop_name = ((transit_details || {}).departure_stop || {}).name,
+                        departure_stop_location = ((transit_details || {}).departure_stop || {}).location,
+                        arrival_time_text = ((transit_details || {}).arrival_time || {}).text,
+                        arrival_stop_name = ((transit_details || {}).arrival_stop || {}).name,
+                        arrival_stop_location = ((transit_details || {}).arrival_stop || {}).location;
 
-                content += renderTransitStop(transit_details.arrival_time.text,
-                    transit_details.arrival_stop.name,
-                    transit_details.arrival_stop.location);
-
-
-            } else if (step.travel_mode == "WALKING") {
+                    //check if the keys exist in the step object
+                    if (departure_time_text
+                        && departure_stop_name
+                        && departure_stop_location
+                        && arrival_time_text
+                        && arrival_stop_name
+                        && arrival_stop_location) {
+                        content += renderTransitStop(departure_time_text,
+                            departure_stop_name,
+                            departure_stop_location);
+                        content += renderTransitDetail(step, index);
+                        content += renderTransitStop(arrival_time_text,
+                            arrival_stop_name,
+                            arrival_stop_location);
+                    }
+                }
+            } else {
                 content += renderTransitDetail(step, index);
             }
 
-            //get encoding journey polyline
-            var encodingPolyline = step.polyline.points;
-            //decode polyline to latlngs array
-            var coordinates = decode(encodingPolyline);
+            var points = ((step || {}).polyline || {}).points,
+                end_location_lat = ((step || {}).end_location || {}).lat,
+                end_location_lng = ((step || {}).end_location || {}).lng;
 
-            drawPolylineOnMap(step.travel_mode, coordinates);
+            if (points) {
+                var coordinates = decode(points);
+                drawPolylineOnMap(travel_mode, coordinates);
+            }
 
-            if (index !== (stepLength - 1)) {
+            if (index !== (stepLength - 1) && end_location_lat && end_location_lng) {
                 //drop destination marker
-                dropMarkerOnMap(step.end_location.lat, step.end_location.lng, "", "circle");
+                dropMarkerOnMap(end_location_lat, end_location_lng, "", "circle");
             }
-
         });
 
-        appendElements({ "#journey_result_steps": content });
+        $("#journey-result-steps").append(content);
     }
 
 
 
-    function renderStepCard(step, index) {
+    function renderTransitStepCard(step, index) {
 
         content = "";
-
 
         // Using the card component, show the steps of journey on card header
         // show detail of each step in card body 
         // resource: https://getbootstrap.com/docs/4.0/components/collapse/
         content += `
         <div class="card" style="margin: 10px 0px;"> 
-        <div class="card-header" id="heading${index}"><h5 class="mb-0">
-        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">`;
+        <div class="card-header" id="heading-${index}"><h5 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-${index}" aria-expanded="false" aria-controls="collapse-${index}">`;
 
-        content += `<div class="transit-bus-line row">Route ${step.transit_details.line.short_name}&nbsp;&nbsp;&nbsp;&nbsp;`
+        //check if short_name and stops exist in json object
+        var short_name = (((step || {}).transit_details || {}).line || {}).short_name,
+            stops = ((step || {}).transit_details || {}).stops,
+            html_instructions = (step || {}).html_instructions;
 
-        var stops = step.transit_details.stops;
-        if (stops) {
-            content += `<b> ${stops.length}</b> stops</div>`;
+
+        if (short_name) {
+            content += `<div class="transit-bus-line row">Route ${short_name}`
         }
 
-
+        if (stops) {
+            content += `&nbsp;&nbsp;&nbsp;&nbsp<b> ${stops.length}</b> stops</div>`;
+        }
 
         // add journey steps detail in card body
         content += `
         </button></h5></div>
-        <div id="collapse${index}" class="collapse" aria-labelledby="heading${index}" data-parent="#journey_result_steps">
+        <div id="collapse-${index}" class="collapse" aria-labelledby="heading-${index}" data-parent="#journey-result-steps">
         <div class="card-body">`;
-
-
-        // if the travel_mode is TRANSIT, add bus icon and bus route number to content
-        var stops = step.transit_details.stops;
 
         if (stops) {
             $.each(stops, function (index, value) {
                 content += "<p> " + value.plate_code + "  " + value.stop_name + "</p>";
             });
         } else {
-            content += "<p>" + step.html_instructions + "</p>";
+            if (html_instructions) {
+                content += "<p>" + html_instructions + "</p>";
+            }
         }
         content += '</div></div></div>';
 
         return content;
-
     }
 
 
@@ -459,6 +500,7 @@ function journey() {
     }
 
 
+
     function dropMarkerOnMap(lat, lon, location = "", markerShape = "default") {
 
         if (markerShape == "circle") {
@@ -468,8 +510,8 @@ function journey() {
             });
         } else {
             var marker = L.marker([lat, lon]);
-
         }
+
         if (location != "") {
             marker.bindPopup(`<b> ${location}</b>`)
         }
@@ -486,7 +528,6 @@ function journey() {
             var polyline = L.polyline(points, { color: 'red', dashArray: '6, 6', dashOffset: '1' });
         }
 
-
         journeyLayer.addLayer(polyline);
         // zoom the map to the polyline
         currentBounds = polyline.getBounds()
@@ -495,30 +536,34 @@ function journey() {
 
 
     function clearSearchResult() {
-        var obj = {
-            "#journey_result_from": "",
-            "#journey_result_to": "",
-            "#journey_result_datetime": "",
-            "#section-trip-summary": "",
-            "#journey_result_steps": "",
-            "#journey_result_detail": ""
-        };
 
-        displayElements(obj);
+        $("#journey-result-from").empty();
+        $("#journey-result-to").empty();
+        $("#journey-result-datetime").empty();
+        $("#section-trip-summary").empty();
+        $("#journey-result-steps").empty();
+        $("#journey-result-detail").empty();
+
+        clearMapLayers()
+    }
+
+
+    function clearMapLayers() {
         journeyLayer.clearLayers();
         stopsLayer.clearLayers();
     }
 
 
     function showSearchJourneyDiv(time) {
-        $("#journey_search_div").fadeIn(time);
-        $("#journey_result_div").fadeOut(time);
+        $("#journey-search-div").fadeIn(time);
+        $("#journey-result-div").fadeOut(time);
 
     }
 
+
     function showResultJourneyDiv(time) {
-        $("#journey_result_div").fadeIn(time);
-        $("#journey_search_div").fadeOut(time);
+        $("#journey-result-div").fadeIn(time);
+        $("#journey-search-div").fadeOut(time);
 
     }
 
@@ -529,14 +574,12 @@ function journey() {
     function decode(encoded) {
 
         // array that holds the points
-
         var points = []
         var index = 0, len = encoded.length;
         var lat = 0, lng = 0;
         while (index < len) {
             var b, shift = 0, result = 0;
             do {
-
                 b = encoded.charAt(index++).charCodeAt(0) - 63;//finds ascii                                                                                    //and substract it by 63
                 result |= (b & 0x1f) << shift;
                 shift += 5;
@@ -552,9 +595,7 @@ function journey() {
             } while (b >= 0x20);
             var dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
             lng += dlng;
-
             points.push([(lat / 1E5), (lng / 1E5)])
-
         }
         return points
     }
