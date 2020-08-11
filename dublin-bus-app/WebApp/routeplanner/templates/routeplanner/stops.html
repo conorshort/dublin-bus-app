@@ -1,4 +1,3 @@
-
 {% load static %}
 <div class="content p-0 col">
     <div class="row sidebar-header">
@@ -7,24 +6,35 @@
     <div class="row sidebar-content">
         <div class="col" id="stops-div">
             <form id='stops-area' method="post" class="row px-4 light-yellow-box">
-                <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area" class="col-9 form-control">
+                <input id="stops_area" type="text" name="stops_Area" placeholder="Search Stops By Area"
+                    class="col-9 form-control">
                 {% csrf_token %}
                 <button type="submit" class="col-3 btn btn-primary">Search</button>
             </form>
 
-            
-            <div class="spinner-grow text-secondary" style="margin:auto;" id="stop-loader" role="status">
+
+
+
+            <div class="row">
+                <div class="fav-div col-12" id="fav-stops-div">
+                    <h5 class="stops-heading gray-box">Your Favourite Stops</h5>
+                    <div class="spinner-grow text-secondary m-5" id="stop-favs-loader" role="status">
+                        <span class="sr-only"></span>
+                    </div>
+                    <ul class="list-group list-group-flush" id="fav-stops-list"></ul>
+                </div>
+            </div>
+
+
+
+            <h5 class="stop-heading gray-box">All Stops</h5>
+            <div class="spinner-grow text-secondary m-5" id="stop-loader" role="status">
                 <span class="sr-only"></span>
             </div>
             <div id="no-stops-warning" class="row m-0 alert alert-warning" style="display: none;">No Stops
                 match this search</div>
-            <div class="row fav-div" id="fav-stops-div">
-                <h5 class="route-heading">Your Favourite Stops</h5>
-                <ul class="list-group list-group-flush" id="fav-stops-list"></ul>
-            </div>
-            <h5 class="route-heading">All Stops</h5>
             <ul class="list-group list-group-flush p-0" id="stopsListGroup">
-            </ul> 
+            </ul>
         </div>
 
         <div class="col" id="stop-realtime-div">
@@ -32,10 +42,13 @@
                 <h6 class="btn mx-20 my-0 btn-outline-dark btn-sm" id="back-to-stops">
                     < Back </h6>
             </div>
+            <div class="spinner-grow text-secondary m-5" id="realtime-loader" role="status">
+                <span class="sr-only"></span>
+            </div>
+            <div id="no-realtime-warning" class="row m-0 alert alert-warning" style="display: none;">
+            No real-time info available at this time.</div>
             <div class="list-group-flush p-0 vh-100" id="stopRealtimeListGroup"></div>
         </div>
     </div>
     <!-- <script src="{% static 'routeplanner/stops.js' %}" id="script"></script>  -->
 </div>
-
-
