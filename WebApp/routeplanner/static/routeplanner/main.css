@@ -466,6 +466,9 @@ div.weather#description {
     #timetable-modal {
       font-size: 0.75em;
     }
+    #timetable-tabs {
+      font-size: 1.1em !important;
+    }
 
     .btn-group-xs > .btn, .btn-xs {
       border-style: solid  !important;
