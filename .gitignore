@@ -147,3 +147,4 @@ historical/
 
 # ssh stuff
 *.ssh
+*.ssh-dev
