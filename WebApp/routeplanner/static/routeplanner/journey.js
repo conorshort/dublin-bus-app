@@ -15,17 +15,18 @@ function journey() {
         initAutoComplete();
         updateFavoriteList();
 
+        let today = new Date();
+        let year = today.getFullYear()
+        let month = today.getMonth()
+        let day = today.getDate()
+        let hour = today.getHours();
+        let min = today.getMinutes();
+        console.log(hour + " " + min)
         //init datetime picker
         $(".datetimeInput").flatpickr({
             enableTime: true,
             dateFormat: "Y-m-d H:i",
-
-            //set datetime picker default value to current datetime
-            onReady: function (selectedDates, dateStr, instance) {
-                $('.datetimeInput').val(
-                    instance.formatDate(new Date(), "Y-m-d H:i")
-                )
-            },
+            defaultDate: `${year}-${month}-${day} ${hour}:${min}`,
         });
 
         $("#journey-loader").hide();
