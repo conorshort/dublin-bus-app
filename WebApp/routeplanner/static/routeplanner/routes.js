@@ -442,7 +442,7 @@ function routes() {
                         return elem;
                     });
 
-                    console.log(tripTimetable)
+                    // console.log(tripTimetable)
 
                     let content = '';
 

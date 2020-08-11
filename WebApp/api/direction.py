@@ -18,10 +18,10 @@ db_logger = logging.getLogger('db')
 
 def direction_to_first_transit(origin, destination, departureUnix):
 
-    print("=============================================")
-    print('origin:', origin)
-    print('destination:', destination)
-    print('departureUnix:', departureUnix)
+    # print("=============================================")
+    # print('origin:', origin)
+    # print('destination:', destination)
+    # print('departureUnix:', departureUnix)
 
     # check is all the parameters given
     # response 400 error if missing any parameter
@@ -47,8 +47,8 @@ def direction_to_first_transit(origin, destination, departureUnix):
         return data
 
     if data['status'] != 'OK':
-        print('Google direction api status not OK. Given parameters {parameters}')
-        return JsonResponse(data)
+        print(f'Google direction api status not OK. Given parameters {PARAMS}')
+        return data
 
     try:
         # count how many steps which travel model is TRANSIT
@@ -152,8 +152,8 @@ def direction_to_first_transit(origin, destination, departureUnix):
                 arr_unix = newData['leg']['arrival_time']['value'] + duration
                 timestr = datetime.fromtimestamp(
                     int(arr_unix), tz.gettz("Europe/London"))
-                print("+++++++++++++++++++++++++++++++++++++++======\n",
-                        arr_unix)
+                # print("+++++++++++++++++++++++++++++++++++++++======\n",
+                #         arr_unix)
                 timestr = timestr.strftime('%I:%M%p')
                 step['transit_details']['arrival_time']['value'] = arr_unix
                 step['transit_details']['arrival_time']['text'] = timestr

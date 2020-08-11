@@ -479,7 +479,22 @@ div.weather#description {
       margin-right: 0px;
       margin-left: 0px;
     }
- }
+
+    
+
+#my_location_btn {
+  position: absolute;
+  bottom: 25px;
+  width: 50px;
+  height: 50px;
+  right: 15px;
+  padding: 10px;
+  z-index: 999;
+  border-radius: 50%;
+  box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
+
+}
+}
 
 @media (max-height: 475px) { 
   .nav_img {

@@ -86,15 +86,15 @@ class GTFSTripManager(GTFSManager):
             if trips:
                 for trip in trips:
                     stops = trip.gtfsstoptime_set.all()
-                    print("full stops set")
+                    # print("full stops set")
 
                     # Get the stops sequence number for origin and desitination stops
                     origin_seq = stops.filter(
                         stop_id=origin_id).values("stop_sequence")
                     dest_seq = stops.filter(
                         stop_id=destination_id).values("stop_sequence")
-                    print(origin_seq)
-                    print(dest_seq)
+                    # print(origin_seq)
+                    # print(dest_seq)
                     # The stops we want will have a sequence number between the origin and destination stops
                     these_stops = stops.filter(stop_sequence__gte=origin_seq,
                                                stop_sequence__lte=dest_seq)
@@ -174,7 +174,7 @@ class GTFSTripManager(GTFSManager):
             return stop_query_set
         else:
             print("returning from get stops between")
-            print(stops_as_lists)
+            # print(stops_as_lists)
             return stops_as_lists
 
     def stops_on_route(self, shape_id):

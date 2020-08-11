@@ -17,11 +17,11 @@ function journey() {
 
         let today = new Date();
         let year = today.getFullYear()
-        let month = today.getMonth()
+        let month = today.getMonth() + 1
         let day = today.getDate()
         let hour = today.getHours();
         let min = today.getMinutes();
-        console.log(hour + " " + min)
+
         //init datetime picker
         $(".datetimeInput").flatpickr({
             enableTime: true,
@@ -155,8 +155,10 @@ function journey() {
 
     $("#use-user-location").click(function (e) {
         // if geolocation is available
+        console.log("setting location");
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function (position) {
+                console.log("hellooo");
                 $("#f-from-stop").val('Your Current Location');
                 $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
                 map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
@@ -180,15 +182,26 @@ function journey() {
         var originCoord = JSON.parse($('#f-from-stop').attr('coord-data'));
         var destinationCoord = JSON.parse($('#f-to-stop').attr('coord-data'));
 
-        var dt = new Date(Date.parse($("#datetimePicker").val()));
-        var unix = dt.getTime() / 1000;
+        console.log("dateTime")
+        console.log(dateTime)
+
+        // 2020-08-06 14:35
+        splitDateTime = dateTime.split(/-| |:/)
+        console.log(splitDateTime)
+        dt = DateTime.fromObject({
+            year: splitDateTime[0],
+            month: splitDateTime[1],
+            day: splitDateTime[2],
+            hour: splitDateTime[3],
+            minute: splitDateTime[4],
+            zone: 'Europe/London',
+        });
+
+        var unix = dt.toSeconds();
+
 
         // //get direction from api /api/direction
-        $.getJSON(`http://127.0.0.1:8000/api/direction?origin=${parseFloat(originCoord.lat).toFixed(7)}\ 
-    ,${parseFloat(originCoord.lng).toFixed(7)}\
-    &destination=${parseFloat(destinationCoord.lat).toFixed(7)},\
-    ${parseFloat(destinationCoord.lng).toFixed(7)}\
-    &departureUnix=${unix}`
+        $.getJSON(`api/direction?origin=${parseFloat(originCoord.lat).toFixed(7)},${parseFloat(originCoord.lng).toFixed(7)}&destination=${parseFloat(destinationCoord.lat).toFixed(7)},${parseFloat(destinationCoord.lng).toFixed(7)}&departureUnix=${unix}`
             , function (data) {
 
                 var status = (data || {}).status,
