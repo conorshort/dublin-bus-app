@@ -181,7 +181,7 @@ function journey() {
 
         var originCoord = JSON.parse($('#f-from-stop').attr('coord-data'));
         var destinationCoord = JSON.parse($('#f-to-stop').attr('coord-data'));
-
+        var dateTime = document.forms["journeyForm"]["datetime"].value;
         console.log("dateTime")
         console.log(dateTime)
 
