@@ -655,7 +655,7 @@ function routes() {
                 <ul>
                     <li class="row">
                     <span class="col-1">
-                        <a href="#">
+                        <a>
                             <i id="${favStr}star-route-${route}" class='${solid} fa-star star route-star' data-route="${route}" data-operator="${operator}">
                             </i>
                         </a>

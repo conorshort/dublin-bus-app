@@ -183,7 +183,7 @@ function stops() {
       <li class="list-group-item stop" id="station-${stop.stopid}">
           <ul class="row pl-0">
                 <span class="col-1">
-                    <a href="#">
+                    <a>
                         <i id="${favStr}star-stop-${stop.stopid}"class="${solid} far fa-star star2 stop-star" data-stop="${stop.stopid}"></i>
                     </a>
                 </span>
