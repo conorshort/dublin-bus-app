@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
+
 <head>
 
     <!-- Required meta tags -->
@@ -80,17 +81,17 @@
 
     <!-- Font Awesome html Icons -->
     <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin="anonymous"></script>
-    
+
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js" ></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
 
     <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
-    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-analytics.js" ></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-analytics.js"></script>
 
     <!-- Add Firebase products that you want to use -->
-    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js" ></script>
-    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-firestore.js" ></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-firestore.js"></script>
+
     <script>
         // congif firebase
         var firebaseConfig = {
@@ -120,10 +121,10 @@
     <div class="modal fade" id="timetable-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content" >
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="timetable-title"></h5>
-                    
+
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -141,10 +142,13 @@
                     </div>
                 </div>
                 <div class="modal-body container" id="trip-timetable">
-                    <div class="spinner-grow text-secondary" style="margin:auto; display: none;" id="trip-loader" role="status">
+                    <div class="spinner-grow text-secondary" style="margin:auto; display: none;" id="trip-loader"
+                        role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
-
+                    <div id="trip-timetable-error" class="row m-0 alert alert-warning" style="display: none;">
+                        Sorry, we have no timetable available for this trip.
+                    </div>
                     <table id="trip-timetable-table" style="display: none;" class="table table-striped table-sm">
                         <thead class="thead-light">
                             <tr>
@@ -186,4 +190,5 @@
         </div>
     </div>
 </body>
+
 </html>

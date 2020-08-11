@@ -24,6 +24,9 @@ function routes() {
         $(document).on("keyup.routes search.routes", '#route-filter', () => {
             filterRouteList();
         });
+        $(document).on("click.routes", () => {
+            $("#trip-timetable-error").hide();
+        });
 
         // On click for the back button when route variations are
         // showing
@@ -107,6 +110,7 @@ function routes() {
 
         // get all routes from django
         $.getJSON("api/routes/routename", function (data) {
+            $("#no-routes-loaded").hide();
 
             // Get the routenames from the data
             let routes = [];
@@ -188,6 +192,12 @@ function routes() {
                 // Show a list of the variations 
                 showRouteVariations(routeName, inbound);
             });
+        }).fail(function() {
+
+            $("#all-routes-loader").hide();
+            $("#no-routes-loaded").show();
+
+
         });
     });
 
@@ -314,6 +324,11 @@ function routes() {
                 $("#timetable-loader").hide();
                 // Populate the modal with the timetable
                 fillTimetableModal(stopName, timetables);
+            }).fail(() => {
+
+
+
+
             });
     }
 
@@ -402,6 +417,7 @@ function routes() {
         $(".timetable-item").off("click.routes")
         $(".timetable-item").on("click.routes", function (e) {
             $("#trip-loader").show();
+            $("#trip-timetable-error").hide();
             $("#timetable-modal").animate({ scrollTop: $("#timetable-modal").height() }, 200);
             $("#trip-timetable-table").hide();
             let tripId = $(e.target).attr("data-trip-id");
@@ -415,7 +431,6 @@ function routes() {
                     // Sort the times
                     tripTimetable.sort((a, b) => a.stop_sequence - b.stop_sequence);
 
-                    console.log(tripTimetable)
                     // Convert the time from seconds after midnight to a human readable format
                     tripTimetable = tripTimetable.map(elem => {
 
@@ -449,10 +464,12 @@ function routes() {
                     });
                     $("#actual-times").html("");
                     $("#actual-times").append(content);
-                }).then(() => {
                     $("#trip-timetable-table").show();
                     $("#trip-loader").hide();
-
+                }).fail(() => {
+                    $("#trip-loader").hide();
+                    $("#trip-timetable-error").show();
+                
                 });
         });
     }
