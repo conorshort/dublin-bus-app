@@ -144,3 +144,6 @@ config.py
 dublin_bus_gtfs/
 go_ahead_gtfs/
 historical/
+
+# ssh stuff
+*.ssh

@@ -10,10 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 import sys
-
-from .config import *
 import os
-from .config import db_config
+from .config import db_config, secret_key
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -24,14 +22,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "6e$-u*$-g$6%7$dpe9j(%1a1s8^&4j(&l7fvtij9@4xwvr0fvn"
+SECRET_KEY = secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost',
+                 'www.buustimes.com',
                  "127.0.0.1",
-                 "192.168.1.19"]
+                 "192.168.1.19",
+                 "176.58.99.68"]
 
 
 # Application definition
