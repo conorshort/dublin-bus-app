@@ -228,21 +228,21 @@ div.weather#description {
   padding: 5px 5px;
 }
 
-#timetable-modal {
+/* #timetable-modal {
   top: 10%;
-}
+} */
 
 /* ==== modal ==== */
-.modal-dialog,
+/* .modal-dialog,
 .modal-content {
     height: 80%;
-}
+} */
 
-.modal-body {
-    /* 100% = dialog height, 120px = header + footer */
+/* .modal-body {
+    100% = dialog height, 120px = header + footer 
     max-height: calc(100% - 120px);;  
-    overflow-y: auto;
-}
+    overflow-y: auto; 
+} */
 
 
 /* ==== form ==== */
