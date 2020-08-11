@@ -16,18 +16,18 @@ function journey() {
         updateFavoriteList();
 
         let today = new Date();
-        let year = today.getFullYear()
-        let month = today.getMonth() + 1
-        let day = today.getDate()
+        let year = today.getFullYear();
+        let month = today.getMonth()+1;
+        let day = today.getDate();
         let hour = today.getHours();
         let min = today.getMinutes();
 
         //init datetime picker
         $(".datetimeInput").flatpickr({
             enableTime: true,
+            minDate: "today",
             dateFormat: "Y-m-d H:i",
-            minDate: 'today',
-            defaultDate: `${year}-${month}-${day} ${hour}:${min}`
+            defaultDate: `${year}-${month}-${day} ${hour}:${min}`,
         });
 
         $("#journey-loader").hide();
@@ -344,13 +344,12 @@ function journey() {
         $("#section-trip-summary").html(departure_time + " &nbsp;&nbsp; <b style='font-size: 30px;'> &#8250; </b>  &nbsp;&nbsp;" + arrive_time);
     }
 
-
-
     function renderTransitStop(timeline, name, coordinates) {
-        content = '<div class="transit-stop row" style="margin:0px; padding:0px;"> ';
-        content += `<div class="transit-timeline col-3" style="text-align:right; ">${timeline}</div>`
-        content += '<div class="col-1" style="margin:0px; padding:0px;"><div style="background: red; border-radius: 50%; width: 24px; height: 24px; margin-left: -3px;"></div></div>';
-        content += `<div class="transit-stop-name col-8" style="margin:0px; padding:0px;"><b>${name}</b></div>`;
+        content = '<div class="transit-stop row m-0"> ';
+        content += `<div class="transit-timeline col-3 p-0" style="text-align:right;"><div class="row m-0">${timeline}</div></div>`;
+        content += '<div class="col-1 p-0" style="position: relative; width: 100%; padding-top: 100%;"><div class="row m-0"';
+        content += 'style="background: red; position: absolute; border-radius: 50%; top: 0; left: 0; bottom: 0; right: 0; max-width: 24px; max-height: 24px;"></div></div>';
+        content += `<div class="transit-stop-name col-8 p-0"><div class="row m-0"><b>${name}</b></div></div>`;
         content += '</div>'
 
         return content;
@@ -364,24 +363,24 @@ function journey() {
             duration_text = ((step || {}).duration || {}).text,
             distance_text = ((step || {}).distance || {}).text;
 
-        content = '<div class="transit-stop row"> ';
+        content = '<div class="transit-stop row m-0"> ';
 
         if (travel_mode) {
             if (travel_mode == "TRANSIT") {
-                content += `<div class="transit-timeline col-3" style="text-align:right;"><img src="./static/img/bus_small.png" alt="bus_icon" class="journey_result_icon"></div>`
-                content += '<div class="col-1"><div style="border-left: 4px solid red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+                content += `<div class="transit-timeline col-3 p-0" style="text-align:right;"><img src="./static/img/bus_small.png" alt="bus_icon" class="row m-0 journey_result_icon"></div>`
+                content += '<div class="col-1 p-0"><div class="row m-0" style="border-left: 2px solid red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
 
             } else {
-                content += `<div class="transit-timeline col-3" style="text-align:right";><img src="./static/img/walking_small.png" alt="walk_icon" class="journey_result_icon"></div>`
-                content += '<div class="col-1"><div style="border-left: 4px dotted red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
+                content += `<div class="transit-timeline col-3 p-0" style="text-align:right";><img src="./static/img/walking_small.png" alt="walk_icon" class="row m-0 journey_result_icon"></div>`
+                content += '<div class="col-1 p-0"><div class="row m-0" style="border-left: 2px dotted red; height: 100%;position: absolute;left: 50%; margin-left: -2px; top: 0;"></div></div>';
             }
 
-            content += '<div class="transit-detail col-8" style="padding-top: 20px; padding-bottom: 20px;">';
-            content += `<div class="transit-mode row"> ${travel_mode}</div>`;
+            content += '<div class="transit-detail col-8 p-0" style="padding-top: 20px; padding-bottom: 20px;">';
+            content += `<div class="transit-mode row m-0"> ${travel_mode}</div>`;
         }
 
         if (duration_text && distance_text) {
-            content += `<div class="transit-duration row">${duration_text}&nbsp;&nbsp;&nbsp;&nbsp;${distance_text}</div>`;
+            content += `<div class="transit-duration row m-0">${duration_text}&nbsp;&nbsp;&nbsp;&nbsp;${distance_text}</div>`;
         }
 
         if (travel_mode == "TRANSIT") {
@@ -477,7 +476,7 @@ function journey() {
         }
 
         if (stops) {
-            content += `&nbsp;&nbsp;&nbsp;&nbsp<b> ${stops.length}</b> stops</div>`;
+            content += `&nbsp;&nbsp;&nbsp;&nbsp<b> ${stops.length}</b>&nbsp;stops</div>`;
         }
 
         // add journey steps detail in card body

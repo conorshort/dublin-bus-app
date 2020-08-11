@@ -139,15 +139,20 @@
                     </nav>
                     <div class="tab-content" id="timetable-content">
                     </div>
-                    <div class="spinner-grow text-secondary" style="margin:auto;" id="timetable-loader" role="status">
-                        <span class="sr-only">Loading...</span>
+                    <div class="text-center">
+                        <div class="spinner-grow text-warning m-5" style="margin:auto;" id="timetable-loader" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-body container" id="trip-timetable">
-                    <div class="spinner-grow text-secondary" style="margin:auto; display: none;" id="trip-loader"
+                    <div class="text-center">
+                        <div class="spinner-grow text-warning m-5" style="margin:auto; display: none;" id="trip-loader"
                         role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
+                    </div>
+                    
                     <div id="trip-timetable-error" class="row m-0 alert alert-warning" style="display: none;">
                         Sorry, we have no timetable available for this trip.
                     </div>
