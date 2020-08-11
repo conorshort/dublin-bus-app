@@ -1,9 +1,10 @@
 from dublin_bus.config import OPENWEATHER_KEY
+from dublin_bus.settings import BASE_DIR
 import requests
 import json
 import ast
 import bisect
-
+import os
 
 def getWeatherHourly():
 
@@ -17,7 +18,7 @@ def getWeatherHourly():
     # to make the future query faster
     dt_values = [i['dt'] for i in weatherList]
 
-    with open('weatherData.txt', 'w') as file:
+    with open(os.path.join(BASE_DIR, "weatherData.txt"), 'w') as file:
 
         # weather_dt_values : store the whole weather list which within 48 hrs
         # weather_hourly_data : store the dt of each weather in a list
@@ -30,10 +31,10 @@ def getWeatherHourly():
 
 def getWeather(unixTime):
 
-    with open("weatherData.txt", "r") as file:
+    with open(os.path.join(BASE_DIR, "weatherData.txt"), "r") as file:
         contents = file.read()
         data = ast.literal_eval(contents)
-        print(data)
+
         weather_hourly_data = data['weather_hourly_data']
         weather_dt_values = data['weather_dt_values']
         file.close()

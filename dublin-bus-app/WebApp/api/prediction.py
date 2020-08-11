@@ -4,8 +4,8 @@ import datetime
 import pickle
 import os
 from dateutil import tz
+from dublin_bus.settings import BASE_DIR
 
-ROOT_DIR = os.path.abspath(os.path.dirname(__name__))
 
 
 def predict_journey_time(lineId, segments, departure_unix, return_list=False):
@@ -113,7 +113,7 @@ def get_journey_perdiction(model, test_dataframe, return_list=False):
 def get_models_name():
 
     files = []
-    for (dirpath, dirnames, filenames) in os.walk(f'{ROOT_DIR}/WebApp/pickles/pickles'):
+    for (dirpath, dirnames, filenames) in os.walk(f"{BASE_DIR}/pickles/pickles"):
         files.extend(filenames)
 
     return files
@@ -121,11 +121,14 @@ def get_models_name():
 
 def get_route_model(lineId, hasWeather=False):
 
-    # path for model pickle without weather
-    modelFile = f'{ROOT_DIR}/WebApp/pickles/pickles/route_{lineId}.pkl'
+
+
+        # path for model pickle without weather
+    modelFile = f"{BASE_DIR}/pickles/pickles/route_{lineId}.pkl"
     if hasWeather is False:
         # path for model pickle
-        modelFile = f'{ROOT_DIR}/WebApp/pickles/pickles_without_weather/route_{lineId}_without_weather.pkl'
+        modelFile =f"{BASE_DIR}/pickles/pickles_without_weather/route_{lineId}_without_weather.pkl"
+
 
     # Load the Model back from file
     with open(modelFile, 'rb') as file:

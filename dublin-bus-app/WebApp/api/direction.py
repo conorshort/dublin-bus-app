@@ -226,7 +226,6 @@ def is_route_exist_for_prediction(step):
         # get all ML models' name
         # only do the journey time prediction if the model of the line is existed
         lines = [modelName.replace('.pkl', '') for modelName in get_models_name()]
-
         try:
             lineId = step['transit_details']['line']['short_name'].upper()
             if ('route_'+lineId) in lines:
