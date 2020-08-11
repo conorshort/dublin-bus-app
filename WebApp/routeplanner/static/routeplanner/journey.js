@@ -26,7 +26,8 @@ function journey() {
         $(".datetimeInput").flatpickr({
             enableTime: true,
             dateFormat: "Y-m-d H:i",
-            defaultDate: `${year}-${month}-${day} ${hour}:${min}`,
+            minDate: 'today',
+            defaultDate: `${year}-${month}-${day} ${hour}:${min}`
         });
 
         $("#journey-loader").hide();
