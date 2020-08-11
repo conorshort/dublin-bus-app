@@ -375,7 +375,7 @@ div.weather#description {
 .stops-list {
   height: 500px;
 
-
+}
 #trip-timetable {
   max-height: 300px;
 
@@ -438,7 +438,7 @@ div.weather#description {
     }
 
     #side_navibar {
-      display:none;
+      display: none;
     }
     .content {
       width: 100vw;

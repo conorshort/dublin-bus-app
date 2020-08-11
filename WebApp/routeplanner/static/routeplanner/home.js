@@ -149,7 +149,7 @@ var MapUIControl = (function () {
                 this.isHidemap=false;
                 this.isFullscreen=false;
                 allowStopReload = false;
-                $(".sidebar_header").hide();
+                $(".sidebar-header").hide();
                 $("#mobile-show-content").hide();
                 $('#sidebar').fadeIn(10);
                 // $("#map").show()
@@ -181,7 +181,7 @@ var MapUIControl = (function () {
                 this.isHidemap = false;
                 this.isFullscreen = true;
                 allowStopReload = false;
-                $(".sidebar_header").hide();
+                $(".sidebar-header").hide();
 
                 var newHeight = $(window).height() - 80 - 60 - 50 + 5;
                 $('#sidebar').fadeOut(10);

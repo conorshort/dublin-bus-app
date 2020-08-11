@@ -30,7 +30,9 @@ function routes() {
         // Hides the variations div and shows the routes list
         $(document).on("click.routes", "#back-to-routes", function () {
             removeRouteStopsFromMap();
-            toggleRouteDisplay(currentRoute);
+            for (const route in routeLayerObj) {
+                removeRouteFromMap(route);
+            }
             MapUIControl.hidemap();
             $("#route-stop-div").fadeOut(10);
             $("#variations-accordion").html("");
