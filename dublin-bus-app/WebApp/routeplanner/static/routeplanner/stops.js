@@ -240,7 +240,7 @@ function stops() {
 
         var marker =
             L.marker([stop.latitude, stop.longitude])
-                .bindPopup(`<b> ${stop.localname}</b><br> ${route_buttons}`);
+                .bindPopup(`<b> ${stop.fullname}</b><br> ${route_buttons}`);
         stopsLayer.addLayer(marker);
     }
 
