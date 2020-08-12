@@ -364,6 +364,11 @@ div.weather#description {
   overflow:auto;
 } */
 
+.solid-star-span{
+  font-size: 30px; 
+  color: Dodgerblue;
+}
+
 
 
 #route-stop-div {

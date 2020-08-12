@@ -61,7 +61,7 @@ function journey() {
                     $("#favorite-journey-list-group").append(
                         `<li class="list-group-item favorite-journey-list-item"> \
                             <div class="row"> \
-                            <div class="col-1 solid-star" id="solid-star-${index}"><i class="fas fa-star starSolid"></i></div> \
+                            <div class="col-1 solid-star" id="solid-star-${index}"><span style="color: #ffbf00;"><i class="fas fa-star starSolid"></span></div> \
                             <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
                             <b>Origin:</b> ${origin_name} </br> \
                             <b>Destination:</b> ${destination_name}</div></div>
@@ -320,6 +320,7 @@ function journey() {
 
 
     function displaySearchInfoOnHeader(originInput, destinationInput, dateTime) {
+        console.log('displaySearchInfoOnHeader');
         // dictionary to store all the elements which are going to display on frontend
         // key: the element id or class name
         // value: content to append to the element 
@@ -329,6 +330,9 @@ function journey() {
 
         var perJourney = JSON.stringify({ "origin": { "name": originInput.value, "coord": JSON.parse(originInput.getAttribute('coord-data')) }, "destination": { "name": destinationInput.value, "coord": JSON.parse(destinationInput.getAttribute('coord-data')) } });
         var index = jQuery.inArray(perJourney, favorite_journey_list);
+
+        console.log('perJourney: '+perJourney);
+        console.log('index: '+index);
 
         if (index > -1) {
             $("#hollow-star").hide();

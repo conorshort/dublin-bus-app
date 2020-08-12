@@ -8,49 +8,54 @@
         <script id="CookieDeclaration" src="https://consent.cookiebot.com/c9fbc84e-3695-4ff4-9754-113ab9f7d3b1/cd.js"
             type="text/javascript" async></script>
     </div>
-    <div class="row px-3 sidebar-content">
-        <div id="journey-search-div" class="col mt-0">
+    <div class="row sidebar-content">
+        <div id="journey-search-div" class="col mt-0 ">
 
             <!-- Button trigger modal -->
-            <div type="button" class="row mb-3 gray-box" data-toggle="modal" data-target="#favoriteJourneyModalCenter">
-                <i class="fas fa-star starSolid"></i>&nbsp;&nbsp;Use Favorite Journey
+            <div type="button" class="row mb-1 gray-box" style="margin: 0px;" data-toggle="modal" data-target="#favoriteJourneyModalCenter">
+                <span style="color: #ffbf00;">
+                    <i class="fas fa-star starSolid"></i>
+                </span>&nbsp;&nbsp;Use Favorite Journey
+            </div>
+            <div class="row p-3">
+                <form name="journeyForm" id="journeyForm" method="POST" onkeydown="return event.key != 'Enter';" class="col">
+
+                    <!-- origin input row -->
+                    <div class="form-group row">
+                        <label for="inputFromStop" class="col-sm-2 col-form-label">From: </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control from-input" name="f-from-stop" id="f-from-stop"
+                                required="required" placeholder="Origin">
+                            <a id="use-user-location"
+                                style="color: blue; cursor: pointer; text-decoration: underline; font-size: 12px;"><i>Use
+                                    Current Location</i></a>
+                        </div>
+                    </div>
+    
+                    <!-- destination input row -->
+                    <div class="form-group row">
+                        <label for="inputToStop" class="col-sm-2 col-form-label">To: </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control to-input" name="f-to-stop" id="f-to-stop"
+                                required="required" placeholder="Destination">
+                        </div>
+                    </div>
+    
+                    <!-- departure datetime picker input row -->
+                    <div class="form-group row">
+                        <label for="datetime" class="col-sm-2 col-form-label">Depart: </label>
+                        <div class="col-sm-10">
+                            <input class="datetimeInput" id="datetimePicker" required="required" name="datetime">
+                        </div>
+                    </div>
+    
+                    <!-- Cross Site Request Forgery protection-->
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-primary float-right"></input>
+                </form>
             </div>
 
-            <form name="journeyForm" id="journeyForm" method="POST" onkeydown="return event.key != 'Enter';">
-
-                <!-- origin input row -->
-                <div class="form-group row">
-                    <label for="inputFromStop" class="col-sm-2 col-form-label">From: </label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control from-input" name="f-from-stop" id="f-from-stop"
-                            required="required" placeholder="Origin">
-                        <a id="use-user-location"
-                            style="color: blue; cursor: pointer; text-decoration: underline; font-size: 12px;"><i>Use
-                                Current Location</i></a>
-                    </div>
-                </div>
-
-                <!-- destination input row -->
-                <div class="form-group row">
-                    <label for="inputToStop" class="col-sm-2 col-form-label">To: </label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control to-input" name="f-to-stop" id="f-to-stop"
-                            required="required" placeholder="Destination">
-                    </div>
-                </div>
-
-                <!-- departure datetime picker input row -->
-                <div class="form-group row">
-                    <label for="datetime" class="col-sm-2 col-form-label">Depart: </label>
-                    <div class="col-sm-10">
-                        <input class="datetimeInput" id="datetimePicker" required="required" name="datetime">
-                    </div>
-                </div>
-
-                <!-- Cross Site Request Forgery protection-->
-                {% csrf_token %}
-                <input type="submit" class="btn btn-primary float-right"></input>
-            </form>
+            
             <div class="text-center">
                 <div class="spinner-grow text-warning m-5" style="margin:auto;" id="journey-loader" role="status">
                     <span class="sr-only"></span>
@@ -60,10 +65,17 @@
         </div>
 
         <!-- Journey Planner result  -->
-        <div id="journey-result-div" class="col px-2">
-            <div class="row gray-box" id="journey-result-header">
+        <div id="journey-result-div" class="col">
+            <div class="light-yellow-box" style="padding: 3px;">
+                <h6 class="btn btn-outline-dark btn-sm" id="edit-journey-input" style="padding: 3px 8px;">
+                    < Back </h6>
+            </div>
+            <div class="row p-2 gray-box" id="journey-result-header">
                 <div class="col">
                     <div class="row p-2" id="hollow-star"><i class="far fa-star star"></i></div>
+                    
+                    <!-- <h6 class="btn mx-20 my-0 btn-outline-dark btn-sm" id="edit-journey-input">
+                        Back </h6> -->
                     <div class="row">
                         <div class="col-4"> <b>From:</b> </div>
                         <div class="col-8" id="journey-result-from"></div>
@@ -78,22 +90,22 @@
                     </div>
                 </div>
             </div>
-            <div class="row gray-box" id="edit-journey-input"> <i style='font-size:20px' class='fas'> &#xf304;</i>
-                &nbsp;&nbsp; Change Input</div>
-            <div class="row" id="journey-result-content">
+            
+            <div class="row mx-0"  id="journey-result-content">
                 <!-- Showing total duration and other detail -->
-                <div class="col">
-                    <h2>
-                        <div class="row" id="section-trip-summary"></div>
-                    </h2>
+                <div class="col" >
+                    <div class="row" ><h2 id="section-trip-summary"></h2></div>
                     <div class="row">
-                        <div class="col" id="journey-result-detail"></div>
+                        <div id="journey-result-detail"></div>
+                    </div>
+                    <div class="row">
+                        <div class="accordion" id="journey-result-steps"></div>
                     </div>
                 </div>
             </div>
 
             <!-- steps of the journey -->
-            <div class="accordion" id="journey-result-steps"></div>
+            
         </div>
     </div>
     <div class="row m-3 black-box">
