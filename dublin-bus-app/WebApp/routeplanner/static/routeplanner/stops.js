@@ -9,6 +9,7 @@ function stops() {
     map.on('moveend', displayStops);
 
     function displayStops() {
+        
         // This if is checking if the map is resizing on mobile
         // But it doens't seem to work at the moment
         if (MapUIControl.allowStopReload) {
@@ -26,17 +27,25 @@ function stops() {
         }
     }
 
+    
     $(document).ready(function () {
         $("#stop-realtime-div").fadeOut(10);
         $("#stops-div").fadeIn(10);
 
         //clear all the markers in the layer
         stopsLayer.clearLayers();
-
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+            user_lat = position.coords.latitude;
+            user_long = position.coords.longitude;
+            dist_flag = 1;
+            console.log(user_lat, user_long)
+            })}else{
+            dist_flag = 0;
+        };
         var mapCentra = map.getCenter();
         //update centreLocation to centre of the map
         centreLocation = [mapCentra["lat"], mapCentra["lng"]];
-
         showStops(centreLocation[0], centreLocation[1]);
         initAutoComplete();
         updateStopFavourites();
@@ -59,7 +68,11 @@ function stops() {
             $.each(data, function (i, stop) {
                 // content += document.getElementById('routes-list').innerHTML = "<a href='#'><i class='far fa-star star'></a>"
                 // Get distance from centre location to every stop in kilometers
-                dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
+                if(dist_flag == 1){
+                    dist_kms = distance(user_lat, user_long, stop.latitude, stop.longitude, 'K');
+                }else{
+                    dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
+                }
                 dist_ms = Math.round(dist_kms * 1000);
                 content += renderStopListItem(stop, dist_ms);
                 markStopsOnMap(stop);
@@ -126,44 +139,6 @@ function stops() {
         });
     }
 
-    // $(document).on("click", ".star2", function() {
-
-    //     //get the stop attribute associate with the selected star and push to a list
-    //     let starredStop = $(this).attr("data-stop");
-    //     var stopsList = [];
-    //     stopsList.push(starredStop);
-
-    //         //if the stop is not in the list it will be saved in cookies
-    //     // try{
-    //     //     cookiemonster.get('stopsList');
-    //     // }catch{
-    //     //     cookiemonster.set('stopsList', stopsList, 3650);
-    //     //     return ;
-    //     // }
-
-    //     var previous_stops = cookiemonster.get('stopsList');
-    //     var flag = 0;
-
-    //     //if selected stop already in the list wont save again
-    //     for(let i=0;i<previous_stops.length;i++){
-    //         if(starredStop==previous_stops[i]){
-    //             alert('This stop is already in the list');
-    //             flag = 1;
-    //         }
-    //     }
-
-    //     //if it is not in the list then will append to cookies 
-    //         if (flag==0){
-    //             try{
-    //                 cookiemonster.get('stopsList');
-    //                 cookiemonster.append('stopsList', stopsList, 3650);
-
-    //             } catch{
-    //                 cookiemonster.set('stopsList', stopsList, 3650);
-    //             }
-    //             alert('Save Sucessfully');
-    //         }
-    // });
 
     // create and return list-group-item for stop
     // stop_dist added as item
@@ -242,6 +217,7 @@ function stops() {
             L.marker([stop.latitude, stop.longitude])
                 .bindPopup(`<b> ${stop.fullname}</b><br> ${route_buttons}`);
         stopsLayer.addLayer(marker);
+        
     }
 
 
