@@ -10,7 +10,7 @@ from .forms import leapCardForm
 def home(request):
     # api key and url for weather data
     API = '83e8d16b48f83517a5d89158fc88656e'
-    URL = "http://api.openweathermap.org/data/2.5/weather?q=Dublin,ie&appid=" + API
+    URL = "https://api.openweathermap.org/data/2.5/weather?q=Dublin,ie&appid=" + API
     try:
         city_weather = requests.get(url=URL).json()  # sends request to API and resturns weather data in Json
     except e:
