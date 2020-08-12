@@ -158,6 +158,7 @@ function journey() {
         // if geolocation is available
         console.log("setting location");
         if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function () { }, function () { }, {});
             navigator.geolocation.getCurrentPosition(function (position) {
                 console.log("hellooo");
                 $("#f-from-stop").val('Your Current Location');
