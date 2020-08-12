@@ -2,7 +2,7 @@ const RESP_WINDOW_SIZE = 768;
 const MAP_ZOOM_NUM = 12;
 let currentBounds;
 let currentCentre;
-let allowStopReload = true;
+
 let DateTime = luxon.DateTime;
 let dublinCoords = [53.3373266,-6.2752625]
 // Code in this block will be run one the page is loaded in the browser
@@ -125,6 +125,7 @@ function initMap() {
 var MapUIControl = (function () {
 
     return {
+        allowStopReload: true,
         isFirstTime: true,
         isHidemap: true,
         isHalfscreen: false,
@@ -139,6 +140,7 @@ var MapUIControl = (function () {
                 $("#map").animate({ height: "0px" }, 500, () => {
                     // $("#map").hide();
                     $("#mobile-show-content").hide();
+                    $("#my_location_btn").animate({ bottom: 10 });
                 });
             }
         },
@@ -148,11 +150,12 @@ var MapUIControl = (function () {
                 this.isHalfscreen =true;
                 this.isHidemap=false;
                 this.isFullscreen=false;
-                allowStopReload = false;
+                this.allowStopReload = false;
                 $(".sidebar-header").hide();
                 $("#mobile-show-content").hide();
                 $('#sidebar').fadeIn(10);
                 // $("#map").show()
+                $("#my_location_btn").animate({ bottom: 10 });
                 $("#map").animate({ height: "200px" }, 500, () => {
 
                     console.log("Invalidating size")
@@ -161,7 +164,7 @@ var MapUIControl = (function () {
                         map.flyTo(dublinCoords, 12, { 'duration': 0.5 });
                         this.isFirstTime = false;
                     }
-                    allowStopReload = true;
+                    this.allowStopReload = true;
                     if (currentBounds) {
                         console.log("flyint to bounds");
                         console.log(currentBounds);
@@ -180,16 +183,17 @@ var MapUIControl = (function () {
                 this.isHalfscreen = false;
                 this.isHidemap = false;
                 this.isFullscreen = true;
-                allowStopReload = false;
+                this.allowStopReload = false;
                 $(".sidebar-header").hide();
 
-                var newHeight = $(window).height() - 80 - 60 - 50 + 5;
+                var newHeight = $(window).height() - 80 - 30 - 50 + 5;
                 $('#sidebar').fadeOut(10);
                 $("#mobile-show-content").show();
                 // $("#map").show()
+                $("#my_location_btn").animate({bottom: 25});
                 $("#map").animate({ height: newHeight }, 500, () => {
                     map.invalidateSize(false);
-                    allowStopReload = true;
+                    this.allowStopReload = true;
                     if (currentBounds) {
                         map.flyToBounds(currentBounds, { 'duration': 0.5 });
                     } else if (currentCentre) {

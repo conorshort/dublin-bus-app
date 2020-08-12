@@ -3,18 +3,27 @@ function stops() {
     currentCentre = [53.346967, -6.259923];
     MapUIControl.halfscreen();
     $(document).off("click.stops")
-    //event will be called when map bounds change
-    map.on('moveend', displayStops);
-    function displayStops() {
-        var mapCentra = map.getCenter();
-        //update centreLocation to centre of the map
-        centreLocation = [mapCentra["lat"], mapCentra["lng"]];
 
-        //clear all the markers in the layer
-        stopsLayer.clearLayers();
-        //clear all the elements in list group
-        showStops(centreLocation[0], centreLocation[1]);
-        updateStopFavourites();
+    //event will be called when map bounds change
+    // This is put in a function so the moveend can be removed when not on the stops tab
+    map.on('moveend', displayStops);
+
+    function displayStops() {
+        // This if is checking if the map is resizing on mobile
+        // But it doens't seem to work at the moment
+        if (MapUIControl.allowStopReload) {
+            var mapCentra = map.getCenter();
+            //update centreLocation to centre of the map
+            centreLocation = [mapCentra["lat"], mapCentra["lng"]];
+
+            //clear all the markers in the layer
+            stopsLayer.clearLayers();
+            //clear all the elements in list group
+            showStops(centreLocation[0], centreLocation[1]);
+            updateStopFavourites();
+        } else {
+            console.log("Blocked===")
+        }
     }
 
     $(document).ready(function () {

@@ -1,4 +1,3 @@
-
 /* css for extra small button 
 https://stackoverflow.com/questions/33911049/btn-xs-no-longer-a-valid-option-in-bootstrap-4 */
 
@@ -136,15 +135,13 @@ div.weather#description {
 
 #my_location_btn {
   position: absolute;
-  bottom: 50px;
-  width: 80px;
-  height: 80px;
-  right: 20px;
-  padding: 10px;
+  bottom: 10px;
+  width: 60px;
+  height: 60px;
+  right: 10px;
   z-index: 999;
   border-radius: 50%;
-  box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
-
+  box-shadow: 2px 2px 3px 3px rgba(0,0,0,0.15);
 }
 
 
@@ -322,17 +319,20 @@ div.weather#description {
   border-radius: 10px 10px 0px 0px;
   position: absolute;
   display: none;
-  height: 53px;
-  background-color: #797878;
+  height: 30px;
+  background-color: #242424;
   bottom: 58px;
   z-index: 1002;
 }
 
 
 #show-content-arrow{
-  height: 40px;
+  /* height: 40px; */
   margin: auto;
-  width: 20vw;
+  font-size: 20pt;
+  /* width: 20vw; */
+  color: #ffbf00;
+  text-align: center;
 }
 
 /* ==== Dropdown element ==== */
@@ -480,21 +480,13 @@ div.weather#description {
       margin-left: 0px;
     }
 
-    
 
-#my_location_btn {
-  position: absolute;
-  bottom: 25px;
-  width: 50px;
-  height: 50px;
-  right: 15px;
-  padding: 10px;
-  z-index: 999;
-  border-radius: 50%;
-  box-shadow: 2px 4px 4px 4px rgba(0,0,0,0.26);
+  #my_location_btn {
+    width: 50px;
+    height: 50px;
+  }
 
-}
-}
+ }
 
 @media (max-height: 475px) { 
   .nav_img {
@@ -506,6 +498,11 @@ div.weather#description {
   }
   #bottom-navibar {
     height: 30px;
+  }
+
+  #my_location_btn {
+    width: 40px;
+    height: 40px;
   }
 
 }
