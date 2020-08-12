@@ -27,6 +27,7 @@ function journey() {
             enableTime: true,
             minDate: "today",
             dateFormat: "Y-m-d H:i",
+            time_24hr: true,
             defaultDate: `${year}-${month}-${day} ${hour}:${min}`,
         });
 
