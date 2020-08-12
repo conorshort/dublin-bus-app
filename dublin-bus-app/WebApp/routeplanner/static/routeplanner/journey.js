@@ -17,7 +17,7 @@ function journey() {
 
         let today = new Date();
         let year = today.getFullYear();
-        let month = today.getMonth()+1;
+        let month = today.getMonth() + 1;
         let day = today.getDate();
         let hour = today.getHours();
         let min = today.getMinutes();
@@ -48,7 +48,7 @@ function journey() {
             console.log('cookiemonster get journeyList error:' + error)
         }
         console.log(favorite_journey_list)
-        if (favorite_journey_list && favorite_journey_list.length !=0) {
+        if (favorite_journey_list && favorite_journey_list.length != 0) {
             favorite_journey_list.forEach(function (element, index) {
 
                 var favorite_journey = JSON.parse(element);
@@ -164,13 +164,25 @@ function journey() {
     $("#use-user-location").click(function (e) {
         // if geolocation is available
         console.log("setting location");
+        $("#use-user-location").hide();
+        $("#current-location-loader").show();
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function () { }, function () { }, {});
             navigator.geolocation.getCurrentPosition(function (position) {
                 console.log("hellooo");
+                $("#use-user-location").show();
+                $("#current-location-loader").hide();
                 $("#f-from-stop").val('Your Current Location');
                 $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
                 map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
+            }, function () {
+                    $("#use-user-location").show();
+                    $("#current-location-loader").hide();
+                alert('Something went wrong, your location could not be found.')
+            },
+            {
+                timeout: 5000,
+                enableHighAccuracy: true
             });
         } else {
             alert('Geolocation is not available. Please accept the location permission.')

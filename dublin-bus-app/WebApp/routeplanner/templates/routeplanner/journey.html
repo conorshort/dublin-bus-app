@@ -25,8 +25,13 @@
                         <input type="text" class="form-control from-input" name="f-from-stop" id="f-from-stop"
                             required="required" placeholder="Origin">
                         <a id="use-user-location"
-                            style="color: blue; cursor: pointer; text-decoration: underline; font-size: 12px;"><i>Use
-                                Current Location</i></a>
+                            style="color: blue; cursor: pointer; text-decoration: underline; font-size: 12px;"
+                            class="row">
+                            <i class="col-6">Use Current Location</i>
+                        </a>
+                        <div id="current-location-loader" class="spinner-border spinner-border-sm text-warning mt-1 ml-1" role="status" style="display:none;">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
                 </div>
 
