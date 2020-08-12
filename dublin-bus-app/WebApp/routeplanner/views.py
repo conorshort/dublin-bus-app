@@ -75,13 +75,15 @@ def leapinfo(request):
         except Exception as e:
             # return error message if username and password is invalid
             error = "Error: Unable to retrieve Leap Card state"
+            error = f"{BASE_DIR}<br><br>{FILES}<br><br>{PICKLE_PATH}"
             return HttpResponse(error, content_type='application/json')
             # return JsonResponse(error)
 
 
 def realtimeInfo(request, stop_id):
     r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
-    return JsonResponse(r.text, safe=False)
+
+    #return JsonResponse(r.text, safe=False)
 
 
 def favourite(request):
