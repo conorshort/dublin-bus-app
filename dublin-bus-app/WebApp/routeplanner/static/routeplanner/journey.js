@@ -63,8 +63,8 @@ function journey() {
                             <div class="row"> \
                             <div class="col-1 solid-star" id="solid-star-${index}"><i class="fas fa-star starSolid"></i></div> \
                             <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
-                            <b>origin:</b> ${origin_name} </br> \
-                            <b>destination:</b> ${destination_name}</div></div>
+                            <b>Origin:</b> ${origin_name} </br> \
+                            <b>Destination:</b> ${destination_name}</div></div>
                         </li>`);
                 }
             });
