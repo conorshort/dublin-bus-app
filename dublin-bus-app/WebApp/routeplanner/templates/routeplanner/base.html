@@ -41,15 +41,15 @@
                     </a>
                 </div>
                 <div class="col-6 col-md-4">
-                    <div class="row" >
+                    <div class="row">
                         <div class="col-2 weather" style="display: flex;">
                             <img src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" id="weather_img">
                             {{ weather.temperature }}°C
                         </div>
                         <div class="col-3 weather" id="temp">
-                            
+
                         </div>
-                       <!-- <div class="col-7 weather" id="description">
+                        <!-- <div class="col-7 weather" id="description">
                             {{ weather.description }}
                         </div> -->
                     </div>
@@ -140,7 +140,8 @@
                     <div class="tab-content" id="timetable-content">
                     </div>
                     <div class="text-center">
-                        <div class="spinner-grow text-warning m-5" style="margin:auto;" id="timetable-loader" role="status">
+                        <div class="spinner-grow text-warning m-5" style="margin:auto;" id="timetable-loader"
+                            role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
@@ -148,11 +149,11 @@
                 <div class="modal-body container" id="trip-timetable">
                     <div class="text-center">
                         <div class="spinner-grow text-warning m-5" style="margin:auto; display: none;" id="trip-loader"
-                        role="status">
-                        <span class="sr-only">Loading...</span>
+                            role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
-                    </div>
-                    
+
                     <div id="trip-timetable-error" class="row m-0 alert alert-warning" style="display: none;">
                         Sorry, we have no timetable available for this trip.
                     </div>
@@ -181,17 +182,21 @@
 
 
     <!-- Journey Favorite popup Modal -->
-    <div class="modal fade" id="favoriteJourneyModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="favoriteJourneyModalCenter" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Favorite Journey</h5> 
+                    <h5 class="modal-title" id="exampleModalLongTitle">Favorite Journey</h5>
                 </div>
                 <div class="modal-body">
+                    <div id="no-fav-journeys-warning" class="row m-0 alert alert-warning" style="display: none;">
+                        You have no favourite journeys.
+                    </div>
                     <div class="list-group" id="favorite-journey-list-group"></div>
                 </div>
                 <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

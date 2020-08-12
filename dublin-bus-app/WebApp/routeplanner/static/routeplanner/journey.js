@@ -38,13 +38,17 @@ function journey() {
 
         // clear all favorite journey list group
         $("#favorite-journey-list-group").empty();
+        $("#no-fav-journeys-warning").hide();
+        let favorite_journey_list;
         try {
             favorite_journey_list = cookiemonster.get('journeyList');
         } catch (error) {
+            favorite_journey_list = [];
+            cookiemonster.set('journeyList', favorite_journey_list, 3650);
             console.log('cookiemonster get journeyList error:' + error)
         }
-
-        if (favorite_journey_list) {
+        console.log(favorite_journey_list)
+        if (favorite_journey_list && favorite_journey_list.length !=0) {
             favorite_journey_list.forEach(function (element, index) {
 
                 var favorite_journey = JSON.parse(element);
@@ -55,13 +59,16 @@ function journey() {
                     // render favorite journey list-group-item
                     $("#favorite-journey-list-group").append(
                         `<li class="list-group-item favorite-journey-list-item"> \
-                <div class="row"> \
-                <div class="col-1 solid-star" id="solid-star-${index}"><i class="fas fa-star starSolid"></i></div> \
-                <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
-                <b>origin:</b> ${origin_name} </br> \
-                <b>destination:</b> ${destination_name}</div></div></li>`);
+                            <div class="row"> \
+                            <div class="col-1 solid-star" id="solid-star-${index}"><i class="fas fa-star starSolid"></i></div> \
+                            <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
+                            <b>origin:</b> ${origin_name} </br> \
+                            <b>destination:</b> ${destination_name}</div></div>
+                        </li>`);
                 }
             });
+        } else {
+            $("#no-fav-journeys-warning").show();
         }
 
 
@@ -297,7 +304,8 @@ function journey() {
             } catch{
                 cookiemonster.set('journeyList', journeyList, 3650);
             }
-            alert('Save as favorite journey sucessfully');
+            alert('Journey added to favourites.');
+            updateFavoriteList();
         }
     });
 
