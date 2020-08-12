@@ -5,6 +5,8 @@ from pyleapcard import *
 import re
 import requests
 from .forms import leapCardForm
+from dublin_bus.settings import BASE_DIR
+from api.prediction import FILES, PICKLE_PATH
 
 
 def home(request):
@@ -83,7 +85,7 @@ def realtimeInfo(request, stop_id):
 
 
 def favourite(request):
-    return render(request, 'routeplanner/favourite.html')
+    return HttpResponse(f"{BASE_DIR}<br><br>{FILES}<br><br>{PICKLE_PATH}")
 
 #function to format api geocoordinates request to get lat and long of user-entered address
 # def longlatsearch(request, address):

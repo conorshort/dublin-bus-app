@@ -119,6 +119,12 @@ def get_models_name():
     return files
 
 
+FILES = get_models_name()
+PICKLE_PATH = f"{BASE_DIR}/pickles/pickles_without_weather/route_123_without_weather.pkl"
+
+
+
+
 def get_route_model(lineId, hasWeather=False):
 
 
