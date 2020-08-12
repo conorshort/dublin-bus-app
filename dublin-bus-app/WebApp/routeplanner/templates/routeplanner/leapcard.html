@@ -24,7 +24,7 @@
 </div>
 
 
-<script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js"></script>  
+<script src="https://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js"></script>  
 <script>  
     $(document).ready(function(){  
         $.ajaxSetup({  
@@ -44,7 +44,7 @@
                 dataType: "html",  
                 headers:{'Content-Type':"application/json"},
                 data: info,
-                url: "http://127.0.0.1:8000/leapinfo", //url to handle variables
+                url: "/leapinfo", //url to handle variables
                 success: function(result, statues, xml){  
                     // if success, return the result back to html with id "#leap-info"
                     $("#leap-info").html(result);    
