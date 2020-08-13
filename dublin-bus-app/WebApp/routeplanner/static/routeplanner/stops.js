@@ -203,10 +203,10 @@ function stops() {
     });
 
     //click on pop up functionality
-    $(document).on("click", "#real-time", function () {
-        const stopId = $(this).attr("data-stopid");
-        showArrivingBusesOnSideBar(stopId)
-    });
+    // $(document).on("click", "#real-time", function () {
+    //     const stopId = $(this).attr("data-stopid");
+    //     showArrivingBusesOnSideBar(stopId)
+    // });
 
     function markStopsOnMap(stop) {
         // fixing the printing of array issue on marker
@@ -225,21 +225,24 @@ function stops() {
                 //.bindPopup(`<div id=real-time data-stop=${stop.stopid}><b> ${stop.fullname}</b><br> ${route_buttons}</br><div>`);
         
         //define content of marker including functions
-        var container = $('<div class=real-time-pop />');
+        var container = $('<div  />');
         // container.on('click', '#real-time', function() {
         //     console.log("At least it caught the click")
         //     showArrivingBusesOnSideBar(stop.stopid)
         // });
-        container.html(`<b> ${stop.fullname}</b><br> ${route_buttons}</br>`)
+        container.html(`<b> ${stop.fullname}</b><br> ${route_buttons}</br><div class = real-time-pop data-stopid=${stop.stopid}><button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;"> RealTimeInfo </button></div>`)
         // put this content in the popup
         marker.bindPopup(container[0]);
-        L.DomEvent.addListener(container.get(0), "click", function () { console.log("action fired"); });
+        // L.DomEvent.addListener(container.get(0), "click", function () { showArrivingBusesOnSideBar(stop.stopid); });
         stopsLayer.addLayer(marker);
     }
 
     map.on('popupopen', function() {  
         $('div .real-time-pop').click(function(e){
-          console.log("One of the many Small Polygon Links was clicked");
+            let stopID = $(this).attr("data-stopid");
+            console.log(stopID)
+            showArrivingBusesOnSideBar(stopID);
+            console.log("Made it to click button");
         });
       });
 
