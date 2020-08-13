@@ -34,15 +34,15 @@ function stops() {
 
         //clear all the markers in the layer
         stopsLayer.clearLayers();
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-            user_lat = position.coords.latitude;
-            user_long = position.coords.longitude;
-            dist_flag = 1;
-            console.log(user_lat, user_long)
-            })}else{
-            dist_flag = 0;
-        };
+fix         // if ("geolocation" in navigator) {
+        //     navigator.geolocation.getCurrentPosition(function (position) {
+        //     user_lat = position.coords.latitude;
+        //     user_long = position.coords.longitude;
+        //     dist_flag = 1;
+        //     console.log(user_lat, user_long)
+        //     })}else{
+        //     dist_flag = 0;
+        // };
         var mapCentra = map.getCenter();
         //update centreLocation to centre of the map
         centreLocation = [mapCentra["lat"], mapCentra["lng"]];
@@ -68,8 +68,8 @@ function stops() {
             $.each(data, function (i, stop) {
                 // content += document.getElementById('routes-list').innerHTML = "<a href='#'><i class='far fa-star star'></a>"
                 // Get distance from centre location to every stop in kilometers
-                if(dist_flag == 1){
-                    dist_kms = distance(user_lat, user_long, stop.latitude, stop.longitude, 'K');
+                if (userCurrentLocation){
+                    dist_kms = distance(userCurrentLocation[0], userCurrentLocation[1], stop.latitude, stop.longitude, 'K');
                 }else{
                     dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
                 }
@@ -148,10 +148,20 @@ function stops() {
         var route_list = stop.routes;
         route_list = route_list.slice(2, -2);
         route_list = route_list.split("', '");
+        route_list.sort(alphanumSort)
         // Getting routes to display as buttons for style purposes
-        route_buttons = '';
+        route_buttons = '<b>Routes: </b>';
         for (var i = 0; i < route_list.length; i++) {
-            route_buttons += '<button type="button" class="btn btn-outline-secondary" id="stop-button">' + route_list[i] + "</button>";
+            if (i == route_list.length -1 ){
+                route_buttons += '<span>' + route_list[i] + "</span>";
+            } else {
+                route_buttons += '<span>' + route_list[i] + ", </span>";
+            }
+        }
+        if (stop_dist >= 1000){
+            stop_dist = (stop_dist/1000).toFixed(2) + "km";
+        } else {
+            stop_dist = stop_dist + "m";
         }
 
         let favStr = "";
@@ -172,8 +182,8 @@ function stops() {
                     </a>
                 </span>
               <li class="col-8"><b>${ stop.fullname},</b> Stop ${stop.stopid}</li>
-              <li class="col-3">${ stop_dist} Metres</li>
-              <div class="row"><div class="col-12 pl-5 pt-3"> ${ route_buttons}</div></div>
+              <li class="col-3">${ stop_dist}</li>
+              <div class="row"><div class="col-12 pl-5 pt-3 pr-5"> ${ route_buttons}</div></div>
           </ul>
       </li>`;
 
@@ -213,10 +223,14 @@ function stops() {
         var route_list = stop.routes;
         route_list = route_list.slice(2, -2);
         route_list = route_list.split("', '");
-
-        route_buttons = ''
+        // Getting routes to display as buttons for style purposes
+        route_buttons = '<b>Routes: </b>';
         for (var i = 0; i < route_list.length; i++) {
-            route_buttons += `<button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;">` + route_list[i] + "</button>";
+            if (i == route_list.length - 1) {
+                route_buttons += '<span>' + route_list[i] + "</span>";
+            } else {
+                route_buttons += '<span>' + route_list[i] + ", </span>";
+            }
         }
 
         // create marker for stop
