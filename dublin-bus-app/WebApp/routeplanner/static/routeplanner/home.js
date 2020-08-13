@@ -27,6 +27,8 @@ $(document).ready(function () {
     // This is slightly different to the side-bar nav
     // as it also shows and hides the map
     $('.bottom_nav_item').click(function () {
+        //clear all layers 
+        clearElementsInLayers();
         // Get the name of tab on the navbar that was clicked
         MapUIControl.hidemap();
         var nav_id = $(this).attr('id');
@@ -77,6 +79,7 @@ function clearElementsInLayers() {
     //clear all the markers in the layer
     stopsLayer.clearLayers();
     journeyLayer.clearLayers();
+    userLocationLayer.clearLayers();
 }
 
 
@@ -217,7 +220,7 @@ var MapUIControl = (function () {
         },
 
     }
-})()
+})();
 
 
 
@@ -248,6 +251,7 @@ function loadSideBarContent(navId) {
 
     // Load the appropriate HTML using the navId
     $("#sidebar").load("/" + navId, () => {
+        clearElementsInLayers();
         switch (navId) {
             case "routes":
                 routes();

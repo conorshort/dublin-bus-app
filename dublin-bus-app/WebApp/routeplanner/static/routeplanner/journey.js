@@ -17,7 +17,7 @@ function journey() {
 
         let today = new Date();
         let year = today.getFullYear();
-        let month = today.getMonth()+1;
+        let month = today.getMonth() + 1;
         let day = today.getDate();
         let hour = today.getHours();
         let min = today.getMinutes();
@@ -27,6 +27,7 @@ function journey() {
             enableTime: true,
             minDate: "today",
             dateFormat: "Y-m-d H:i",
+            time_24hr: true,
             defaultDate: `${year}-${month}-${day} ${hour}:${min}`,
         });
 
@@ -39,7 +40,6 @@ function journey() {
         // clear all favorite journey list group
         $("#favorite-journey-list-group").empty();
         $("#no-fav-journeys-warning").hide();
-        let favorite_journey_list;
         try {
             favorite_journey_list = cookiemonster.get('journeyList');
         } catch (error) {
@@ -47,7 +47,7 @@ function journey() {
             cookiemonster.set('journeyList', favorite_journey_list, 3650);
             console.log('cookiemonster get journeyList error:' + error)
         }
-        console.log(favorite_journey_list)
+        console.log('favorite_journey_list:'+favorite_journey_list);
         if (favorite_journey_list && favorite_journey_list.length !=0) {
             favorite_journey_list.forEach(function (element, index) {
 
@@ -60,10 +60,10 @@ function journey() {
                     $("#favorite-journey-list-group").append(
                         `<li class="list-group-item favorite-journey-list-item"> \
                             <div class="row"> \
-                            <div class="col-1 solid-star" id="solid-star-${index}"><i class="fas fa-star starSolid"></i></div> \
+                            <div class="col-1 solid-star" id="solid-star-${index}"><span style="color: #ffbf00;"><i class="fas fa-star starSolid"></i></span></div> \
                             <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
-                            <b>origin:</b> ${origin_name} </br> \
-                            <b>destination:</b> ${destination_name}</div></div>
+                            <b>Origin:</b> ${origin_name} </br> \
+                            <b>Destination:</b> ${destination_name}</div></div>
                         </li>`);
                 }
             });
@@ -164,13 +164,25 @@ function journey() {
     $("#use-user-location").click(function (e) {
         // if geolocation is available
         console.log("setting location");
+        $("#use-user-location").hide();
+        $("#current-location-loader").show();
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function () { }, function () { }, {});
             navigator.geolocation.getCurrentPosition(function (position) {
                 console.log("hellooo");
+                $("#use-user-location").show();
+                $("#current-location-loader").hide();
                 $("#f-from-stop").val('Your Current Location');
                 $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
                 map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
+            }, function () {
+                    $("#use-user-location").show();
+                    $("#current-location-loader").hide();
+                    $("#no-location-warning").show();
+            },
+            {
+                timeout: 5000,
+                enableHighAccuracy: true
             });
         } else {
             alert('Geolocation is not available. Please accept the location permission.')
@@ -212,6 +224,8 @@ function journey() {
         // //get direction from api /api/direction
         $.getJSON(`api/direction?origin=${parseFloat(originCoord.lat).toFixed(7)},${parseFloat(originCoord.lng).toFixed(7)}&destination=${parseFloat(destinationCoord.lat).toFixed(7)},${parseFloat(destinationCoord.lng).toFixed(7)}&departureUnix=${unix}`
             , function (data) {
+                
+                console.log('data' + JSON.stringify(data));
 
                 var status = (data || {}).status,
                     leg = (data || {}).leg,
@@ -319,6 +333,7 @@ function journey() {
 
 
     function displaySearchInfoOnHeader(originInput, destinationInput, dateTime) {
+        console.log('displaySearchInfoOnHeader');
         // dictionary to store all the elements which are going to display on frontend
         // key: the element id or class name
         // value: content to append to the element 
@@ -328,6 +343,10 @@ function journey() {
 
         var perJourney = JSON.stringify({ "origin": { "name": originInput.value, "coord": JSON.parse(originInput.getAttribute('coord-data')) }, "destination": { "name": destinationInput.value, "coord": JSON.parse(destinationInput.getAttribute('coord-data')) } });
         var index = jQuery.inArray(perJourney, favorite_journey_list);
+
+        console.log('favorite_journey_list:'+favorite_journey_list);
+        console.log('perJourney: '+perJourney);
+        console.log('index: '+index);
 
         if (index > -1) {
             $("#hollow-star").hide();
@@ -578,6 +597,7 @@ function journey() {
 
 
     function showSearchJourneyDiv(time) {
+        $("#no-location-warning").hide();
         $("#journey-search-div").fadeIn(time);
         $("#journey-result-div").fadeOut(time);
 

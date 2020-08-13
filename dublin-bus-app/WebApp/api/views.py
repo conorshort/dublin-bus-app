@@ -323,7 +323,16 @@ def direction(request):
 
     destination_coord = (destination.split(",")[0], destination.split(",")[1])
 
-    newData = {'leg': {'steps': []}}
+    timestr = datetime.fromtimestamp(int(departureUnix), tz.gettz("Europe/London"))
+    timestr = timestr.strftime("%I:%M%p")
+
+
+    newData = {'leg': {'steps': []},
+                   'departure_time': {'value': int(departureUnix),
+                                              'text': timestr}}
+
+
+                   
 
     isFirstTimeRequest = True
     requestCount = 0
@@ -355,7 +364,6 @@ def direction(request):
         newData['leg']['end_location'] = data['leg']['end_location']
         newData['leg']['steps'] += data['leg']['steps']
         newData['leg']['arrival_time'] = data['leg']['arrival_time']
-        newData['leg']['departure_time'] = data['leg']['departure_time']
 
         isFirstTimeRequest = False
 
