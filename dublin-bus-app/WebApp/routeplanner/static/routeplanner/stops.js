@@ -31,7 +31,7 @@ function stops() {
     $(document).ready(function () {
         $("#stop-realtime-div").fadeOut(10);
         $("#stops-div").fadeIn(10);
-
+        displayStops();
         //clear all the markers in the layer
         stopsLayer.clearLayers();
 fix         // if ("geolocation" in navigator) {
@@ -181,7 +181,7 @@ fix         // if ("geolocation" in navigator) {
                         <i id="${favStr}star-stop-${stop.stopid}"class="${solid} far fa-star star2 stop-star" data-stop="${stop.stopid}"></i>
                     </a>
                 </span>
-              <li class="col-8"><b>${ stop.fullname},</b> Stop ${stop.stopid}</li>
+              <li class="col-8"><b>${ stop.localname},</b> Stop ${stop.stopid}</li>
               <li class="col-3">${ stop_dist}</li>
               <div class="row"><div class="col-12 pl-5 pt-3 pr-5"> ${ route_buttons}</div></div>
           </ul>
@@ -244,7 +244,7 @@ fix         // if ("geolocation" in navigator) {
         //     console.log("At least it caught the click")
         //     showArrivingBusesOnSideBar(stop.stopid)
         // });
-        container.html(`<b> ${stop.fullname}</b><br> ${route_buttons}</br><div class = real-time-pop data-stopid=${stop.stopid}><button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;"> RealTimeInfo </button></div>`)
+        container.html(`<b> ${stop.localname}</b><br> ${route_buttons}</br><div class = real-time-pop data-stopid=${stop.stopid}><button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;"> RealTimeInfo </button></div>`)
         // put this content in the popup
         marker.bindPopup(container[0]);
         // L.DomEvent.addListener(container.get(0), "click", function () { showArrivingBusesOnSideBar(stop.stopid); });
@@ -255,7 +255,10 @@ fix         // if ("geolocation" in navigator) {
         $('div .real-time-pop').click(function(e){
             let stopID = $(this).attr("data-stopid");
             console.log(stopID)
+            $("#stopRealtimeListGroup").html("");
             showArrivingBusesOnSideBar(stopID);
+            $("#stop-realtime-div").fadeIn(10);
+            $("#stops-div").fadeOut(10);
             console.log("Made it to click button");
         });
       });
