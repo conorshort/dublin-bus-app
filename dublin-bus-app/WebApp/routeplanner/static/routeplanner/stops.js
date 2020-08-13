@@ -195,12 +195,18 @@ function stops() {
         return content;
     }
 
+    // Back to Stops button functionality
     $(document).on("click.stops", "#back-to-stops", function () {
 
         $("#stop-realtime-div").fadeOut(10);
         $("#stops-div").fadeIn(10);
     });
 
+    //click on pop up functionality
+    $(document).on("click", "#real-time", function () {
+        const stopId = $(this).attr("data-stopid");
+        showArrivingBusesOnSideBar(stopId)
+    });
 
     function markStopsOnMap(stop) {
         // fixing the printing of array issue on marker
@@ -213,12 +219,29 @@ function stops() {
             route_buttons += `<button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;">` + route_list[i] + "</button>";
         }
 
+        // create marker for stop
         var marker =
             L.marker([stop.latitude, stop.longitude])
-                .bindPopup(`<b> ${stop.fullname}</b><br> ${route_buttons}`);
-        stopsLayer.addLayer(marker);
+                //.bindPopup(`<div id=real-time data-stop=${stop.stopid}><b> ${stop.fullname}</b><br> ${route_buttons}</br><div>`);
         
+        //define content of marker including functions
+        var container = $('<div class=real-time-pop />');
+        // container.on('click', '#real-time', function() {
+        //     console.log("At least it caught the click")
+        //     showArrivingBusesOnSideBar(stop.stopid)
+        // });
+        container.html(`<b> ${stop.fullname}</b><br> ${route_buttons}</br>`)
+        // put this content in the popup
+        marker.bindPopup(container[0]);
+        L.DomEvent.addListener(container.get(0), "click", function () { console.log("action fired"); });
+        stopsLayer.addLayer(marker);
     }
+
+    map.on('popupopen', function() {  
+        $('div .real-time-pop').click(function(e){
+          console.log("One of the many Small Polygon Links was clicked");
+        });
+      });
 
 
     //Click function for bus stop list-item
