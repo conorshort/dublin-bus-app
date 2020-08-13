@@ -12,40 +12,44 @@
         <div id="journey-search-div" class="col mt-0 ">
 
             <!-- Button trigger modal -->
-            <div type="button" class="row mb-1 gray-box" style="margin: 0px;" data-toggle="modal" data-target="#favoriteJourneyModalCenter">
+            <div type="button" class="row mb-1 gray-box" style="margin: 0px;" data-toggle="modal"
+                data-target="#favoriteJourneyModalCenter">
                 <span style="color: #ffbf00;">
                     <i class="fas fa-star starSolid"></i>
                 </span>&nbsp;&nbsp;Use Favorite Journey
             </div>
             <div class="row p-3">
-                <form name="journeyForm" id="journeyForm" method="POST" onkeydown="return event.key != 'Enter';" class="col">
+                <form name="journeyForm" id="journeyForm" method="POST" onkeydown="return event.key != 'Enter';"
+                    class="col">
 
-            <form name="journeyForm" id="journeyForm" method="POST" onkeydown="return event.key != 'Enter';">
 
-                <!-- origin input row -->
-                <div class="form-group row">
-                    <label for="inputFromStop" class="col-sm-2 col-form-label">From: </label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control from-input" name="f-from-stop" id="f-from-stop"
-                            required="required" placeholder="Origin">
-                        <a id="use-user-location"
-                            style="color: blue; cursor: pointer; text-decoration: underline; font-size: 12px;"
-                            class="row">
-                            <i class="col-6">Use Current Location</i>
-                        </a>
-                        <div id="current-location-loader"
-                            class="spinner-border spinner-border-sm text-warning mt-1 ml-1" role="status"
-                            style="display:none;">
-                            <span class="sr-only">Loading...</span>
+
+                    <!-- origin input row -->
+                    <div class="form-group row">
+                        <label for="inputFromStop" class="col-sm-2 col-form-label">From: </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control from-input" name="f-from-stop" id="f-from-stop"
+                                required="required" placeholder="Origin">
+                            <a id="use-user-location"
+                                style="color: blue; cursor: pointer; text-decoration: underline; font-size: 12px;"
+                                class="row">
+                                <i class="col-6">Use Current Location</i>
+                            </a>
+                            <div id="current-location-loader"
+                                class="spinner-border spinner-border-sm text-warning mt-1 ml-1" role="status"
+                                style="display:none;">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="no-location-warning" class="col-12 alert alert-warning mt-1 mb-1"
+                            style="display: none; font-size: 0.9rem;">
+                            <button type="button" class="close  ml-2" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            Something went wrong: your location could not be found.
                         </div>
                     </div>
-                    <div id="no-location-warning" class="col-12 alert alert-warning mt-1 mb-1" style="display: none; font-size: 0.9rem;">
-                        <button type="button" class="close  ml-2" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        Something went wrong: your location could not be found.
-                    </div>
-    
+
                     <!-- destination input row -->
                     <div class="form-group row">
                         <label for="inputToStop" class="col-sm-2 col-form-label">To: </label>
@@ -54,7 +58,7 @@
                                 required="required" placeholder="Destination">
                         </div>
                     </div>
-    
+
                     <!-- departure datetime picker input row -->
                     <div class="form-group row">
                         <label for="datetime" class="col-sm-2 col-form-label">Depart: </label>
@@ -64,17 +68,17 @@
                     </div>
                     <div class="form-group row" style="font-size: 11px; color: gray; margin-top: 0p;">
                         <div class="col">
-                        * Only Valid in Ireland at the moment
+                            * Only Valid in Ireland at the moment
                         </div>
                     </div>
-    
+
                     <!-- Cross Site Request Forgery protection-->
                     {% csrf_token %}
                     <input type="submit" class="btn btn-primary float-right"></input>
                 </form>
             </div>
 
-            
+
             <div class="text-center">
                 <div class="spinner-grow text-warning m-5" style="margin:auto;" id="journey-loader" role="status">
                     <span class="sr-only"></span>
@@ -91,7 +95,8 @@
             </div>
             <div class="row p-2 gray-box" id="journey-result-header">
                 <div class="col">
-                    <div class="row px-3" id="hollow-star" style="border-bottom: 1px solid rgb(185, 185, 185);"><i class="far fa-star star"></i>&nbsp;&nbsp;Save to Favorite</div>
+                    <div class="row px-3" id="hollow-star" style="border-bottom: 1px solid rgb(185, 185, 185);"><i
+                            class="far fa-star star"></i>&nbsp;&nbsp;Save to Favorite</div>
                     <div class="row">
                         <div class="col-4"> <b>From:</b> </div>
                         <div class="col-8" id="journey-result-from"></div>
@@ -106,11 +111,13 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="row mx-0"  id="journey-result-content">
+
+            <div class="row mx-0" id="journey-result-content">
                 <!-- Showing total duration and other detail -->
-                <div class="col" >
-                    <div class="row" ><h2 id="section-trip-summary"></h2></div>
+                <div class="col">
+                    <div class="row">
+                        <h2 id="section-trip-summary"></h2>
+                    </div>
                     <div class="row">
                         <div id="journey-result-detail"></div>
                     </div>
@@ -121,7 +128,7 @@
             </div>
 
             <!-- steps of the journey -->
-            
+
         </div>
     </div>
     <div class="row m-3 black-box">

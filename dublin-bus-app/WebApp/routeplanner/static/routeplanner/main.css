@@ -155,8 +155,7 @@ div.weather#description {
 }
 
 #edit-journey-input {
-  border-top: 1px solid rgb(185, 185, 185);
-  border-bottom: 1px solid rgb(185, 185, 185);
+
   padding: 10px 25px;
 }
 
@@ -429,8 +428,14 @@ div.weather#description {
   padding: 2px 0px !important;
 }
 
+.fas {
+  color: #ffbf00;
+}
 
-
+.far {
+    font-weight: 600 !important;
+    color: darkgrey;
+}
 
 
 /* CSS for when the page is less than 768px */
