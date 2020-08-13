@@ -110,7 +110,7 @@ function initMap() {
             userLocationLayer.addLayer(marker);
             centreLocation = [position.coords.latitude, position.coords.longitude];
             currentCentre = centreLocation;
-            map.setView(centreLocation, MAP_ZOOM_NUM);
+            // map.setView(centreLocation, MAP_ZOOM_NUM);
         });
     } 
     
@@ -209,7 +209,7 @@ var MapUIControl = (function () {
         },
 
     }
-})()
+})();
 
 
 

@@ -178,7 +178,7 @@ function journey() {
             }, function () {
                     $("#use-user-location").show();
                     $("#current-location-loader").hide();
-                alert('Something went wrong, your location could not be found.')
+                    $("#no-location-warning").show();
             },
             {
                 timeout: 5000,
@@ -590,6 +590,7 @@ function journey() {
 
 
     function showSearchJourneyDiv(time) {
+        $("#no-location-warning").hide();
         $("#journey-search-div").fadeIn(time);
         $("#journey-result-div").fadeOut(time);
 

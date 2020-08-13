@@ -29,9 +29,17 @@
                             class="row">
                             <i class="col-6">Use Current Location</i>
                         </a>
-                        <div id="current-location-loader" class="spinner-border spinner-border-sm text-warning mt-1 ml-1" role="status" style="display:none;">
+                        <div id="current-location-loader"
+                            class="spinner-border spinner-border-sm text-warning mt-1 ml-1" role="status"
+                            style="display:none;">
                             <span class="sr-only">Loading...</span>
                         </div>
+                    </div>
+                    <div id="no-location-warning" class="col-12 alert alert-warning mt-1 mb-1" style="display: none; font-size: 0.9rem;">
+                        <button type="button" class="close  ml-2" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        Something went wrong: your location could not be found.
                     </div>
                 </div>
 
