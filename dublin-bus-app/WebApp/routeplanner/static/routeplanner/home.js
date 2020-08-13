@@ -92,7 +92,7 @@ function initMap() {
         accessToken: 'pk.eyJ1Ijoib2hteWhhcHB5IiwiYSI6ImNrYjdyaWg0cDA0bXMycXFyNzgxdmkyN3kifQ.gcq3O8-AveWKXNS5TUGL_g'
     }).addTo(map);
 
-    // map.locate({ setView: true, watch: true });
+    map.locate({ setView: false, watch: true });
 
     // if geolocation is available
     if ("geolocation" in navigator) {
