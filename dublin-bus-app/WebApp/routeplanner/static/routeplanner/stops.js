@@ -244,7 +244,7 @@ fix         // if ("geolocation" in navigator) {
         //     console.log("At least it caught the click")
         //     showArrivingBusesOnSideBar(stop.stopid)
         // });
-        container.html(`<b> ${stop.localname}</b><br> ${route_buttons}</br><div class = real-time-pop data-stopid=${stop.stopid}><button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;"> RealTimeInfo </button></div>`)
+        container.html(`<b> ${stop.localname}, </b>Stop ${stop.stopid}<br> ${route_buttons}</br><div class = real-time-pop data-stopid=${stop.stopid}><button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;"> Real Time Info </button></div>`)
         // put this content in the popup
         marker.bindPopup(container[0]);
         // L.DomEvent.addListener(container.get(0), "click", function () { showArrivingBusesOnSideBar(stop.stopid); });
