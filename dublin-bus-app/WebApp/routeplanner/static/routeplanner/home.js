@@ -111,20 +111,21 @@ function initMap() {
             userLocationLayer.addLayer(marker);
             centreLocation = [position.coords.latitude, position.coords.longitude];
             userCurrentLocation = centreLocation;
+
+            $('#my_location_btn').click(function () {
+                map.setView(userCurrentLocation, MAP_ZOOM_NUM);
+            });
             // map.setView(centreLocation, MAP_ZOOM_NUM);
         }, function () {
-            $("#use-user-location").show();
-            $("#current-location-loader").hide();
-            $("#no-location-warning").show();
+            userCurrentLocation = [53.3482, -6.2641];
+            $('#my_location_btn').click(function () {
+                map.setView(userCurrentLocation, MAP_ZOOM_NUM);
+            });
         },
             {
                 timeout: 5000,
                 enableHighAccuracy: true
             });
-        // on click function for my location btn
-        $('#my_location_btn').click(function () {
-            map.setView(centreLocation, MAP_ZOOM_NUM);
-        });
     }
 }
 
