@@ -17,7 +17,7 @@ function journey() {
 
         let today = new Date();
         let year = today.getFullYear();
-        let month = today.getMonth()+1;
+        let month = today.getMonth() + 1;
         let day = today.getDate();
         let hour = today.getHours();
         let min = today.getMinutes();
@@ -164,13 +164,25 @@ function journey() {
     $("#use-user-location").click(function (e) {
         // if geolocation is available
         console.log("setting location");
+        $("#use-user-location").hide();
+        $("#current-location-loader").show();
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function () { }, function () { }, {});
             navigator.geolocation.getCurrentPosition(function (position) {
                 console.log("hellooo");
-                $("#f-from-stop").val(`Your Location: [${position.coords.latitude.toFixed(5)},${position.coords.longitude.toFixed(5)}]`);
+                $("#use-user-location").show();
+                $("#current-location-loader").hide();
+                $("#f-from-stop").val('Your Current Location');
                 $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
                 map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
+            }, function () {
+                    $("#use-user-location").show();
+                    $("#current-location-loader").hide();
+                    $("#no-location-warning").show();
+            },
+            {
+                timeout: 5000,
+                enableHighAccuracy: true
             });
         } else {
             alert('Geolocation is not available. Please accept the location permission.')
@@ -585,6 +597,7 @@ function journey() {
 
 
     function showSearchJourneyDiv(time) {
+        $("#no-location-warning").hide();
         $("#journey-search-div").fadeIn(time);
         $("#journey-result-div").fadeOut(time);
 
