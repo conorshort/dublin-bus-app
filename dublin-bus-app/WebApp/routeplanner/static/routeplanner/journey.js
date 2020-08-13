@@ -168,7 +168,7 @@ function journey() {
             navigator.geolocation.getCurrentPosition(function () { }, function () { }, {});
             navigator.geolocation.getCurrentPosition(function (position) {
                 console.log("hellooo");
-                $("#f-from-stop").val('Your Current Location');
+                $("#f-from-stop").val(`Your Location: [${position.coords.latitude.toFixed(5)},${position.coords.longitude.toFixed(5)}]`);
                 $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
                 map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
             });
