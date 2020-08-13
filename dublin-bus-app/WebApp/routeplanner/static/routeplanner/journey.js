@@ -212,6 +212,8 @@ function journey() {
         // //get direction from api /api/direction
         $.getJSON(`api/direction?origin=${parseFloat(originCoord.lat).toFixed(7)},${parseFloat(originCoord.lng).toFixed(7)}&destination=${parseFloat(destinationCoord.lat).toFixed(7)},${parseFloat(destinationCoord.lng).toFixed(7)}&departureUnix=${unix}`
             , function (data) {
+                
+                console.log('data' + JSON.stringify(data));
 
                 var status = (data || {}).status,
                     leg = (data || {}).leg,
