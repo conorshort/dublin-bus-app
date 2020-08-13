@@ -2,9 +2,10 @@ const RESP_WINDOW_SIZE = 768;
 const MAP_ZOOM_NUM = 12;
 let currentBounds;
 let currentCentre;
+let userCurrentLocation;
 
 let DateTime = luxon.DateTime;
-let dublinCoords = [53.3373266,-6.2752625]
+let dublinCoords = [53.3373266, -6.2752625]
 // Code in this block will be run one the page is loaded in the browser
 $(document).ready(function () {
 
@@ -81,7 +82,7 @@ function clearElementsInLayers() {
 
 
 function initMap() {
-    
+
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         // maxZoom: MAP_ZOOM_NUM,
@@ -91,34 +92,40 @@ function initMap() {
         accessToken: 'pk.eyJ1Ijoib2hteWhhcHB5IiwiYSI6ImNrYjdyaWg0cDA0bXMycXFyNzgxdmkyN3kifQ.gcq3O8-AveWKXNS5TUGL_g'
     }).addTo(map);
 
-    map.locate({ setView: true, watch: true });
+    // map.locate({ setView: true, watch: true });
 
     // if geolocation is available
     if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            
+        navigator.geolocation.getCurrentPosition(function (position) {
+
             // create custom icon
             var customIcon = L.icon({
                 iconUrl: './static/img/user_marker.png',
                 iconSize: [35, 45], // size of the icon
             });
-                
-            var marker = L.marker([position.coords.latitude, position.coords.longitude], {icon: customIcon})
-            .addTo(map)
-            .bindPopup("Centre");
-            
+
+            var marker = L.marker([position.coords.latitude, position.coords.longitude], { icon: customIcon })
+                .addTo(map)
+                .bindPopup("Centre");
+
             userLocationLayer.addLayer(marker);
             centreLocation = [position.coords.latitude, position.coords.longitude];
-            currentCentre = centreLocation;
+            userCurrentLocation = centreLocation;
+            // map.setView(centreLocation, MAP_ZOOM_NUM);
+        }, function () {
+            $("#use-user-location").show();
+            $("#current-location-loader").hide();
+            $("#no-location-warning").show();
+        },
+            {
+                timeout: 5000,
+                enableHighAccuracy: true
+            });
+        // on click function for my location btn
+        $('#my_location_btn').click(function () {
             map.setView(centreLocation, MAP_ZOOM_NUM);
         });
-    } 
-    
-
-    // on click function for my location btn
-    $('#my_location_btn').click(function () {
-        map.setView(centreLocation, MAP_ZOOM_NUM);
-    });
+    }
 }
 
 
@@ -147,9 +154,9 @@ var MapUIControl = (function () {
 
         halfscreen: function () {
             if ($(window).width() < RESP_WINDOW_SIZE) {
-                this.isHalfscreen =true;
-                this.isHidemap=false;
-                this.isFullscreen=false;
+                this.isHalfscreen = true;
+                this.isHidemap = false;
+                this.isFullscreen = false;
                 this.allowStopReload = false;
                 $(".sidebar-header").hide();
                 $("#mobile-show-content").hide();
@@ -160,7 +167,7 @@ var MapUIControl = (function () {
 
                     console.log("Invalidating size")
                     map.invalidateSize(false);
-                    if(this.isFirstTime){
+                    if (this.isFirstTime) {
                         map.flyTo(dublinCoords, 12, { 'duration': 0.5 });
                         this.isFirstTime = false;
                     }
@@ -190,7 +197,7 @@ var MapUIControl = (function () {
                 $('#sidebar').fadeOut(10);
                 $("#mobile-show-content").show();
                 // $("#map").show()
-                $("#my_location_btn").animate({bottom: 25});
+                $("#my_location_btn").animate({ bottom: 25 });
                 $("#map").animate({ height: newHeight }, 500, () => {
                     map.invalidateSize(false);
                     this.allowStopReload = true;
