@@ -21,7 +21,6 @@ function stops() {
             stopsLayer.clearLayers();
             //clear all the elements in list group
             showStops(centreLocation[0], centreLocation[1]);
-            updateStopFavourites();
         } else {
             console.log("Blocked===")
         }
@@ -34,7 +33,7 @@ function stops() {
         displayStops();
         //clear all the markers in the layer
         stopsLayer.clearLayers();
-fix         // if ("geolocation" in navigator) {
+        // if ("geolocation" in navigator) {
         //     navigator.geolocation.getCurrentPosition(function (position) {
         //     user_lat = position.coords.latitude;
         //     user_long = position.coords.longitude;
@@ -48,7 +47,6 @@ fix         // if ("geolocation" in navigator) {
         centreLocation = [mapCentra["lat"], mapCentra["lng"]];
         showStops(centreLocation[0], centreLocation[1]);
         initAutoComplete();
-        updateStopFavourites();
     });
 
 
@@ -74,11 +72,13 @@ fix         // if ("geolocation" in navigator) {
                     dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
                 }
                 dist_ms = Math.round(dist_kms * 1000);
-                content += renderStopListItem(stop, dist_ms);
+
+                content += renderStopListItem(stop, dist_ms, fav = false);
                 markStopsOnMap(stop);
             });
             $("#stop-loader").hide();
             $("#stopsListGroup").html(content);
+            updateStopFavourites();
 
             let visible = $(content).length;
             if (visible == 0) {
@@ -416,19 +416,20 @@ fix         // if ("geolocation" in navigator) {
         $("#fav-stops-list").html("");
         stopsList.forEach(stop => {
             stop = JSON.parse(stop)
-            $("#star-stop-" + stop.stopid).removeClass("far")
-                .addClass("fas");
             //Get stop info required for render stopListitem
-            var lat = centreLocation[0];
-            var lng = centreLocation[1];
+            var lat = userCurrentLocation[0];
+            var lng = userCurrentLocation[1];
             var dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
             var dist_ms = Math.round(dist_kms * 1000);
             let content = renderStopListItem(stop, dist_ms, fav = true);
-            $("#fav-star-stop-" + stop.stopid).removeClass("far")
-                .addClass("fas");
             $("#fav-stops-list").append(content);
+            $("#fav-star-stop-" + stop.stopid).removeClass("far")
+            .addClass("fas");
             $("#fav-stops-div").show();
             $("#stop-favs-loader").hide();
+            console.log("setting stops class for " + stop.stopid)
+            $("#star-stop-" + stop.stopid).removeClass("far")
+                .addClass("fas");
         });
     }
 
