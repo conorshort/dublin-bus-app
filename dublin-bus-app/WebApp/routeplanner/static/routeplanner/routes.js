@@ -654,7 +654,7 @@ function routes() {
             <li class="list-group-item ${favStr}route-item" id="route-${route}">
                 <ul>
                     <li class="row">
-                    <span class="col-1">
+                    <span class="col-1 pl-0"">
                         <a>
                             <i id="${favStr}star-route-${route}" class='${solid} fa-star star route-star' data-route="${route}" data-operator="${operator}">
                             </i>

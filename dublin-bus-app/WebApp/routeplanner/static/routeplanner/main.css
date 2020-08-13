@@ -32,6 +32,7 @@ a:hover, a:active {
   height: 80px;
   line-height: 80px;
   vertical-align: center;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .site-header {
@@ -42,6 +43,7 @@ a:hover, a:active {
   box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.3); ;
   position: relative;
   z-index: 1001;
+
 }
 
 /* ==== weather ==== */
