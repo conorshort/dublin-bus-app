@@ -40,7 +40,6 @@ function journey() {
         // clear all favorite journey list group
         $("#favorite-journey-list-group").empty();
         $("#no-fav-journeys-warning").hide();
-        let favorite_journey_list;
         try {
             favorite_journey_list = cookiemonster.get('journeyList');
         } catch (error) {
@@ -48,7 +47,7 @@ function journey() {
             cookiemonster.set('journeyList', favorite_journey_list, 3650);
             console.log('cookiemonster get journeyList error:' + error)
         }
-        console.log(favorite_journey_list)
+        console.log('favorite_journey_list:'+favorite_journey_list);
         if (favorite_journey_list && favorite_journey_list.length !=0) {
             favorite_journey_list.forEach(function (element, index) {
 
@@ -61,7 +60,7 @@ function journey() {
                     $("#favorite-journey-list-group").append(
                         `<li class="list-group-item favorite-journey-list-item"> \
                             <div class="row"> \
-                            <div class="col-1 solid-star" id="solid-star-${index}"><span style="color: #ffbf00;"><i class="fas fa-star starSolid"></span></div> \
+                            <div class="col-1 solid-star" id="solid-star-${index}"><span style="color: #ffbf00;"><i class="fas fa-star starSolid"></i></span></div> \
                             <div class="col-11 favorite-journey-content" id="favorite-journey-content-${index}">
                             <b>Origin:</b> ${origin_name} </br> \
                             <b>Destination:</b> ${destination_name}</div></div>
@@ -331,6 +330,7 @@ function journey() {
         var perJourney = JSON.stringify({ "origin": { "name": originInput.value, "coord": JSON.parse(originInput.getAttribute('coord-data')) }, "destination": { "name": destinationInput.value, "coord": JSON.parse(destinationInput.getAttribute('coord-data')) } });
         var index = jQuery.inArray(perJourney, favorite_journey_list);
 
+        console.log('favorite_journey_list:'+favorite_journey_list);
         console.log('perJourney: '+perJourney);
         console.log('index: '+index);
 
