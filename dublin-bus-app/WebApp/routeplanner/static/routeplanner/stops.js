@@ -2,14 +2,14 @@ function stops() {
     currentBounds = undefined;
     currentCentre = [53.346967, -6.259923];
     MapUIControl.halfscreen();
-    $(document).off("click.stops")
-
+    $(document).off("click.stops");
+    $("#map").off("click.stops")
     //event will be called when map bounds change
     // This is put in a function so the moveend can be removed when not on the stops tab
     map.on('moveend', displayStops);
 
     function displayStops() {
-        
+
         // This if is checking if the map is resizing on mobile
         // But it doens't seem to work at the moment
         if (MapUIControl.allowStopReload) {
@@ -26,7 +26,7 @@ function stops() {
         }
     }
 
-    
+
     $(document).ready(function () {
         $("#stop-realtime-div").fadeOut(10);
         $("#stops-div").fadeIn(10);
@@ -57,9 +57,9 @@ function stops() {
             $.each(data, function (i, stop) {
                 // content += document.getElementById('routes-list').innerHTML = "<a href='#'><i class='far fa-star star'></a>"
                 // Get distance from centre location to every stop in kilometers
-                if (userLocationGotOnce){
+                if (userLocationGotOnce) {
                     dist_kms = distance(userCurrentLocation[0], userCurrentLocation[1], stop.latitude, stop.longitude, 'K');
-                }else{
+                } else {
                     dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
                 }
                 dist_ms = Math.round(dist_kms * 1000);
@@ -111,7 +111,7 @@ function stops() {
         //get realtime data
         $("#realtime-loader").show();
         $("#no-realtime-warning").hide();
-        
+
         $.getJSON(`/realtimeInfo/${stopid}`, function (data) {
             // parse response data to json 
             obj = JSON.parse(data)
@@ -143,14 +143,14 @@ function stops() {
         // Getting routes to display as buttons for style purposes
         route_buttons = '<b>Routes: </b>';
         for (var i = 0; i < route_list.length; i++) {
-            if (i == route_list.length -1 ){
+            if (i == route_list.length - 1) {
                 route_buttons += '<span>' + route_list[i] + "</span>";
             } else {
                 route_buttons += '<span>' + route_list[i] + ", </span>";
             }
         }
-        if (stop_dist >= 1000){
-            stop_dist = (stop_dist/1000).toFixed(2) + "km";
+        if (stop_dist >= 1000) {
+            stop_dist = (stop_dist / 1000).toFixed(2) + "km";
         } else {
             stop_dist = stop_dist + "m";
         }
@@ -222,30 +222,30 @@ function stops() {
         // create marker for stop
         var marker =
             L.marker([stop.latitude, stop.longitude])
-                //.bindPopup(`<div id=real-time data-stop=${stop.stopid}><b> ${stop.fullname}</b><br> ${route_buttons}</br><div>`);
-        
+        //.bindPopup(`<div id=real-time data-stop=${stop.stopid}><b> ${stop.fullname}</b><br> ${route_buttons}</br><div>`);
+
         //define content of marker including functions
         var container = $('<div  />');
 
-        container.html(`<i id="marker-star-stop-${stop.stopid}"class=" far fa-star star2 stop-star" data-stop="${stop.stopid}"></i><b> ${stop.localname}, </b>Stop ${stop.stopid}<br> ${route_buttons}</br><div class = real-time-pop data-stopid=${stop.stopid}><button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;"> Real Time Info </button></div>`)
+        container.html(`<i id="marker-star-stop-${stop.stopid}"class=" far fa-star star2 stop-star marker-stop-star" data-stop="${stop.stopid}"></i><b> ${stop.localname}, </b>Stop ${stop.stopid}<br> ${route_buttons}</br><div class = real-time-pop data-stopid=${stop.stopid}><button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;"> Real Time Info </button></div>`)
         // put this content in the popup
         marker.bindPopup(container[0]);
         // L.DomEvent.addListener(container.get(0), "click", function () { showArrivingBusesOnSideBar(stop.stopid); });
         stopsLayer.addLayer(marker);
     }
 
-    map.on('popupopen', function() {  
+    map.on('popupopen', function (e) {
         updateStopFavourites();
-        $('div .real-time-pop').click(function(e){
+        $('div .real-time-pop').click(function (e) {
             let stopID = $(this).attr("data-stopid");
-
+            console.log("hello")
             $("#stopRealtimeListGroup").html("");
             showArrivingBusesOnSideBar(stopID);
             $("#stop-realtime-div").fadeIn(10);
             $("#stops-div").fadeOut(10);
 
         });
-      });
+    });
 
 
     //Click function for bus stop list-item
@@ -324,8 +324,12 @@ function stops() {
         initAutocomplete(stops_area);
     }
 
-    $("#stopsListGroup, #fav-stops-list, #map").on("click.stops", '.star2', function (e) {
+    $("#stopsListGroup, #fav-stops-list").on("click.stops", '.star2', stopStarClick);
+    $("#map").on("click.stops", ".marker-stop-star", stopStarClick)
 
+
+
+    function stopStarClick(e) {
         e.stopPropagation();
         // Get the clikced stop
         const starredStopID = $(this).attr("data-stop");
@@ -345,7 +349,6 @@ function stops() {
                 currentStopsList = cookiemonster.get('stopsList');
             } catch{
                 // If not just add the clicked stop to the list and return
-   
                 cookiemonster.set('stopsList', [stopinfo], 3650);
                 updateStopFavourites()
                 return;
@@ -358,10 +361,8 @@ function stops() {
 
                 // if index > -1 the stop is alreay in the cookies,
                 // we can remove it from the array
-  
-
                 currentStopsList.splice(index, 1);
- 
+
             } else {
                 // Otherwise we add to the array
                 currentStopsList.push(stopinfo);
@@ -375,13 +376,13 @@ function stops() {
             // Update the favourites display
             updateStopFavourites();
         });
-    });
+    }
 
 
     function updateStopFavourites() {
         $(".stop-star").removeClass("fas");
         $(".stop-star").addClass("far");
-        
+
         let stopsList;
         try {
             stopsList = cookiemonster.get('stopsList');
@@ -400,7 +401,7 @@ function stops() {
         stopsList.forEach(stop => {
             stop = JSON.parse(stop)
             //Get stop info required for render stopListitem
-            if(userLocationGotOnce){
+            if (userLocationGotOnce) {
                 var lat = userCurrentLocation[0];
                 var lng = userCurrentLocation[1];
             } else {
@@ -413,14 +414,14 @@ function stops() {
             let content = renderStopListItem(stop, dist_ms, fav = true);
             $("#fav-stops-list").append(content);
             $("#fav-star-stop-" + stop.stopid).removeClass("far")
-            .addClass("fas");
+                .addClass("fas");
             $("#fav-stops-div").show();
             $("#stop-favs-loader").hide();
             $("#star-stop-" + stop.stopid).removeClass("far")
                 .addClass("fas");
             $("#marker-star-stop-" + stop.stopid).removeClass("far")
                 .addClass("fas");
-                
+
         });
     }
 
