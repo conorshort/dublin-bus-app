@@ -222,13 +222,13 @@ var MapUIControl = (function () {
         
                     map.invalidateSize(false);
                     if (this.isFirstTime) {
-                        map.flyTo(dublinCoords, 12, { 'duration': 0.5 });
+                        // map.flyTo(dublinCoords, 12, { 'duration': 0.5 });
                         this.isFirstTime = false;
                     }
                     this.allowStopReload = true;
                     if (currentBounds) {
 
-                        map.flyToBounds(currentBounds, { 'duration': 0.5 });
+                        // map.flyToBounds(currentBounds, { 'duration': 0.5 });
                     } else if (currentCentre) {
 
                     }
@@ -253,7 +253,7 @@ var MapUIControl = (function () {
                     map.invalidateSize(false);
                     this.allowStopReload = true;
                     if (currentBounds) {
-                        map.flyToBounds(currentBounds, { 'duration': 0.5 });
+                        // map.flyToBounds(currentBounds, { 'duration': 0.5 });
                     } else if (currentCentre) {
                         // map.flyTo(currentCentre, 12, { 'duration': 0.5 })
                     }
