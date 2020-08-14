@@ -96,26 +96,30 @@ function initMap() {
 
     map.locate({ setView: true, watch: true });
 
-    // if geolocation is available
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+    // // if geolocation is available
+    // if ("geolocation" in navigator) {
+        
+
+
+
+    //     navigator.geolocation.getCurrentPosition(function(position) {
             
-            // create custom icon
-            var customIcon = L.icon({
-                iconUrl: './static/img/user_marker.png',
-                iconSize: [35, 45], // size of the icon
-            });
+    //         // create custom icon
+    //         var customIcon = L.icon({
+    //             iconUrl: './static/img/user_marker.png',
+    //             iconSize: [35, 45], // size of the icon
+    //         });
                 
-            var marker = L.marker([position.coords.latitude, position.coords.longitude], {icon: customIcon})
-            .addTo(map)
-            .bindPopup("Centre");
+    //         var marker = L.marker([position.coords.latitude, position.coords.longitude], {icon: customIcon})
+    //         .addTo(map)
+    //         .bindPopup("Centre");
             
-            userLocationLayer.addLayer(marker);
-            centreLocation = [position.coords.latitude, position.coords.longitude];
-            currentCentre = centreLocation;
-            // map.setView(centreLocation, MAP_ZOOM_NUM);
-        });
-    } 
+    //         userLocationLayer.addLayer(marker);
+    //         centreLocation = [position.coords.latitude, position.coords.longitude];
+    //         currentCentre = centreLocation;
+    //         // map.setView(centreLocation, MAP_ZOOM_NUM);
+    //     });
+    // } 
     
 
     // on click function for my location btn
