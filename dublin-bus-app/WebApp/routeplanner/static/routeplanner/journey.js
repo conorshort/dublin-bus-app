@@ -198,24 +198,6 @@ function journey() {
             };
 
             navigator.geolocation.watchPosition(geoSuccess, geoError, geoOptions);
-
-            // navigator.geolocation.getCurrentPosition(function () { }, function () { }, {});
-            // navigator.geolocation.getCurrentPosition(function (position) {
-            //     console.log("hellooo");
-            //     $("#use-user-location").show();
-            //     $("#current-location-loader").hide();
-            //     $("#f-from-stop").val('Your Current Location');
-            //     $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
-            //     map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
-            // }, function () {
-            //         $("#use-user-location").show();
-            //         $("#current-location-loader").hide();
-            //         $("#no-location-warning").show();
-            // },
-            // {
-            //     timeout: 5000,
-            //     enableHighAccuracy: true
-            // });
         } else {
             alert('The browser is not supported Geolocation.')
         }

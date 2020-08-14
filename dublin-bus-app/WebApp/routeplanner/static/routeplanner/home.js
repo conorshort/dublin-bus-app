@@ -2,7 +2,8 @@ const RESP_WINDOW_SIZE = 768;
 const MAP_ZOOM_NUM = 12;
 let currentBounds;
 let currentCentre;
-
+let userCurrentLocation;
+let userLocationGotOnce = false;
 let DateTime = luxon.DateTime;
 let dublinCoords = [53.3373266,-6.2752625]
 // Code in this block will be run one the page is loaded in the browser
@@ -54,6 +55,19 @@ $(document).ready(function () {
         }
 
     });
+
+
+    $('#my_location_btn').click(function () {
+
+
+
+        
+
+
+    });
+    map.setView(userCurrentLocation, MAP_ZOOM_NUM);
+
+
     initMap();
     // Load the journey UI content by default
     loadSideBarContent("journey");
@@ -65,6 +79,7 @@ $(document).ready(function () {
 //centreLocation: default value is Dublin city centre,
 //If user allow location access, than set value to user location
 var centreLocation = [53.3482, -6.2641]
+var my_location_btn_clicked_once
 L.control.attribution(false);
 // Initialize and add the map
 var map = L.map('map', { attributionControl: false }).setView(centreLocation, MAP_ZOOM_NUM);
@@ -94,38 +109,35 @@ function initMap() {
         accessToken: 'pk.eyJ1Ijoib2hteWhhcHB5IiwiYSI6ImNrYjdyaWg0cDA0bXMycXFyNzgxdmkyN3kifQ.gcq3O8-AveWKXNS5TUGL_g'
     }).addTo(map);
 
-    map.locate({ setView: true, watch: true });
-
-    // // if geolocation is available
-    // if ("geolocation" in navigator) {
-        
-
-
-
-    //     navigator.geolocation.getCurrentPosition(function(position) {
-            
-    //         // create custom icon
-    //         var customIcon = L.icon({
-    //             iconUrl: './static/img/user_marker.png',
-    //             iconSize: [35, 45], // size of the icon
-    //         });
-                
-    //         var marker = L.marker([position.coords.latitude, position.coords.longitude], {icon: customIcon})
-    //         .addTo(map)
-    //         .bindPopup("Centre");
-            
-    //         userLocationLayer.addLayer(marker);
-    //         centreLocation = [position.coords.latitude, position.coords.longitude];
-    //         currentCentre = centreLocation;
-    //         // map.setView(centreLocation, MAP_ZOOM_NUM);
-    //     });
-    // } 
-    
+    map.locate({ setView: false, watch: true });
 
     // on click function for my location btn
-    $('#my_location_btn').click(function () {
-        map.setView(centreLocation, MAP_ZOOM_NUM);
-    });
+    if ("geolocation" in navigator) {
+        var geoOptions = {
+            maximumAge: 5 * 60 * 1000,
+            timeout: 5000,
+            enableHighAccuracy: true
+        }
+        var geoSuccess = function (position) {
+            userLocationGotOnce = true;
+            userCurrentLocation = [position.coords.latitude, position.coords.longitude];
+        };
+
+        var geoError = function (error) {
+            console.log('Error occurred. Error code: ' + error.code);
+            // error.code can be:
+            //   0: unknown error
+            //   1: permission denied
+            //   2: position unavailable (error response from location provider)
+            //   3: timed out
+            userCurrentLocation = [53.3482, -6.2641];
+        };
+
+        navigator.geolocation.watchPosition(geoSuccess, geoError, geoOptions);
+    } else {
+        alert('The browser does not support geolocation.')
+    }
+    
 }
 
 
