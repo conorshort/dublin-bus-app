@@ -323,7 +323,7 @@ div.weather#description {
   position: absolute;
   display: none;
   height: 40px;
-  background-color: #00000020;
+  background-color: #00000080;
   bottom: 59px;
   z-index: 1002;
 }
