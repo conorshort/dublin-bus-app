@@ -4,11 +4,11 @@ function journey() {
     // shorter method for the document ready event
     $(function () {
 
-        // //load script widgets.js before twttr.widgets.load()
-        // $.getScript("https://platform.twitter.com/widgets.js")
-        //     .done(function () {
-        //         twttr.widgets.load();
-        //     });
+        //load script widgets.js before twttr.widgets.load()
+        $.getScript("https://platform.twitter.com/widgets.js")
+            .done(function () {
+                twttr.widgets.load();
+        });
 
         showSearchJourneyDiv(0);
         clearMapLayers();
@@ -196,7 +196,7 @@ function journey() {
                 $("#current-location-loader").hide();
                 $("#no-location-warning").show();
             };
-            
+
             navigator.geolocation.watchPosition(geoSuccess, geoError, geoOptions);
 
             // navigator.geolocation.getCurrentPosition(function () { }, function () { }, {});
