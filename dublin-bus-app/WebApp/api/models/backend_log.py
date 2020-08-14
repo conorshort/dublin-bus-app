@@ -2,6 +2,7 @@ from django.db import models
 from django.templatetags.static import static
 from django.utils import timezone
 
+## UNUSED IN PRODUCTION, DJANO LOGGER USED INSTEAD
 
 class BackendLog(models.Model):
     date_time = models.DateTimeField()
