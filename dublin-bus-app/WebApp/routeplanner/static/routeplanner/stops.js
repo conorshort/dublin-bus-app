@@ -33,15 +33,6 @@ function stops() {
         displayStops();
         //clear all the markers in the layer
         stopsLayer.clearLayers();
-        // if ("geolocation" in navigator) {
-        //     navigator.geolocation.getCurrentPosition(function (position) {
-        //     user_lat = position.coords.latitude;
-        //     user_long = position.coords.longitude;
-        //     dist_flag = 1;
-        //     console.log(user_lat, user_long)
-        //     })}else{
-        //     dist_flag = 0;
-        // };
         var mapCentra = map.getCenter();
         //update centreLocation to centre of the map
         centreLocation = [mapCentra["lat"], mapCentra["lng"]];
@@ -66,7 +57,7 @@ function stops() {
             $.each(data, function (i, stop) {
                 // content += document.getElementById('routes-list').innerHTML = "<a href='#'><i class='far fa-star star'></a>"
                 // Get distance from centre location to every stop in kilometers
-                if (userCurrentLocation){
+                if (userLocationGotOnce){
                     dist_kms = distance(userCurrentLocation[0], userCurrentLocation[1], stop.latitude, stop.longitude, 'K');
                 }else{
                     dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
@@ -178,7 +169,7 @@ function stops() {
           <ul class="row pl-0">
                 <span class="col-1">
                     <a>
-                        <i id="${favStr}star-stop-${stop.stopid}"class="${solid} far fa-star star2 stop-star" data-stop="${stop.stopid}"></i>
+                        <i id="${favStr}star-stop-${stop.stopid}"class="${solid} fa-star star2 stop-star" data-stop="${stop.stopid}"></i>
                     </a>
                 </span>
               <li class="col-8"><b>${ stop.localname},</b> Stop ${stop.stopid}</li>
@@ -212,11 +203,6 @@ function stops() {
         $("#stops-div").fadeIn(10);
     });
 
-    //click on pop up functionality
-    // $(document).on("click", "#real-time", function () {
-    //     const stopId = $(this).attr("data-stopid");
-    //     showArrivingBusesOnSideBar(stopId)
-    // });
 
     function markStopsOnMap(stop) {
         // fixing the printing of array issue on marker
@@ -240,11 +226,8 @@ function stops() {
         
         //define content of marker including functions
         var container = $('<div  />');
-        // container.on('click', '#real-time', function() {
-        //     console.log("At least it caught the click")
-        //     showArrivingBusesOnSideBar(stop.stopid)
-        // });
-        container.html(`<b> ${stop.localname}, </b>Stop ${stop.stopid}<br> ${route_buttons}</br><div class = real-time-pop data-stopid=${stop.stopid}><button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;"> Real Time Info </button></div>`)
+
+        container.html(`<i id="marker-star-stop-${stop.stopid}"class=" far fa-star star2 stop-star" data-stop="${stop.stopid}"></i><b> ${stop.localname}, </b>Stop ${stop.stopid}<br> ${route_buttons}</br><div class = real-time-pop data-stopid=${stop.stopid}><button type="button" class="btn btn-outline-secondary" style="font-size: 10pt; padding: 2px; margin: 1px;"> Real Time Info </button></div>`)
         // put this content in the popup
         marker.bindPopup(container[0]);
         // L.DomEvent.addListener(container.get(0), "click", function () { showArrivingBusesOnSideBar(stop.stopid); });
@@ -252,6 +235,7 @@ function stops() {
     }
 
     map.on('popupopen', function() {  
+        updateStopFavourites();
         $('div .real-time-pop').click(function(e){
             let stopID = $(this).attr("data-stopid");
             console.log(stopID)
@@ -340,7 +324,7 @@ function stops() {
         initAutocomplete(stops_area);
     }
 
-    $("#stopsListGroup, #fav-stops-list").on("click.stops", '.star2', function (e) {
+    $("#stopsListGroup, #fav-stops-list, #map").on("click.stops", '.star2', function (e) {
         console.log(e)
         e.stopPropagation();
         // Get the clikced stop
@@ -417,8 +401,14 @@ function stops() {
         stopsList.forEach(stop => {
             stop = JSON.parse(stop)
             //Get stop info required for render stopListitem
-            var lat = userCurrentLocation[0];
-            var lng = userCurrentLocation[1];
+            if(userLocationGotOnce){
+                var lat = userCurrentLocation[0];
+                var lng = userCurrentLocation[1];
+            } else {
+                var lat = dublinCoords[0]
+                var lng = dublinCoords[1];
+            }
+
             var dist_kms = distance(lat, lng, stop.latitude, stop.longitude, 'K');
             var dist_ms = Math.round(dist_kms * 1000);
             let content = renderStopListItem(stop, dist_ms, fav = true);
@@ -430,6 +420,9 @@ function stops() {
             console.log("setting stops class for " + stop.stopid)
             $("#star-stop-" + stop.stopid).removeClass("far")
                 .addClass("fas");
+            $("#marker-star-stop-" + stop.stopid).removeClass("far")
+                .addClass("fas");
+                
         });
     }
 

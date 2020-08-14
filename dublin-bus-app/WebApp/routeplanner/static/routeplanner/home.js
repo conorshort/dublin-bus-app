@@ -4,6 +4,7 @@ let currentBounds;
 let currentCentre;
 let userCurrentLocation;
 let userLocationGotOnce = false;
+let locationFunctionRun = false;
 let DateTime = luxon.DateTime;
 let dublinCoords = [53.3373266, -6.2752625]
 // Code in this block will be run one the page is loaded in the browser
@@ -58,21 +59,29 @@ $(document).ready(function () {
 
 
     $('#my_location_btn').click(function () {
-
-
-
-        
-
-
+        if (userCurrentLocation) {
+            map.setView(userCurrentLocation, MAP_ZOOM_NUM);
+        }
     });
-    map.setView(userCurrentLocation, MAP_ZOOM_NUM);
+
+
+
 
 
     initMap();
     // Load the journey UI content by default
     loadSideBarContent("journey");
 
+    $('#my_location_btn').on("click.location", (e) => {
+        getCurrentLocation(e)
+
+    });
+
+
 });
+
+
+
 
 
 
@@ -98,6 +107,10 @@ function clearElementsInLayers() {
 
 
 
+
+
+
+
 function initMap() {
 
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -111,7 +124,19 @@ function initMap() {
 
     map.locate({ setView: false, watch: true });
 
-    // on click function for my location btn
+
+
+}
+
+
+
+function findUserLocation(e) {
+    console.log("finding user location from")
+    console.log(e.currentTarget.id)
+    if (e.currentTarget.id == "use-user-location") {
+        $("#use-user-location").hise();
+        $("#current-location-loader").show();
+    }
     if ("geolocation" in navigator) {
         var geoOptions = {
             maximumAge: 5 * 60 * 1000,
@@ -119,8 +144,16 @@ function initMap() {
             enableHighAccuracy: true
         }
         var geoSuccess = function (position) {
+            if (e.currentTarget.id == "use-user-location") {
+                $("#use-user-location").show();
+                $("#current-location-loader").hide();
+                $("#f-from-stop").val('Your Current Location');
+                $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
+            }
             userLocationGotOnce = true;
             userCurrentLocation = [position.coords.latitude, position.coords.longitude];
+            map.setView(userCurrentLocation, MAP_ZOOM_NUM);
+            locationFunctionRun = true;
         };
 
         var geoError = function (error) {
@@ -130,15 +163,108 @@ function initMap() {
             //   1: permission denied
             //   2: position unavailable (error response from location provider)
             //   3: timed out
-            userCurrentLocation = [53.3482, -6.2641];
+            if (e.currentTarget.id == "use-user-location") {
+                $("#use-user-location").show();
+                $("#current-location-loader").hide();
+                $("#no-location-warning").show();
+            }
+
+            if (!userLocationGotOnce) {
+                userCurrentLocation = [53.3482, -6.2641];
+                map.setView(userCurrentLocation, MAP_ZOOM_NUM);
+            }
+
+            locationFunctionRun = true;
         };
 
         navigator.geolocation.watchPosition(geoSuccess, geoError, geoOptions);
     } else {
-        alert('The browser does not support geolocation.')
+        if (!userLocationGotOnce) {
+            userCurrentLocation = [53.3482, -6.2641];
+            map.setView(userCurrentLocation, MAP_ZOOM_NUM);
+        }
+        locationFunctionRun = true;
+        alert('The browser does not support geolocation.');
     }
-    
+
 }
+
+
+
+
+
+
+function getCurrentLocation(e) {
+    if (e.currentTarget.id == "use-user-location") {
+        $("#use-user-location").hide();
+        $("#current-location-loader").show();
+    }
+    if ("geolocation" in navigator) {
+        let watchID;
+        var geoOptions = {
+            maximumAge: 5 * 60 * 1000,
+            timeout: 5000,
+            enableHighAccuracy: true
+        }
+        var geoSuccess = function (position) {
+            if (e.currentTarget.id == "use-user-location") {
+                $("#use-user-location").show();
+                $("#current-location-loader").hide();
+                $("#f-from-stop").val('Your Current Location');
+                $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
+            }
+            userCurrentLocation = [position.coords.latitude, position.coords.longitude];
+            userLocationGotOnce = true;
+            map.setView(userCurrentLocation, MAP_ZOOM_NUM);
+
+            navigator.geolocation.clearWatch(watchID);
+
+        };
+
+        var geoError = function (error) {
+            console.log('Error occurred. Error code: ' + error.code);
+            if (!userLocationGotOnce){
+                userCurrentLocation = dublinCoords;
+            } 
+            if (e.currentTarget.id == "use-user-location") {
+                $("#use-user-location").show();
+                $("#current-location-loader").hide();
+                $("#no-location-warning").show();
+            }
+            map.setView(userCurrentLocation, MAP_ZOOM_NUM);
+
+            navigator.geolocation.clearWatch(watchID);
+        };
+
+        watchID = navigator.geolocation.watchPosition(geoSuccess, geoError, geoOptions);
+    } else {
+        if (!userLocationGotOnce) {
+            userCurrentLocation = dublinCoords;
+        }
+        alert('The browser does not support geolocation.');
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 var MapUIControl = (function () {

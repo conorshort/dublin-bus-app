@@ -8,7 +8,7 @@ function journey() {
         $.getScript("https://platform.twitter.com/widgets.js")
             .done(function () {
                 twttr.widgets.load();
-        });
+            });
 
         showSearchJourneyDiv(0);
         clearMapLayers();
@@ -47,8 +47,8 @@ function journey() {
             cookiemonster.set('journeyList', favorite_journey_list, 3650);
             console.log('cookiemonster get journeyList error:' + error)
         }
-        console.log('favorite_journey_list:'+favorite_journey_list);
-        if (favorite_journey_list && favorite_journey_list.length !=0) {
+        console.log('favorite_journey_list:' + favorite_journey_list);
+        if (favorite_journey_list && favorite_journey_list.length != 0) {
             favorite_journey_list.forEach(function (element, index) {
 
                 var favorite_journey = JSON.parse(element);
@@ -160,48 +160,10 @@ function journey() {
         initAutocomplete(to_input);
     }
 
-
-    $("#use-user-location").click(function (e) {
-        // if geolocation is available
-        console.log("setting location");
-        $("#use-user-location").hide();
-        $("#current-location-loader").show();
-
-
-
-        if ("geolocation" in navigator) {
-            var geoOptions = {
-                maximumAge: 5 * 60 * 1000,
-                timeout: 5000,
-                enableHighAccuracy: true
-            }
-            var geoSuccess = function(position) {
-
-                $("#use-user-location").show();
-                $("#current-location-loader").hide();
-                $("#f-from-stop").val('Your Current Location');
-                $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
-                map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
-            };
-
-            var geoError = function(error) {
-                console.log('Error occurred. Error code: ' + error.code);
-                // error.code can be:
-                //   0: unknown error
-                //   1: permission denied
-                //   2: position unavailable (error response from location provider)
-                //   3: timed out
-
-                $("#use-user-location").show();
-                $("#current-location-loader").hide();
-                $("#no-location-warning").show();
-            };
-
-            navigator.geolocation.watchPosition(geoSuccess, geoError, geoOptions);
-        } else {
-            alert('The browser is not supported Geolocation.')
-        }
+    $('#use-user-location').on("click.location", (e) => {
+        getCurrentLocation(e)
     });
+
 
 
 
@@ -238,7 +200,7 @@ function journey() {
         // //get direction from api /api/direction
         $.getJSON(`api/direction?origin=${parseFloat(originCoord.lat).toFixed(7)},${parseFloat(originCoord.lng).toFixed(7)}&destination=${parseFloat(destinationCoord.lat).toFixed(7)},${parseFloat(destinationCoord.lng).toFixed(7)}&departureUnix=${unix}`
             , function (data) {
-                
+
                 console.log('data' + JSON.stringify(data));
 
                 var status = (data || {}).status,
@@ -358,9 +320,9 @@ function journey() {
         var perJourney = JSON.stringify({ "origin": { "name": originInput.value, "coord": JSON.parse(originInput.getAttribute('coord-data')) }, "destination": { "name": destinationInput.value, "coord": JSON.parse(destinationInput.getAttribute('coord-data')) } });
         var index = jQuery.inArray(perJourney, favorite_journey_list);
 
-        console.log('favorite_journey_list:'+favorite_journey_list);
-        console.log('perJourney: '+perJourney);
-        console.log('index: '+index);
+        console.log('favorite_journey_list:' + favorite_journey_list);
+        console.log('perJourney: ' + perJourney);
+        console.log('index: ' + index);
 
         if (index > -1) {
             $("#hollow-star").hide();
