@@ -8,7 +8,7 @@ function journey() {
         $.getScript("https://platform.twitter.com/widgets.js")
             .done(function () {
                 twttr.widgets.load();
-            });
+        });
 
         showSearchJourneyDiv(0);
         clearMapLayers();
@@ -166,26 +166,58 @@ function journey() {
         console.log("setting location");
         $("#use-user-location").hide();
         $("#current-location-loader").show();
+
+
+
         if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(function () { }, function () { }, {});
-            navigator.geolocation.getCurrentPosition(function (position) {
-                console.log("hellooo");
+            var geoOptions = {
+                maximumAge: 5 * 60 * 1000,
+                timeout: 5000,
+                enableHighAccuracy: true
+            }
+            var geoSuccess = function(position) {
+
                 $("#use-user-location").show();
                 $("#current-location-loader").hide();
                 $("#f-from-stop").val('Your Current Location');
                 $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
                 map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
-            }, function () {
-                    $("#use-user-location").show();
-                    $("#current-location-loader").hide();
-                    $("#no-location-warning").show();
-            },
-            {
-                timeout: 5000,
-                enableHighAccuracy: true
-            });
+            };
+
+            var geoError = function(error) {
+                console.log('Error occurred. Error code: ' + error.code);
+                // error.code can be:
+                //   0: unknown error
+                //   1: permission denied
+                //   2: position unavailable (error response from location provider)
+                //   3: timed out
+
+                $("#use-user-location").show();
+                $("#current-location-loader").hide();
+                $("#no-location-warning").show();
+            };
+
+            navigator.geolocation.watchPosition(geoSuccess, geoError, geoOptions);
+
+            // navigator.geolocation.getCurrentPosition(function () { }, function () { }, {});
+            // navigator.geolocation.getCurrentPosition(function (position) {
+            //     console.log("hellooo");
+            //     $("#use-user-location").show();
+            //     $("#current-location-loader").hide();
+            //     $("#f-from-stop").val('Your Current Location');
+            //     $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
+            //     map.setView([position.coords.latitude, position.coords.longitude], MAP_ZOOM_NUM);
+            // }, function () {
+            //         $("#use-user-location").show();
+            //         $("#current-location-loader").hide();
+            //         $("#no-location-warning").show();
+            // },
+            // {
+            //     timeout: 5000,
+            //     enableHighAccuracy: true
+            // });
         } else {
-            alert('Geolocation is not available. Please accept the location permission.')
+            alert('The browser is not supported Geolocation.')
         }
     });
 

@@ -1,11 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
     <!-- Required meta tags -->
     <meta charset="utf-8">
+    <meta name="Description" content="Author: Dan O’Beirne, Hsin Ping Weng, Conor Short, Wing Ki Chung">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}" />
     <!-- Bootstrap CSS -->
@@ -15,8 +16,8 @@
         integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
         crossorigin="anonymous" />
         
-        <!-- datetime picker -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- datetime picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -38,14 +39,16 @@
             <div class="row">
                 <div class="col-6 col-md-8" id="site_icon">
                     <a href="{% url 'routeplanner' %}">
-                        <img src="./static/img/buus_logo.png" style="width: 80px; float: left; margin-right: 10px;">
+
+                        <img src="./static/img/buus_logo.webp" style="width: 80px; float: left;" alt="logo">
+
                         <span id="site-name">Buus</span>
                     </a>
                 </div>
                 <div class="col-6 col-md-4">
                     <div class="row">
                         <div class="col-2 weather" style="display: flex;">
-                            <img src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" id="weather_img">
+                            <img src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" id="weather_img" alt="weather">
                             {{ weather.temperature }}°C
                         </div>
                         <div class="col-3 weather" id="temp">
@@ -66,9 +69,7 @@
     </main>
 
     <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8" crossorigin="anonymous"></script>
-
+   
     <!-- Twitter Javascript for Widget JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
@@ -97,7 +98,6 @@
     <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-analytics.js"></script>
 
     <!-- Add Firebase products that you want to use -->
-    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-firestore.js"></script>
 
     <script>
