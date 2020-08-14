@@ -22,7 +22,7 @@ function stops() {
             //clear all the elements in list group
             showStops(centreLocation[0], centreLocation[1]);
         } else {
-            console.log("Blocked===")
+
         }
     }
 
@@ -238,12 +238,12 @@ function stops() {
         updateStopFavourites();
         $('div .real-time-pop').click(function(e){
             let stopID = $(this).attr("data-stopid");
-            console.log(stopID)
+
             $("#stopRealtimeListGroup").html("");
             showArrivingBusesOnSideBar(stopID);
             $("#stop-realtime-div").fadeIn(10);
             $("#stops-div").fadeOut(10);
-            console.log("Made it to click button");
+
         });
       });
 
@@ -325,7 +325,7 @@ function stops() {
     }
 
     $("#stopsListGroup, #fav-stops-list, #map").on("click.stops", '.star2', function (e) {
-        console.log(e)
+
         e.stopPropagation();
         // Get the clikced stop
         const starredStopID = $(this).attr("data-stop");
@@ -335,7 +335,7 @@ function stops() {
         $("#fav-stops-list").html("");
         $.getJSON(`/api/stops/${starredStopID}`, function (data) {
             stopinfo = JSON.stringify(data);
-            console.log("This is the (hopefully stringified) data: ", stopinfo);
+
 
             let currentStopsList;
 
@@ -345,7 +345,7 @@ function stops() {
                 currentStopsList = cookiemonster.get('stopsList');
             } catch{
                 // If not just add the clicked stop to the list and return
-                console.log("Setting cookie to ", [stopinfo])
+   
                 cookiemonster.set('stopsList', [stopinfo], 3650);
                 updateStopFavourites()
                 return;
@@ -355,14 +355,13 @@ function stops() {
             // Check if the clicked stop is in the cookies array
             const index = currentStopsList.indexOf(stopinfo);
             if (index > -1) {
-                console.log("made it in")
+
                 // if index > -1 the stop is alreay in the cookies,
                 // we can remove it from the array
-                console.log("stopinfo pre slice", stopinfo)
+  
 
                 currentStopsList.splice(index, 1);
-                console.log('index: ', index);
-                console.log("stopinfo post slice", stopinfo);
+ 
             } else {
                 // Otherwise we add to the array
                 currentStopsList.push(stopinfo);
@@ -393,7 +392,7 @@ function stops() {
 
         if (stopsList.length == 0) {
             $("#fav-stops-div").hide();
-            console.log('fav stops hide 2');
+
             return;
         }
 
@@ -417,7 +416,6 @@ function stops() {
             .addClass("fas");
             $("#fav-stops-div").show();
             $("#stop-favs-loader").hide();
-            console.log("setting stops class for " + stop.stopid)
             $("#star-stop-" + stop.stopid).removeClass("far")
                 .addClass("fas");
             $("#marker-star-stop-" + stop.stopid).removeClass("far")

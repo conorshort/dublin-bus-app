@@ -160,7 +160,7 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
 
         tripid = self.request.query_params.get('tripid')
         stopSequence = self.request.query_params.get('stopsequence')
-        print(tripid)
+
         # if both tripid and stopSequence paramaters are given,
         # filter stoptime data by unique_trip_id
         if tripid and stopSequence:
@@ -224,7 +224,7 @@ class GTFSStopTimeViewSet(viewsets.ReadOnlyModelViewSet):
 
             seconds = datetime(2020, 8, day, 0, 0).timestamp()
             unix_time = (seconds + departure_time)
-            print("passing route name", route_name)
+  
             journey_time = predict_journey_time(
                 route_name, segments, int(unix_time), return_list=True)
             trip = list(trip)
@@ -282,7 +282,7 @@ def calc_fare(shape_id, board, alight):
         route_name = GTFSTrip.objects.filter(shape_id=shape_id).first().route.route_name
         direction = shape_id[-1]
         url = f"https://www.dublinbus.ie/Fare-Calculator/Fare-Calculator-Results/?routeNumber={route_name}&direction={direction}&board={board}&alight={alight}"
-        print("getting url:", url)
+
         fare_page = requests.get(url)
         soup = BeautifulSoup(fare_page.text, 'html.parser')
         fare_elem_id = "ctl00_FullRegion_MainRegion_ContentColumns_holder_FareListingControl_lblFare"
@@ -303,12 +303,12 @@ def direction(request):
                   'destination': destination,
                   'departureUnix': departureUnix}
 
-    print('direction departureUnix:', departureUnix)
+
     timestr = datetime.fromtimestamp(
         int(departureUnix), tz.gettz("Europe/London"))
 
     timestr = timestr.strftime("%I:%M%p")
-    print(timestr)
+
 
     # check if 3 papameter all given
     # if missing any parameter from request

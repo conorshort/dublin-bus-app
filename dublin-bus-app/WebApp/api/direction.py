@@ -144,7 +144,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
                     isValiedForPrediction = False
                     break  
 
-                print("JOURNEEY TIME", journeyTime)
+                # print("JOURNEEY TIME", journeyTime)
 
                 # set duration to predicted journey time
                 duration = int(journeyTime)

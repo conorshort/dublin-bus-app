@@ -19,7 +19,7 @@ class SmartDublinBusStopManager(models.Manager):
             result_list = []
             # There should only be one nearest stop
             for row in cursor.fetchall():
-                print("NEAREST STOPT", row)
+                # print("NEAREST STOPT", row)
                 return row[0]
         return None
 
@@ -29,7 +29,7 @@ class SmartDublinBusStopManager(models.Manager):
         import requests
         import json
 
-        print("Getting data...")
+        # print("Getting data...")
 
         all_stops_URL = 'https://data.smartdublin.ie/cgi-bin/rtpi/busstopinformation?&format=json'
 
