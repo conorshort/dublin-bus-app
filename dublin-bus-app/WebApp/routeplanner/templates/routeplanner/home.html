@@ -48,10 +48,10 @@
             <div>Leap Card</div>
         </div>
 
-        <div class="bottom_nav_item" id="bottom-favourite">
+        <!-- <div class="bottom_nav_item" id="bottom-favourite">
             <img src="./static/img/star.png" alt="favourite" class="nav_img">
             <div>Favourite</div>
-        </div>
+        </div> -->
     </div>
 </div>
 
@@ -66,11 +66,11 @@
     crossorigin="anonymous"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBavSlO4XStz2_RD_fUBGwm89mQwGwYUzA&libraries=places" async
     defer></script>
-<script type="text/javascript" src="{% static 'routeplanner/cookiemonster.js' %}" id="script"></script>
-<script src="{% static 'routeplanner/routes.js' %}"></script>
-<script src="{% static 'routeplanner/stops.js' %}"></script>
-<script src="{% static 'routeplanner/journey.js' %}"></script>
+<script type="text/javascript" src="{% static 'routeplanner/cookiemonster.js' %}" id="script" ></script>
+<script src="{% static 'routeplanner/routes.js' %}" async defer></script>
+<script src="{% static 'routeplanner/stops.js' %}" async defer></script>
+<script src="{% static 'routeplanner/journey.js' %}" async defer></script>
 
-<script src="{% static 'routeplanner/home.js' %}"></script>
-<script src="{% static 'routeplanner/favourite.js' %}"></script>
+<script src="{% static 'routeplanner/home.js' %}"  async defer></script>
+<script src="{% static 'routeplanner/favourite.js' %}" async defer></script>
 {% endblock %}
