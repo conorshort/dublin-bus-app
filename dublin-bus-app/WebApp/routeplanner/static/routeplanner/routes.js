@@ -47,7 +47,6 @@ function routes() {
         $(document).on("click.routes", "#inbound-radio, #outbound-radio", function () {
             let direction = $(this).attr("data-inbound")
 
-            console.log("radio click" + direction);
             removeRouteStopsFromMap()
             toggleRouteDisplay(currentRoute);
             toggleRouteDisplay(currentRoute, direction);
@@ -293,8 +292,7 @@ function routes() {
         $("#trip-loader").hide();
         let stopId = $(this).attr('data-stop-id');
         let shapeId = $(this).attr('data-shape-id');
-        console.log(this);
-        console.log(stopId);
+
         if (!stopId) {
             stopId = this.stopId
             shapeId = this.shapeId
@@ -390,7 +388,7 @@ function routes() {
             timesArr = []
             timetables[days].forEach(time => {
                 timesArr.push([time.time, time.trip_id]);
-                console.log(timesArr);
+
             });
             // Sort the times
             timesArr.sort((a, b) => a[0] - b[0]);
@@ -425,7 +423,6 @@ function routes() {
             let thisTime = $(e.target).html();
             let thisPredTime;
 
-            console.log("getting json");
             $.getJSON("/api/stoptime/timetable",
                 { trip_id: tripId }, (tripTimetable) => {
                     // Sort the times
@@ -449,7 +446,7 @@ function routes() {
 
 
                     tripTimetable.forEach(element => {
-                        console.log(thisPredTime); console.log(element.predicted_time);
+
                         let jourTime = element.predicted_time - thisPredTime
                         jourTime = Math.floor(jourTime / 60) + " mins";
                         let highlight = false;
@@ -557,7 +554,7 @@ function routes() {
 
 
     function removeRouteStopsFromMap() {
-        console.log("removing siots");
+
 
         if (routeStopsLayer) {
             map.removeLayer(routeStopsLayer);

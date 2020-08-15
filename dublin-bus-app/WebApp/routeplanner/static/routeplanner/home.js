@@ -130,70 +130,6 @@ function initMap() {
 
 
 
-function findUserLocation(e) {
-    console.log("finding user location from")
-    console.log(e.currentTarget.id)
-    if (e.currentTarget.id == "use-user-location") {
-        $("#use-user-location").hise();
-        $("#current-location-loader").show();
-    }
-    if ("geolocation" in navigator) {
-        var geoOptions = {
-            maximumAge: 5 * 60 * 1000,
-            timeout: 5000,
-            enableHighAccuracy: true
-        }
-        var geoSuccess = function (position) {
-            if (e.currentTarget.id == "use-user-location") {
-                $("#use-user-location").show();
-                $("#current-location-loader").hide();
-                $("#f-from-stop").val('Your Current Location');
-                $("#f-from-stop").attr('coord-data', `{"lat":${position.coords.latitude}, "lng":${position.coords.longitude}}`);
-            }
-            userLocationGotOnce = true;
-            userCurrentLocation = [position.coords.latitude, position.coords.longitude];
-            map.setView(userCurrentLocation, MAP_ZOOM_NUM);
-            locationFunctionRun = true;
-        };
-
-        var geoError = function (error) {
-            console.log('Error occurred. Error code: ' + error.code);
-            // error.code can be:
-            //   0: unknown error
-            //   1: permission denied
-            //   2: position unavailable (error response from location provider)
-            //   3: timed out
-            if (e.currentTarget.id == "use-user-location") {
-                $("#use-user-location").show();
-                $("#current-location-loader").hide();
-                $("#no-location-warning").show();
-            }
-
-            if (!userLocationGotOnce) {
-                userCurrentLocation = [53.3482, -6.2641];
-                map.setView(userCurrentLocation, MAP_ZOOM_NUM);
-            }
-
-            locationFunctionRun = true;
-        };
-
-        navigator.geolocation.watchPosition(geoSuccess, geoError, geoOptions);
-    } else {
-        if (!userLocationGotOnce) {
-            userCurrentLocation = [53.3482, -6.2641];
-            map.setView(userCurrentLocation, MAP_ZOOM_NUM);
-        }
-        locationFunctionRun = true;
-        alert('The browser does not support geolocation.');
-    }
-
-}
-
-
-
-
-
-
 function getCurrentLocation(e) {
     if (e.currentTarget.id == "use-user-location") {
         $("#use-user-location").hide();
@@ -247,26 +183,6 @@ function getCurrentLocation(e) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var MapUIControl = (function () {
 
     return {
@@ -303,21 +219,18 @@ var MapUIControl = (function () {
                 $("#my_location_btn").animate({ bottom: 10 });
                 $("#map").animate({ height: "200px" }, 500, () => {
 
-                    console.log("Invalidating size")
+        
                     map.invalidateSize(false);
                     if (this.isFirstTime) {
-                        map.flyTo(dublinCoords, 12, { 'duration': 0.5 });
+                        // map.flyTo(dublinCoords, 12, { 'duration': 0.5 });
                         this.isFirstTime = false;
                     }
                     this.allowStopReload = true;
                     if (currentBounds) {
-                        console.log("flyint to bounds");
-                        console.log(currentBounds);
-                        map.flyToBounds(currentBounds, { 'duration': 0.5 });
+
+                        // map.flyToBounds(currentBounds, { 'duration': 0.5 });
                     } else if (currentCentre) {
-                        // console.log("flyint to centre");
-                        // console.log(currentCentre);
-                        // map.flyTo(currentCentre, 12, { 'duration': 0.5 });
+
                     }
                 });
             }
@@ -331,16 +244,16 @@ var MapUIControl = (function () {
                 this.allowStopReload = false;
                 $(".sidebar-header").hide();
 
-                var newHeight = $(window).height() - 80 - 30 - 50 + 5;
+                var newHeight = $(window).height() - 80 - 60;
                 $('#sidebar').fadeOut(10);
                 $("#mobile-show-content").show();
                 // $("#map").show()
-                $("#my_location_btn").animate({ bottom: 25 });
+                $("#my_location_btn").animate({ bottom: 50 });
                 $("#map").animate({ height: newHeight }, 500, () => {
                     map.invalidateSize(false);
                     this.allowStopReload = true;
                     if (currentBounds) {
-                        map.flyToBounds(currentBounds, { 'duration': 0.5 });
+                        // map.flyToBounds(currentBounds, { 'duration': 0.5 });
                     } else if (currentCentre) {
                         // map.flyTo(currentCentre, 12, { 'duration': 0.5 })
                     }
@@ -380,8 +293,7 @@ $(window).resize(function () {
 
 
 function loadSideBarContent(navId) {
-    console.log("loadgin...")
-    console.log(navId)
+
 
     // Load the appropriate HTML using the navId
     $("#sidebar").load("/" + navId, () => {

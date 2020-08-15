@@ -45,9 +45,9 @@ function journey() {
         } catch (error) {
             favorite_journey_list = [];
             cookiemonster.set('journeyList', favorite_journey_list, 3650);
-            console.log('cookiemonster get journeyList error:' + error)
+
         }
-        console.log('favorite_journey_list:' + favorite_journey_list);
+
         if (favorite_journey_list && favorite_journey_list.length != 0) {
             favorite_journey_list.forEach(function (element, index) {
 
@@ -179,12 +179,10 @@ function journey() {
         var originCoord = JSON.parse($('#f-from-stop').attr('coord-data'));
         var destinationCoord = JSON.parse($('#f-to-stop').attr('coord-data'));
         var dateTime = document.forms["journeyForm"]["datetime"].value;
-        console.log("dateTime")
-        console.log(dateTime)
 
-        // 2020-08-06 14:35
+
         splitDateTime = dateTime.split(/-| |:/)
-        console.log(splitDateTime)
+
         dt = DateTime.fromObject({
             year: splitDateTime[0],
             month: splitDateTime[1],
@@ -201,7 +199,7 @@ function journey() {
         $.getJSON(`api/direction?origin=${parseFloat(originCoord.lat).toFixed(7)},${parseFloat(originCoord.lng).toFixed(7)}&destination=${parseFloat(destinationCoord.lat).toFixed(7)},${parseFloat(destinationCoord.lng).toFixed(7)}&departureUnix=${unix}`
             , function (data) {
 
-                console.log('data' + JSON.stringify(data));
+
 
                 var status = (data || {}).status,
                     leg = (data || {}).leg,
@@ -309,7 +307,7 @@ function journey() {
 
 
     function displaySearchInfoOnHeader(originInput, destinationInput, dateTime) {
-        console.log('displaySearchInfoOnHeader');
+
         // dictionary to store all the elements which are going to display on frontend
         // key: the element id or class name
         // value: content to append to the element 

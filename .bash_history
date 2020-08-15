@@ -57,3 +57,11 @@ ls .ssh
 sudo chmod 700 ~/.ssh/
 sudo chmod 600 ~/.ssh/*
 exit
+cd dublin-bus-app/
+sudo service apache2 restart
+git pull
+git push
+git commit
+git commit -a
+git push
+git pull

@@ -1,0 +1,575 @@
+/* css for extra small button 
+https://stackoverflow.com/questions/33911049/btn-xs-no-longer-a-valid-option-in-bootstrap-4 */
+
+
+
+html, body {
+  background: #fafafa;
+  color: #333333;
+  height: 100%;
+}
+
+/* main {
+  height: 100%;
+} */
+
+a {
+  color: black;
+}
+
+/* ==== Header ==== */
+#header_content {
+  margin: 0 auto; 
+  width: 80%;
+}
+
+a:hover, a:active {
+  text-decoration: none;
+  color: inherit; 
+}
+
+#site_icon {
+  height: 80px;
+  line-height: 80px;
+  vertical-align: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.site-header {
+  height: 80px;
+  background-color: #ffbf00;
+  color: black;
+  font-size: 30px;
+  box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.3); ;
+  position: relative;
+  z-index: 1001;
+
+}
+
+/* ==== weather ==== */
+
+.weather {
+  height: 80px;
+  line-height: 80px;
+  vertical-align: center;
+}
+
+div.weather#temp {
+  font-size: 40px;
+}
+
+div.weather#description {
+  font-size: 20px;
+}
+
+#weather_img {
+  height: 80px;
+}
+
+/* ==== Sidebar ==== */
+.sidebar-header {
+  font-size: 30px;
+  background-color: #ffbf00;
+  margin: auto;
+  width: 100%;
+  padding: 10px;
+}
+
+.sidebar {
+  height:calc(100vh - 80px);
+  overflow:scroll;
+}
+
+.content {
+  background-color: white;
+  box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1000;
+  width: 100%;
+  margin: 0px;
+  height: calc(100vh - 80px);
+  overflow-y:auto;
+  overflow-x: hidden;
+}
+
+#sidebar {
+
+  width: 430px;
+  -ms-flex: 0 0 430px;
+  flex: 0 0 430px;
+  padding:0px;
+}
+
+.gray-box {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.dark-gray-box {
+  background-color: rgba(0, 0, 0, 0.705);
+  padding: 10px;
+}
+
+.light-yellow-box {
+  background-color: #ffbf00;
+  padding: 10px;
+}
+
+.black-box {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* ==== map ==== */
+
+#map {
+  max-height: 100vh;
+  overflow-y: hidden;
+  height: 900px;
+}
+
+#map {
+  height: calc(100vh - 80px);
+  overflow-y: hidden;
+}
+
+#my_location_btn {
+  position: absolute;
+  bottom: 10px;
+  width: 60px;
+  height: 60px;
+  right: 10px;
+  z-index: 999;
+  border-radius: 50%;
+  box-shadow: 2px 2px 3px 3px rgba(0,0,0,0.15);
+}
+
+
+/* ==== journey ==== */
+
+#journey_search_div {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#edit-journey-input {
+
+  padding: 10px 25px;
+}
+
+#journey-result-content {
+  padding: 15px;
+}
+
+.journey_result_icon {
+  width: 20px;
+}
+
+#journey-favorite-dropdown {
+  width: 100%;
+  border-radius: 0px;
+  margin: 0px 5px;
+}
+
+#dropdownMenuButton {
+  margin: 0px;
+  background-color: green;
+}
+
+
+/* ==== leapcard ==== */
+#leap-info {
+  color: #ffbf00;
+}
+
+/* ==== stop ==== */
+
+#stop-button {
+  margin: 2px;
+  padding: 2px 8px;
+}
+
+/* ==== route ==== */
+
+#route-stops-title{
+  padding: 10px 0px 10px 40px;
+  display: inline-block;
+
+}
+
+#back-to-routes{
+  margin-top: 5px;
+  margin-left: 30px;
+}
+.direction-buttons{
+  margin-top: 12px;
+  margin-left: 30px;
+  margin-bottom: 8px;
+}
+.btn-outline-warning {
+  color: black !important;
+}
+
+#route-stop-div {
+  display: none;
+}
+
+.stops-list {
+  height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.stop-item {
+  padding: 5px 5px;
+}
+
+/* #timetable-modal {
+  top: 10%;
+} */
+
+/* ==== modal ==== */
+/* .modal-dialog,
+.modal-content {
+    height: 80%;
+} */
+
+/* .modal-body {
+    100% = dialog height, 120px = header + footer 
+    max-height: calc(100% - 120px);;  
+    overflow-y: auto; 
+} */
+
+
+/* ==== form ==== */
+.form-table {
+  width: 100%;
+  margin: 10px 0px;
+} 
+
+.form-table td { 
+  height: 50px;
+  margin: 8px 0px;
+
+} 
+
+.form-input {
+  width: 100%;
+  height: 80%;
+}
+
+
+/* ==== Navigation bar ==== */
+
+#side_navibar {
+  background-color: #797878;
+  width: 90px;
+  height: calc(100vh - 80px);
+}
+
+#bottom-navibar {
+  background-color: #797878;
+  width: 100vw !important;
+  height: 60px;
+  display: none;
+  z-index: 1001;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+
+.nav_item {
+  overflow:hidden;
+  text-align: center;
+  padding: 20px;
+  height: 15%;
+  color: black;
+  min-height: 100px;
+}
+
+.bottom_nav_item  {
+  overflow:hidden;
+  text-align: center;
+  height: 60px;
+  width: 25%;
+}
+
+.nav_item:hover, .bottom_nav_item:hover {
+  background-color: #aaaaaa67;
+  transition: 0.2s ease-in-out;
+}
+
+.nav-active{
+  background-color: #ffbf00;
+  font-weight: bold;
+}
+
+
+.nav_img {
+  height:60%;
+  max-height: 27px;
+  margin-top: 5px;
+}
+
+
+#mobile-show-content { 
+  border-radius: 10px 10px 0px 0px;
+  position: absolute;
+  display: none;
+  height: 30px;
+  background-color: #242424;
+  bottom: 58px;
+  z-index: 1002;
+}
+
+
+#show-content-arrow{
+  /* height: 40px; */
+  margin: auto;
+  font-size: 20pt;
+  /* width: 20vw; */
+  color: #ffbf00;
+  text-align: center;
+}
+
+/* ==== Dropdown element ==== */
+
+.dropdown-toggle { 
+  background-color: white; 
+  color: #333333;
+}
+
+/* ==== Button element ==== */
+.btn-primary {
+  background-color: deepskyblue;
+  border-style: none;
+
+}
+
+/* ==== search bar ====  */
+#stops_area {
+  border: 0px; 
+  border-bottom: 1px solid #ccc;
+  margin: 2px 0px;
+}
+
+
+/* ==== Other elements ==== */
+
+/* #stopsListGroup {
+  max-height:800px;
+  overflow:auto;
+} */
+
+.solid-star-span{
+  font-size: 30px; 
+  color: Dodgerblue;
+}
+
+
+
+#route-stop-div {
+  display: none;
+}
+.fav-div {
+  margin-left: 0px;
+}
+.stops-list {
+  height: 500px;
+
+}
+#trip-timetable {
+  max-height: 300px;
+
+  overflow-y: auto;
+  padding-top: 0px;
+}
+
+#trip-timetable thead tr th {
+  position: sticky;
+  top: 0;
+  border-width: 0px;
+
+}
+
+
+.journey_result_icon {
+  width: 20px;
+}
+
+.route-heading {
+  margin: 0px;
+  padding-left: 25px;
+  padding-bottom: 0px;
+}
+
+#route-filter {
+  width: 95%;
+  margin-left: 15px;
+}
+
+.btn-group-xs > .btn, .btn-xs {
+  border-style: none !important;
+  padding: .5rem .4rem;
+  font-size: 1rem;
+  line-height: .5;
+  border-radius: .2rem;
+  margin-right: 0px;
+  margin-left: 0px;
+  width: 95%;
+  height: 30px;
+}
+
+.timetable-item {
+  padding: 2px 0px !important;
+}
+
+.fas {
+  color: #ffbf00;
+}
+
+.far {
+    font-weight: 600 !important;
+    color: darkgrey;
+}
+
+
+/* CSS for when the page is less than 768px */
+@media (max-width: 768px) { 
+
+  #site-name{
+    font-size: 24px;
+  }
+    #sidebar {
+      width: 100vw;
+      box-shadow: 5px 0 5px 0px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 1000;
+      height: auto;
+      padding-bottom: 60px;
+    }
+
+    #side_navibar {
+      display: none;
+    }
+    .content {
+      width: 100vw;
+      height: auto;
+      /* overflow-x: visible; */
+      overflow-y: visible;
+    }
+
+
+    #map {
+      
+      height: 0px;
+      overflow-y: hidden;
+    }
+
+
+
+    #bottom-navibar {
+      position: fixed;
+      display: block;
+      min-width: 100vw !important;
+      bottom: 0;
+    }
+
+    #timetable-modal {
+      font-size: 0.75em;
+    }
+    #timetable-tabs {
+      font-size: 1.1em !important;
+    }
+
+    .btn-group-xs > .btn, .btn-xs {
+      border-style: solid  !important;
+      padding: .5rem .4rem;
+      font-size: .875rem;
+      line-height: .5;
+      border-radius: .2rem;
+      margin-right: 0px;
+      margin-left: 0px;
+    }
+
+
+  #my_location_btn {
+    width: 50px;
+    height: 50px;
+  }
+  #site-name {
+    display: none;
+  }
+ }
+
+@media (max-height: 475px) { 
+  #site-name{
+    font-size: 12px;
+  }
+
+  .nav_img {
+    display: none;
+  }
+  .nav_item {
+    padding: 10px;
+    min-height: 40px;
+  }
+  #bottom-navibar {
+    height: 30px;
+  }
+
+  #my_location_btn {
+    width: 40px;
+    height: 40px;
+  }
+
+
+}
+
+
+
+
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+
+.list-group-item {
+  width: 100%;
+  border: 0px;
+  background-color: white;
+  border-bottom: 1px solid rgb(236, 236, 236);
+}
+
+#stops_area, #route-filter  {
+  border: 0px;
+}
+
+
+
+/* Dont show any bullets front of list-item */
+li {
+  list-style: none;
+}

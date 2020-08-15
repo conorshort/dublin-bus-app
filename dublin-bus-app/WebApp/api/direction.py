@@ -86,8 +86,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
 
         # happen when steps only has walking step
         else:
-            # FIXME: timezone  & daylight saving problem
-            # when convert unix to time string shows one hour late
+
             timestr = datetime.fromtimestamp(
                 int(departureUnix), tz.gettz("Europe/London"))
             timestr = timestr.strftime("%I:%M%p")
@@ -144,7 +143,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
                     isValiedForPrediction = False
                     break  
 
-                print("JOURNEEY TIME", journeyTime)
+                # print("JOURNEEY TIME", journeyTime)
 
                 # set duration to predicted journey time
                 duration = int(journeyTime)
@@ -188,8 +187,7 @@ def direction_to_first_transit(origin, destination, departureUnix):
         newData['leg']['duration']['text'] = get_time_string(totalDuration)
         newData['leg']['distance']['text'] = get_destination_string(totalDistance)
 
-        # FIXME: timezone  & daylight saving problem
-        # when convert unix to time string shows one hour late
+   
 
         timestr = datetime.fromtimestamp(
             int(newData['leg']['arrival_time']['value']), tz.gettz("Europe/London"))

@@ -26,12 +26,12 @@ def day_bools_to_string(day_bool_list):
             if day == 0:
                 consecutive = False
             elif day == 1 and not consecutive:
-                day_string += ", " + day_names[i]
+                day_string += ", " + day_names[i][:3]
                 consecutive = True
             elif i + 1 >= len(day_bool_list):
                 break
             elif day == 1 and day_bool_list[i + 1] == 0:
-                day_string += "-" + day_names[i]
+                day_string += "-" + day_names[i][:3]
                 consecutive = False
     return day_string[2:]
 
