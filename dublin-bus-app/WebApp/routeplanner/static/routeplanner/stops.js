@@ -114,7 +114,8 @@ function stops() {
 
         $.getJSON(`/realtimeInfo/${stopid}`, function (data) {
             // parse response data to json 
-            obj = JSON.parse(data)
+
+            obj = data;
             if (obj.errorcode == "0") {
                 results = obj.results;
                 content = '';

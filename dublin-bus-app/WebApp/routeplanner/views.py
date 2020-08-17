@@ -80,9 +80,11 @@ def leapinfo(request):
 
 
 def realtimeInfo(request, stop_id):
-    r = requests.get(f"https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?stopid={stop_id}&format=json%27")
-
-    return JsonResponse(r.text, safe=False)
+    url = f"https://api.nationaltransport.ie/rtpi/RealTimeBusInformation?stopid={stop_id}"
+    headers = {'content-type': 'application/json',
+               "Ocp-Apim-Subscription-Key": "decc1398902345eea26b3bda43931fea"}
+    r = requests.get(url, headers=headers)
+    return JsonResponse(r.json(), safe=False)
 
 
 def favourite(request):
