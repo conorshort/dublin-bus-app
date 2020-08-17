@@ -51,6 +51,5 @@ def getWeather(unixTime):
         return weather_hourly_data[weatherIndex]
     return None
 
-
 if __name__ == '__main__':
     getWeatherHourly()
