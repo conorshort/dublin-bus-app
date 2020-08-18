@@ -14,13 +14,13 @@ def predict_journey_time(lineId, segments, departure_unix, return_list=False):
 
         # cheak if df has weather features
         weatherFeatures = ['temp', 'wind_speed', 'rain']
-        hasWeatherFeatures = all(elem in weatherFeatures for elem in segments_df.columns)
-
+        hasWeatherFeatures = all(elem in segments_df.columns for elem in weatherFeatures)
+    
         # chech if the datafram contain weather features
         # has weather: departure time within 48 hrs
         # dont have weather : departure time before now or over 48 hrs
         if hasWeatherFeatures:
-            model = get_route_model(lineId)
+            model = get_route_model(lineId, hasWeather=True)
         else:
             model = get_route_model(lineId, hasWeather=False)
 
@@ -41,10 +41,12 @@ def create_test_dataframe(lineId, segments, departure_unix):
         departure_unix = (int(departure_unix) // 3600) * 3600
         weather = getWeather(int(departure_unix))
 
-        if weather is not None:
-            model = get_route_model(lineId)
+
+        if weather:
+            model = get_route_model(lineId, hasWeather=True)
         else:
             model = get_route_model(lineId, hasWeather=False)
+
         # get all features of the route model
         features = model.get_booster().feature_names
 
@@ -127,14 +129,11 @@ PICKLE_PATH = f"{BASE_DIR}/pickles/pickles_without_weather/route_123_without_wea
 
 def get_route_model(lineId, hasWeather=False):
 
-
-
         # path for model pickle without weather
     modelFile = f"{BASE_DIR}/pickles/pickles/route_{lineId}.pkl"
-    if hasWeather is False:
+    if not hasWeather:
         # path for model pickle
         modelFile =f"{BASE_DIR}/pickles/pickles_without_weather/route_{lineId}_without_weather.pkl"
-
 
     # Load the Model back from file
     with open(modelFile, 'rb') as file:
