@@ -181,7 +181,7 @@ div.weather#description {
 
 /* ==== leapcard ==== */
 #leap-info {
-  color: #ffbf00;
+  color: rgb(32, 32, 32);
 }
 
 /* ==== stop ==== */

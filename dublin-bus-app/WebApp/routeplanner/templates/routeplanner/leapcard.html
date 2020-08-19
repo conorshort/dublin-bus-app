@@ -15,10 +15,15 @@
             </form>
         </div>
     </div>
-    <div id= "leap-info" style="font-size:180">
+    <div class="text-center">
+        <div class="spinner-grow text-warning m-5" role="status" id="leap-info-loader">
+            <span class=" sr-only">Loading...</span>
+        </div>
+    </div>
+    <div id = "leap-info" style="margin: 0px 20px;">
         <!-- <h2 id="leap-info">Card:</h2> 
-        <h4>{{ result.card }}</h4>
-        <h2 id="leap-info">Balance: </h2> 
+        <h4>{{ result.card }}</h4> -->
+        <!-- <h2 id="leap-info">Balance: </h2> 
         <h4>{{ result.balance }}</h4> -->
     </div>
 </div>
@@ -30,8 +35,14 @@
         $.ajaxSetup({  
             data: {csrfmiddlewaretoken: '{{ csrf_token }}' },  
         });
+
+        $("#leap-info-loader").hide();
+
     // enact this function after form submission
     $('#formadd').submit(function(){  
+
+        $("#leap-info-loader").show();
+
         //info is getting username and password values by their id
         info={      
                 username:$('#un').val(),   
@@ -47,14 +58,31 @@
                 url: "/leapinfo", //url to handle variables
                 success: function(result, statues, xml){  
                     // if success, return the result back to html with id "#leap-info"
-                    $("#leap-info").html(result);    
+                    
+                    
+                    
+                    $("#leap-info").html(renderLeapcardInfo($('#un').val(),result));   
+
+                    console.log(result);
+
+
+                    $("#leap-info-loader").hide(); 
                 },  
                 error: function(){  
                     //otherwise alert false
                     alert("false");  
+                    $("#leap-info-loader").hide();
                 }  
             });  
             return false;  
-        });  
+        }); 
     });
+
+    function renderLeapcardInfo(username, balance){
+        content = '';
+        content += `<p>Hi <b>${username}</b>,</p>`;
+        content += `<p>your leapcard balance is ‎<b>€${balance}</b></p>`;
+        return content
+    }
+
 </script> 
