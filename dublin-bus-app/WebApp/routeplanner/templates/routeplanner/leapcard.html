@@ -8,8 +8,10 @@
             <form method="post" id="formadd">
                 <b>Leap card account information:</b></br></br>
                 {% csrf_token %}
-
-                {{ form }}
+                <table>
+                    {{ form.as_table}}
+                </table>
+                
                 <button type="submit" class="btn btn-primary float-right" style="margin-right:2%;margin-top:8%">Submit</button>
 
             </form>
@@ -20,7 +22,7 @@
             <span class=" sr-only">Loading...</span>
         </div>
     </div>
-    <div id = "leap-info" style="margin: 0px 20px;">
+    <div id="leap-info">
         <!-- <h2 id="leap-info">Card:</h2> 
         <h4>{{ result.card }}</h4> -->
         <!-- <h2 id="leap-info">Balance: </h2> 
@@ -58,14 +60,7 @@
                 url: "/leapinfo", //url to handle variables
                 success: function(result, statues, xml){  
                     // if success, return the result back to html with id "#leap-info"
-                    
-                    
-                    
                     $("#leap-info").html(renderLeapcardInfo($('#un').val(),result));   
-
-                    console.log(result);
-
-
                     $("#leap-info-loader").hide(); 
                 },  
                 error: function(){  
@@ -79,9 +74,9 @@
     });
 
     function renderLeapcardInfo(username, balance){
-        content = '';
+        content = '<div style="margin: 10px 20px;"';
         content += `<p>Hi <b>${username}</b>,</p>`;
-        content += `<p>your leapcard balance is ‎<b>€${balance}</b></p>`;
+        content += `<p>your leapcard balance is ‎<b>€${balance}</b></p></div>`;
         return content
     }
 
